@@ -1,0 +1,17 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Cors
+flask-jwt-extended
+psycopg2
+itsdangerous
+python-dotenv
+Werkzeug
+alembic
+gunicorn
+dependency-injector
+python-dotenv
+marshmallow
+marshmallow-sqlalchemy
+flasgger
+pyyml
