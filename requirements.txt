@@ -1,12 +1,11 @@
 Flask
-Flask-SQLAlchemy
-Flask-Migrate
 Flask-Cors
 flask-jwt-extended
 psycopg2
 itsdangerous
 python-dotenv
 Werkzeug
+sqlalchemy
 alembic
 gunicorn
 dependency-injector
