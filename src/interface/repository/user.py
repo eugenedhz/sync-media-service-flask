@@ -5,7 +5,7 @@ from src.domain.user import User
 class UserRepoInterface(ABC):
 
 	@abstractmethod
-	def store(self, user: User) -> User:
+	def store(self, user: User) -> None:
 		raise NotImplementedError
 
 
@@ -20,7 +20,7 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def update(self, user: User) -> User:
+	def update(self, user: User) -> None:
 		raise NotImplementedError
 
 
