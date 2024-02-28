@@ -35,18 +35,15 @@ class UserRepo(UserRepoInterface):
 		return User(**(found_user.__dict__))
 
 
-	def update(self, user: User) -> User:
+	def update(self, user: User) -> None:
 		with Session(self.engine) as s:
 			query = (
 				update(UserModel)
 				.where(UserModel.id == int(user.id))
 				.values(**(user.to_dict()))
-				.returning(UserModel)
 			)
 
 			updated_user = s.scalars(query)
-
-		return User(**(updated_user.__dict__))
 
 
 	def get_all(self) -> list[User]:
