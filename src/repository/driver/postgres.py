@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from src.configs.app_config import POSTGRES_CONN_URL
+from src.configs.app_config import Default as cfg
 
 
-engine = create_engine(POSTGRES_CONN_URL, echo=True)
+postgresql_engine = create_engine(cfg().POSTGRES_CONN_URL, echo=True)

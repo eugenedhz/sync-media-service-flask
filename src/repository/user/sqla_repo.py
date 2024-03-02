@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import Union
 
 from src.domain.user import User
-from src.interface.repos.user import UserRepoInterface
-from src.repository.sqla_models.models import User as UserModel
+from src.interface.repository.user import UserRepoInterface
+from src.repository.sqla_models.models import UserModel
 
 
 class UserRepo(UserRepoInterface):
@@ -23,16 +23,22 @@ class UserRepo(UserRepoInterface):
 
 	def get_by_id(self, id: Union[str | int]) -> User:
 		with Session(self.engine) as s:
-			found_user = s.get(UserModel, int(id))
+			found_user = s.get(UserModel, id)
 
-		return User(**(found_user.__dict__))
+			found_user_dict = found_user.__dict__
+			del found_user_dict['_sa_instance_state']
+
+		return User(**found_user_dict)
 			
 
 	def get_by_username(self, username: str) -> User:
 		with Session(self.engine) as s:
 			found_user = s.execute(select(UserModel).filter_by(username=username))
 
-		return User(**(found_user.__dict__))
+			found_user_dict = found_user.__dict__
+			del found_user_dict['_sa_instance_state']
+
+		return User(**found_user_dict)
 
 
 	def update(self, user: User) -> None:
@@ -43,23 +49,32 @@ class UserRepo(UserRepoInterface):
 				.values(**(user.to_dict()))
 			)
 
-			updated_user = s.scalars(query)
+			s.scalars(query)
 
 
 	def get_all(self) -> list[User]:
 		with Session(self.engine) as s:
 			found_users = s.execute(select(UserModel).all())
 
-		return [User(**(user.__dict__)) for user in found_users]
+			found_dict_users = [user.__dict__ for user in found_users]
+
+			for user in found_users_dict:
+				del user['_sa_instance_state']
+
+		return [User(**user) for user in found_dict_users]
 
 
 	def delete_user(self, id: Union[str | int]) -> User:
 		with Session(self.engine) as s:
-			found_user = s.get(UserModel, int(id))
+			found_user = s.get(UserModel, id)
+
+			found_user_dict = found_user.__dict__
+
+			del found_user_dict['_sa_instance_state']
 
 			s.delete(found_user)
 
-		return User(**(found_user.__dict__))
+		return User(**found_user_dict)
 
 
 	def username_exists(self, username: str) -> bool:

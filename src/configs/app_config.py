@@ -10,30 +10,18 @@ class Default(object):
 	JWT_COOKIE_SECURE = True
 	JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
 	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
-	JWT_SECRET_KEY = "DUEY*&#H(D@NFIUEGUDBNC(#(*#H73"
+	JWT_SECRET_KEY = "" # TODO: get from the env variables
 
 	SWAGGER = {
         'uiversion': 3,
         'openapi': '3.0.2'
 	}
 
-	DB_NAME = 'bakingbread'
-	DB_PASSWORD = 'test3915'
-	SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-	@property
-	def SQLALCHEMY_DATABASE_URI(self):
-		return f'postgresql+psycopg2://postgres:{self.DB_PASSWORD}@localhost/{self.DB_NAME}'
+	# TODO: get password and username from the env variables
+	POSTGRES_CONN_URL = 'postgresql://postgres:test3915@localhost/ilow' 
 
 
 class Development(Default):
-	DB_NAME = 'BakingBread'
-	DB_PASSWORD = 'test3915'
 
 	JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=1)
 	JWT_REFRESH_TOKEN_EXPIRES = timedelta(minutes=2)
-
-
-class Staging(Default):
-	DB_NAME = 'bakingbread'
-	DB_PASSWORD = 'test3915'

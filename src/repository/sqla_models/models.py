@@ -5,16 +5,18 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
-class User(Base):
+class UserModel(Base):
+	__tablename__ = 'User'
+
 	id = Column(Integer, primary_key=True)
 
 	username = Column(String, unique=True, nullable=False)
-	password_hash = Column(String, nullable=False)
-	registration_date = Column(DateTime, nullable=False)
-	is_banned = Column(Boolean, nullable=False, default=False)
+	passwordHash = Column(String, nullable=False)
+	registrationDate = Column(DateTime, nullable=False)
+	isBanned = Column(Boolean, nullable=False, default=False)
 
 	email = Column(String, unique=True)
-	display_name = Column(String)
+	displayName = Column(String)
 	birthday = Column(DateTime)
 	description = Column(String)
 	avatar = Column(String)

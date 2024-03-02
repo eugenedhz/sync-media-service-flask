@@ -1,0 +1,115 @@
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  title: 'ilow Media Service API DOCS'
+  description: |
+      ## FOR USAGE
+
+      Just scroll down to the **interactive API requests**!
+
+      If any not understandable `errors` occur, contact ***@Eugene Toropkin***
+
+      -----------------------------------------------
+        
+      📝 **Note:** Log in as an ***administrator*** or ***user*** before making requests marked with a padlock 🔒
+
+      Before login, sign up as an ***administrator*** or ***user*** in case you dont have admin username and password.
+
+      Check the **Authenticaton API** requests for those purposes.
+      
+      -----------------------------------------------
+
+      ## REQUEST HTTP METHODS 
+
+      - To `create` something use ***POST*** method
+
+      - To `get` something use ***GET*** method
+
+      - To `update` something use ***PATCH*** method
+
+      - To `delete` something use ***DELETE*** method
+
+      -----------------------------------------------
+
+      ## TABLE OF ***ERRORS*** THAT API MAY RETURN
+        
+      | Status Code | Description | Message |
+      | --- | --- | --- |
+      | ***Global errors*** |
+      | 405 | METHOD NOT ALLOWED | ***METHOD_NOT_ALLOWED*** |
+      | 404 | NOT FOUND | ***RESOURCE_NOT_FOUND*** |
+      | ***Authenticaton API errors*** |
+      | 400 | BAD REQUEST | ***NO_SIGNUP_DATA_PROVIDED*** |
+      | 400 | BAD REQUEST | ***NO_LOGIN_DATA_PROVIDED*** |
+      | 400 | BAD REQUEST | ***INVALID_PHONE_NUMBER*** |
+      | 400 | BAD REQUEST | ***INVALID_OTP_CODE*** |+
+      | 409 | CONFLICT | ***INVALID_LOGIN_OR_PASSWORD*** |
+      | 409 | CONFLICT | ***ADMIN_ALREADY_EXISTS*** |
+      | 409 | CONFLICT | ***ADMIN_DOESNT_EXIST*** |
+      | 401 | UNAUTHORIZED | ***NO_TOKEN_PROVIDED*** |
+      | 401 | UNAUTHORIZED | ***NO_FRESH_TOKEN_PROVIDED*** |
+      | 401 | UNAUTHORIZED | ***TOKEN_HAS_EXPIRED*** |
+      | 422 | UNPROCESSABLE ENTITY | ***INVALID_TOKEN*** |
+      | 403 | FORBIDDEN | ***ADMIN_RIGHTS_REQUIRED*** |
+      | ***Query params errors*** |
+      | 400 | BAD REQUEST | ***UNKNOWN_QUERY_PARAM*** |
+      | 400 | BAD REQUEST | ***INVALID_SORT_VALUE*** |
+      | 400 | BAD REQUEST | ***INVALID_EXPAND_VALUE*** |
+      | 400 | BAD REQUEST | ***INVALID_EXPAND_VALUE_PARAMETER*** |
+      | 400 | BAD REQUEST | ***INVALID_SELECT_FIELD*** |
+      | ***JSON validation errors*** |
+      | 400 | BAD REQUEST | ***"field_name": "MISSING_DATA"*** |
+      | 400 | BAD REQUEST | ***"field_name": "UNKNOWN_FIELD"*** |
+      | 400 | BAD REQUEST | ***"field_name": "INVALID_LENGTH"*** |
+      | 400 | BAD REQUEST | ***"field_name": "INVALID_TYPE"*** |
+      | 400 | BAD REQUEST | ***"field_name": "NOT_NULLABLE"*** |
+
+      -----------------------------------------------
+
+  
+  version: 'beta 0.0.1'
+
+  contact:
+    url: https://vk.com/akumii
+    email: toropkibn@gmail.com
+
+  license:
+    name: Nginx 1.18.0
+    url: https://nginx.org/LICENSE
+
+externalDocs:
+  description: ilow Gitlab!
+  url: https://gitlab.eugenv.ru
+
+tags:
+  - name: Authentication API
+    description: Do everything with authentication :)
+  - name: User API
+    description: Do everything with users :)
+  - name: Media API
+    description: Do everything with media :)
+  - name: Rooms API
+    description: Do everything with rooms :)
+
+################################################################################
+#                            Hosts, Servers, cookies auth                      #
+################################################################################
+
+servers: [
+  {
+    "url": "https://ilow-api.eugenv.ru/",
+    "description": "Development server"
+  },
+  {
+    "url": "http://127.0.0.1:5000/",
+    "description": "Local server"
+  },
+  {
+    "url": "No production server is present...",
+  }
+]
+
+################################################################################
+#                                    Paths                                     #
+################################################################################
