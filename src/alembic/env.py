@@ -16,7 +16,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from src.adapters.db.sql.models import Base
+from repository.sqla_models.models import Base
 target_metadata = Base.metadata
 # target_metadata = None
 

@@ -5,15 +5,15 @@ import datetime
 
 @dataclass
 class User:
-	id: str  # Примечание по type hint айдишника (почему не int?): в разных бд это может быть не только int, но и str, как UUID 
 	username: str
-	password_hash: str
-	registration_date: datetime.date
-	is_banned: bool = False
+	passwordHash: str
+	registrationDate: datetime.date
+	isBanned: bool = False
 
 	# Примечание по Optional[]: по PEP Optional используется только в случае допущения None, кроме значения объявленного типа
+	id: Optional[str] = None # Примечание по type hint айдишника (почему не int?): в разных бд это может быть не только int, но и str, как UUID 
 	email: Optional[str] = None
-	display_name: Optional[str] = None
+	displayName: Optional[str] = None
 	birthday: Optional[datetime.date] = None 
 	description: Optional[str] = None
 	avatar: Optional[str] = None

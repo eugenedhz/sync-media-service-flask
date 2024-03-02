@@ -1,6 +1,7 @@
 Flask
 Flask-Cors
 flask-jwt-extended
+flask-socketio
 psycopg2
 itsdangerous
 python-dotenv
@@ -8,9 +9,7 @@ Werkzeug
 sqlalchemy
 alembic
 gunicorn
-dependency-injector
 python-dotenv
 marshmallow
-marshmallow-sqlalchemy
 flasgger
 pyyml
