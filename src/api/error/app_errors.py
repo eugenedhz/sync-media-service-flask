@@ -4,7 +4,7 @@ from src.app import app
 from src.api.error.custom_error import ApiError
 
 
-@app.errorhandler(ApiError) # handles all kinds of custom errors (executes with `raise ApiError({some data})`)
+@app.errorhandler(ApiError)
 def error_response_callback(error):
     return jsonify(error.to_dict()), error.status_code
 
