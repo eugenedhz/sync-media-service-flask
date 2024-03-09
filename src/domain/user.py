@@ -8,12 +8,12 @@ class User:
 	username: str
 	passwordHash: str
 	registrationDate: datetime.date
+	email: str
+	displayName: str
 	isBanned: bool = False
 
 	# Примечание по Optional[]: по PEP Optional используется только в случае допущения None, кроме значения объявленного типа
 	id: Optional[str] = None # Примечание по type hint айдишника (почему не int?): в разных бд это может быть не только int, но и str, как UUID 
-	email: Optional[str] = None
-	displayName: Optional[str] = None
 	birthday: Optional[datetime.date] = None 
 	description: Optional[str] = None
 	avatar: Optional[str] = None

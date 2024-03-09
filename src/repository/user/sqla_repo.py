@@ -12,33 +12,34 @@ class UserRepo(UserRepoInterface):
 		self.engine = engine
 
 
-	def store(self, user: User) -> None:
-		with Session(self.engine) as s:
+	def store(self, user: User) -> User:
+		with Session(self.engine, expire_on_commit=False) as s:
 			new_user = UserModel(**(user.to_dict()))
 
 			s.add(new_user)
 
 			s.commit()
+		
+		return User(**new_user._asdict(User))
 
 
 	def get_by_id(self, id: Union[str | int]) -> User:
 		with Session(self.engine) as s:
 			found_user = s.get(UserModel, id)
 
-			found_user_dict = found_user.__dict__
-			del found_user_dict['_sa_instance_state']
-
-		return User(**found_user_dict)
+		return User(**found_user._asdict(User))
 			
 
 	def get_by_username(self, username: str) -> User:
 		with Session(self.engine) as s:
-			found_user = s.execute(select(UserModel).filter_by(username=username))
+			query = (
+				select(UserModel)
+				.filter_by(username=username)
+			)
 
-			found_user_dict = found_user.__dict__
-			del found_user_dict['_sa_instance_state']
+			found_user = s.scalars(query).first()
 
-		return User(**found_user_dict)
+		return User(**found_user._asdict(User))
 
 
 	def update(self, user: User) -> None:
@@ -54,31 +55,48 @@ class UserRepo(UserRepoInterface):
 
 	def get_all(self) -> list[User]:
 		with Session(self.engine) as s:
-			found_users = s.execute(select(UserModel).all())
+			query = (
+				select(UserModel)
+				.all()
+			)
 
-			found_dict_users = [user.__dict__ for user in found_users]
+			found_users = s.scalars(query)
 
-			for user in found_users_dict:
-				del user['_sa_instance_state']
+		found_users_dict = [user._asdict(User) for user in found_users]
 
-		return [User(**user) for user in found_dict_users]
+		return [User(**user) for user in found_users_dict]
 
 
 	def delete_user(self, id: Union[str | int]) -> User:
 		with Session(self.engine) as s:
 			found_user = s.get(UserModel, id)
 
-			found_user_dict = found_user.__dict__
-
-			del found_user_dict['_sa_instance_state']
-
 			s.delete(found_user)
 
-		return User(**found_user_dict)
+			s.commit()
+
+		return User(**found_user._asdict(User))
 
 
 	def username_exists(self, username: str) -> bool:
 		with Session(self.engine) as s:
-			found_user = s.execute(select(UserModel).filter_by(username=username))
+			query = (
+				select(UserModel.id)
+				.filter_by(username=username)
+			)
+
+			found_user = s.scalars(query).first()
+
+		return found_user is not None
+
+
+	def email_exists(self, email: str) -> bool:
+		with Session(self.engine) as s:
+			query = (
+				select(UserModel.id)
+				.filter_by(email=email)
+			)
+
+			found_user = s.scalars(query).first()
 
 		return found_user is not None

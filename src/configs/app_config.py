@@ -10,7 +10,7 @@ class Default(object):
 	JWT_COOKIE_SECURE = True
 	JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
 	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
-	JWT_SECRET_KEY = "" # TODO: get from the env variables
+	JWT_SECRET_KEY = "NeeDs2BeR3PlacEd" # TODO: get from the env variables
 
 	SWAGGER = {
         'uiversion': 3,
