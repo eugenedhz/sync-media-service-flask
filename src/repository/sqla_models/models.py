@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, Date
 from sqlalchemy.orm import DeclarativeBase
 
 
@@ -22,11 +22,11 @@ class UserModel(Base):
 
 	username = Column(String, unique=True, nullable=False)
 	passwordHash = Column(String, nullable=False)
-	registrationDate = Column(DateTime, nullable=False)
+	registrationDate = Column(Date, nullable=False)
 	isBanned = Column(Boolean, nullable=False, default=False)
 	email = Column(String, unique=True, nullable=False)
 	displayName = Column(String, nullable=False)
 
-	birthday = Column(DateTime)
+	birthday = Column(Date)
 	description = Column(String)
 	avatar = Column(String)
