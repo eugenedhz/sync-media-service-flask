@@ -83,7 +83,7 @@ externalDocs:
   url: https://gitlab.eugenv.ru
 
 tags:
-  - name: Authentication API
+  - name: User Authentication API
     description: Do everything with authentication :)
   - name: User API
     description: Do everything with users :)
@@ -102,7 +102,7 @@ servers: [
     "description": "Development server"
   },
   {
-    "url": "http://127.0.0.1:5000/",
+    "url": "http://127.0.0.1:8302/",
     "description": "Local server"
   },
   {
@@ -113,3 +113,204 @@ servers: [
 ################################################################################
 #                                    Paths                                     #
 ################################################################################
+
+paths:
+  /user/signup:
+    post:
+      summary: Регистрация пользователя
+
+      tags:
+        - User Authentication API
+
+      operationId: signup
+
+      requestBody:
+        required: true
+        description: Обязательный JSON
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SipnupSchema'
+
+      responses:
+        200:
+          description: Пользователь зарегистрироан, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /user/login:
+    post:
+      summary: Логин пользователя
+
+      tags:
+        - User Authentication API
+
+      operationId: login
+
+      requestBody:
+        required: true
+        description: Обязательный JSON
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginSchema'
+
+      responses:
+        200:
+          description: Пользователь залогинился, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /logout:
+    post:
+      security:
+        - cookieAuth: []
+
+      operationId: logout
+
+      summary: Выход из приложения, сброс cookies
+
+      tags:
+        - User Authentication API
+
+      responses:
+        200:
+          description: Выводит {logout = true}, сбрасывает токены из cookies
+
+  /refresh:
+    post:
+      security:
+        - cookieAuth: []
+
+      operationId: logout
+
+      summary: Запросить новый токен, когда истечёт срок старого
+
+      tags:
+        - User Authentication API
+
+      responses:
+        200:
+          description: Выводит {refresh = true}, ставит новый токен в cookies
+
+
+  /user:
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_user
+
+      summary: Удалить аккаунт, может только юзер со своего аккаунта
+
+      tags:
+        - User API
+
+      responses:
+        200:
+          description: Пользователь удаляется, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+
+################################################################################
+#                                    Schemas                                   #
+################################################################################
+
+
+components:
+  schemas:
+    SipnupSchema:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: false
+          maxLength: 30
+          minLength: 1
+          description: Уникальный username пользователя
+          required: true
+          example: "nick2004"
+        password:
+          type: string
+          nullable: false
+          minLength: 1
+          required: true
+          example: 'pwd'
+        email:
+          type: string
+          nullable: false
+          minLength: 1
+          required: true
+          example: 'example@example.org'
+        displayName:
+          type: string
+          nullable: false
+          maxLength: 30
+          minLength: 1
+          description: Необязательно уникальное имя пользователя, которое будет показываться другим
+          required: true
+          example: 'Lolkek'
+
+    LoginSchema:
+      type: object
+      properties:
+        username:
+          required: true
+          nullable: false
+          type: string
+          maxLength: 30
+          minLength: 1
+          description: Уникальный username пользователя
+          example: 'nick2004'
+
+        password:
+          required: true
+          nullable: false
+          type: string
+          minLength: 1
+          example: 'pwd'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: false
+          example: 1
+        username:
+          type: string
+          nullable: false
+          example: 'nick2004'
+        displayName:
+          type: string
+          nullable: false
+          example: 'Lolkek'
+        email:
+          type: string
+          nullable: false
+          example: 'example@example.org'
+        isBanned:
+          type: boolean
+          nullable: false
+          example: false
+        registrationDate:
+          type: string
+          nullable: false
+        birthday:
+          type: string
+          required: true
+        description:
+          type: string
+          example: 'Описание страничкии'
+          required: true
+        avatar:
+          type: string
+          required: true
+          example: 'ilow-api.eugenv.ru/static/images/avatar_id_1.png'
