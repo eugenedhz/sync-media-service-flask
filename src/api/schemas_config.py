@@ -43,6 +43,6 @@ class JsonSchema(Schema):
 			raise ApiError(
 				ApiErrorInfo(
 					error_message = invalid_fields, 
-					description = "JSON не соответствует схеме, смотрите в swagger."
+					description = "JSON you have sent failed validation."
 				)
 			)
