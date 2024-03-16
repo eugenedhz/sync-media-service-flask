@@ -22,7 +22,6 @@ from src.api.routes.user.schemas import (
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.query_params.ids.validate import is_valid_ids
-from pkg.formdata.parse import parse_formdata
 from pkg.image.jpg_validate import is_valid_jpg
 
 
