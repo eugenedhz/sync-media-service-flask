@@ -12,12 +12,12 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def get_by_id(self, id: str, select_fields: Optional[tuple[str, ...]]) -> User:
+	def get_by_id(self, id: Union[str | int]) -> User:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	def get_by_username(self, username: str, select_fields: Optional[tuple[str, ...]]) -> User:
+	def get_by_username(self, username: str) -> User:
 		raise NotImplementedError
 
 
@@ -27,12 +27,12 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def get_all(self, select_fields: Optional[tuple[str, ...]], required_ids: Optional[tuple[int | str, ...]]) -> list[dict]:
+	get_all(self, required_ids: Optional[tuple[int | str, ...]], filter_by: Optional[dict[str, Any]]) -> list[UserDTO]:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	def delete(self, id: str) -> User:
+	def delete(self, id: Union[str | int]) -> User:
 		raise NotImplementedError
 
 

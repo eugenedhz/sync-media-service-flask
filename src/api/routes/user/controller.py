@@ -192,8 +192,6 @@ def update_user():
 
 	if len(parsed_formdata) == 0 and 'avatar' not in request.files:
 		raise ApiError(API_ERRORS['EMPTY_FORMDATA']) 
-	
-	
 
 	if 'username' in parsed_formdata:
 		username = parsed_formdata['username']

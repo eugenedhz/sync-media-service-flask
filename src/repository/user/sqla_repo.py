@@ -77,7 +77,6 @@ class UserRepo(UserRepoInterface):
 
 
 	def get_all(self, required_ids: Optional[tuple[int | str, ...]], filter_by: Optional[dict[str, Any]]) -> list[UserDTO]:
-
 		with Session(self.engine) as s:
 			query = (
 				select(UserModel)
