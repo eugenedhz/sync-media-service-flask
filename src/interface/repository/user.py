@@ -1,39 +1,42 @@
 from abc import ABC, abstractmethod
+from src.usecase.user.dto import UserUpdateDTO
+from typing import Union, Optional
 from src.domain.user import User
 
 
 class UserRepoInterface(ABC):
 
 	@abstractmethod
-	def store(self, user: User) -> None:
+	def store(self, user: User) -> User:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	def get_by_id(self, id: str) -> User:
+	def get_by_id(self, id: str, select_fields: Optional[tuple[str, ...]]) -> User:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	def get_by_username(self, username: str) -> User:
+	def get_by_username(self, username: str, select_fields: Optional[tuple[str, ...]]) -> User:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	def update(self, user: User) -> None:
+	def update(self, id: Union[str, int], update_user_dto: UserUpdateDTO) -> User:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	def get_all(self) -> list[User]:
+	def get_all(self, select_fields: Optional[tuple[str, ...]], required_ids: Optional[tuple[int | str, ...]]) -> list[dict]:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	def delete_user(self, id: str) -> User:
+	def delete(self, id: str) -> User:
 		raise NotImplementedError
 
-	
+
 	@abstractmethod
-	def username_exists(self, username: str) -> bool:
+	def email_exists(self, email: str) -> bool:
 		raise NotImplementedError
+

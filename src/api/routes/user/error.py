@@ -1,7 +1,7 @@
 from src.api.error.custom_error import ApiErrorInfo
 
 
-API_ERRORS = {
+USER_API_ERRORS = {
 	'USERNAME_EXISTS': ApiErrorInfo(
 		error_message = 'USERNAME_ALREADY_EXISTS', 
 		status_code = 409
@@ -25,5 +25,5 @@ API_ERRORS = {
 	'BANNED': ApiErrorInfo(
 		error_message = 'USER_IS_BANNED', 
 		status_code = 403
-	),
+	)
 }

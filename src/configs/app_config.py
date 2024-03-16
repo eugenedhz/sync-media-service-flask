@@ -8,8 +8,8 @@ class Default(object):
 	JWT_COOKIE_SAMESITE = 'None'
 	JWT_COOKIE_CSRF_PROTECT = False
 	JWT_COOKIE_SECURE = True
-	JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
-	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
+	JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=10)
+	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=1)
 	JWT_SECRET_KEY = "NeeDs2BeR3PlacEd" # TODO: get from the env variables
 
 	SWAGGER = {
@@ -18,10 +18,11 @@ class Default(object):
 	}
 
 	# TODO: get password and username from the env variables
-	POSTGRES_CONN_URL = 'postgresql://postgres:test3915@localhost/ilow' 
+	POSTGRES_CONN_URL = 'postgresql://postgres:test3915@eugenv.ru/ilow' 
 
 
 class Development(Default):
+	DEBUG = False
 
-	JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=1)
-	JWT_REFRESH_TOKEN_EXPIRES = timedelta(minutes=2)
+	JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
+	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=2)

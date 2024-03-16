@@ -7,14 +7,14 @@ import datetime
 class User:
 	username: str
 	passwordHash: str
-	registrationDate: datetime.date
+	registrationDate: int # timestamp
 	email: str
 	displayName: str
 	isBanned: bool = False
 
 	# Примечание по Optional[]: по PEP Optional используется только в случае допущения None, кроме значения объявленного типа
 	id: Optional[str] = None # Примечание по type hint айдишника (почему не int?): в разных бд это может быть не только int, но и str, как UUID 
-	birthday: Optional[datetime.date] = None 
+	birthday: Optional[int] = None # timestamp
 	description: Optional[str] = None
 	avatar: Optional[str] = None
 

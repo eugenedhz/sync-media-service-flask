@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, Date
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.types import TypeDecorator
+from datetime import datetime
 
 
 class Base(DeclarativeBase):
@@ -15,6 +17,19 @@ class Base(DeclarativeBase):
 		return new_dict
 
 
+class DateAsTimestamp(TypeDecorator):
+    cache_ok = True
+    impl = DateTime
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            return datetime.fromtimestamp(value)
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            return int(value.timestamp())
+
+
 class UserModel(Base):
 	__tablename__ = 'User'
 
@@ -22,11 +37,11 @@ class UserModel(Base):
 
 	username = Column(String, unique=True, nullable=False)
 	passwordHash = Column(String, nullable=False)
-	registrationDate = Column(Date, nullable=False)
+	registrationDate = Column(DateAsTimestamp, nullable=False)
 	isBanned = Column(Boolean, nullable=False, default=False)
 	email = Column(String, unique=True, nullable=False)
 	displayName = Column(String, nullable=False)
 
-	birthday = Column(Date)
+	birthday = Column(DateAsTimestamp)
 	description = Column(String)
 	avatar = Column(String)

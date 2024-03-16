@@ -197,8 +197,102 @@ paths:
         200:
           description: Выводит {refresh = true}, ставит новый токен в cookies
 
+  /user/all:
+    get:
+
+      operationId: get_users
+
+      summary: Получить пользователей
+
+      description: Если пользователи не найдены, возвращает пустой список.
+
+      tags:
+        - User API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: Получить только определённые поля пользователей, перечисляются через запятую (id,username). Не возвращает ошибки!!!
+        type: string
+      - in: query
+        name: ids
+        required: false
+        description: Получить пользователей по id, перечисляются через запятую (1,2,4). 
+        type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: Отфильтровать пользователей по значениям полей, например (filter_by=displayName=Sasha,isBanned=false). Не возвращает ошибки!!!
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
 
   /user:
+    patch:
+      security:
+        - cookieAuth: []
+
+      operationId: update_user
+
+      summary: Обновить аккаунт пользователя
+
+      tags:
+        - User API
+
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdateSchema'
+
+      responses:
+        200:
+          description: Пользователь обновляется, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    get:
+
+      operationId: get_user
+
+      summary: Получить пользователя
+
+      tags:
+        - User API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: Получить только определённые поля пользователя, перечисляются через запятую (id,username).
+        type: string
+      - in: query
+        name: id
+        required: false
+        description: Получить пользователя по id, принимается только id=число, иначе выведет ошибку.
+        type: string
+      - in: query
+        name: username
+        required: false
+        description: Получить пользователя по username
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
     delete:
       security:
         - cookieAuth: []
@@ -277,7 +371,36 @@ components:
           minLength: 1
           example: 'pwd'
 
-    User:
+    UserUpdateSchema:
+      type: object
+      properties:
+        username:
+          type: string
+          required: false
+          example: 'nick2004'
+        displayName:
+          type: string
+          required: false
+          example: 'Lolkek'
+        email:
+          type: string
+          required: false
+          example: 'example@example.org'
+        birthday:
+          type: int
+          required: false
+          description: 'timestamp'
+          example: 1710230677
+        description:
+          type: string
+          required: false
+          example: 'Описание страничкии'
+        avatar:
+          required: false
+          type: string
+          format: binary
+
+    UserSchema:
       type: object
       properties:
         id:
@@ -301,16 +424,20 @@ components:
           nullable: false
           example: false
         registrationDate:
-          type: string
+          type: int
           nullable: false
+          description: 'timestamp'
+          example: 1710230677
         birthday:
-          type: string
-          required: true
+          type: int
+          nullable: true
+          description: 'timestamp'
+          example: 1710230677
         description:
           type: string
+          nullable: true
           example: 'Описание страничкии'
-          required: true
         avatar:
           type: string
-          required: true
+          nullable: true
           example: 'ilow-api.eugenv.ru/static/images/avatar_id_1.png'
