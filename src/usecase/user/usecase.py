@@ -6,7 +6,7 @@ from datetime import datetime
 from src.domain.user import User
 from src.interface.repository.user import UserRepoInterface
 from src.usecase.user.dto import (
-	UserRegisterDTO, UserDTO, LoginDTO, UserUpdateDTO
+	UserCreateDTO, UserDTO, LoginDTO, UserUpdateDTO, QueryParametersDTO
 )
 
 class UserUsecase():
@@ -15,9 +15,9 @@ class UserUsecase():
 		self.repo = repo
 
 
-	def register(self, user_dto: UserRegisterDTO) -> UserDTO:
+	def create_user(self, user_dto: UserCreateDTO) -> UserDTO:
 		password_hash = generate_password_hash(user_dto.password)
-		registration_date = datetime.now()
+		registration_date = int(datetime.now().timestamp())
 
 		new_user = User(
 			username = user_dto.username,
@@ -55,7 +55,7 @@ class UserUsecase():
 		return UserDTO(**found_user_dict)
 
 
-	def get_by_id(self, id: Union[str, int]) -> Optional[UserDTO]:
+	def get_by_id(self, id: int) -> Optional[UserDTO]:
 
 		found_user = self.repo.get_by_id(id=id)
 
@@ -68,13 +68,13 @@ class UserUsecase():
 		return UserDTO(**found_user_dict)
 
 
-	def get_users(self, required_ids: Optional[tuple[int | str, ...]] = None, filter_by: Optional[dict[str, Any]] = None) -> list[UserDTO]:
-		users = self.repo.get_all(required_ids, filter_by)
+	def get_users(self, query_parameters: QueryParametersDTO) -> list[UserDTO]:
+		users = self.repo.get_all(query_parameters)
 
 		return users
 
 
-	def update_user(self, id: Union[str, int], update_user_dto: UserUpdateDTO) -> UserDTO:
+	def update_user(self, id: int, update_user_dto: UserUpdateDTO) -> UserDTO:
 		updated_user = self.repo.update(id, update_user_dto)
 
 		updated_user_dict = updated_user.to_dict()
@@ -83,7 +83,7 @@ class UserUsecase():
 		return UserDTO(**updated_user_dict)
 
 
-	def delete_user(self, id: Union[str, int]) -> UserDTO:
+	def delete_user(self, id: int) -> UserDTO:
 		deleted_user = self.repo.delete(id=id)
 
 		deleted_user_dict = deleted_user.to_dict()
