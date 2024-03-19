@@ -32,6 +32,7 @@ info:
       | 405 | METHOD NOT ALLOWED | ***METHOD_NOT_ALLOWED*** |
       | 404 | NOT FOUND | ***RESOURCE_NOT_FOUND*** |
       | 500 | INTERNAL SERVER ERROR | ***INTERNAL_SERVER_ERROR*** |
+      | 403 | FORBIDDEN | ***ADMIN_RIGHTS_REQUIRED*** |
       | ***JSON validation errors*** |
       | 400 | BAD REQUEST | ***"field_name": "MISSING_FIELD"*** |
       | 400 | BAD REQUEST | ***"field_name": "UNKNOWN_FIELD"*** |
@@ -57,14 +58,14 @@ info:
       | 422 | UNPROCESSABLE ENTITY | ***INVALID_TOKEN*** |
       | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
       | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
-      | 409 | CONFLICT | ***USERNAME_DOESNT_EXIST*** |
+      | 409 | CONFLICT | ***USERNAME_NOT_FOUND*** |
       | 409 | CONFLICT | ***INCORRECT_PASSWORD*** |
       | 403 | FORBIDDEN | ***USER_IS_BANNED*** |
       | ***User API errors*** |
       | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
       | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
-      | 404 | NOT FOUND | ***NO_USER_FOUND*** |
-      | 404 | NOT FOUND | ***NO_USERS_FOUND*** |
+      | 404 | NOT FOUND | ***USERS_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
 
       -----------------------------------------------
   
@@ -286,7 +287,7 @@ paths:
         name: id
         required: false
         description: Получить пользователя по id, принимается только id=число, иначе выведет ошибку.
-        type: string
+        type: int
       - in: query
         name: username
         required: false
@@ -310,6 +311,13 @@ paths:
 
       tags:
         - User API
+
+      parameters:
+      - in: query
+        name: id
+        required: false
+        description: Удалить пользователя по id, принимается только id=число, иначе выведет ошибку.
+        type: int
 
       responses:
         200:

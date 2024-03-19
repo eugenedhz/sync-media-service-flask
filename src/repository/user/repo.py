@@ -5,7 +5,10 @@ from typing import Union, Optional, Any
 from src.domain.user import User
 from src.interface.repository.user import UserRepoInterface
 from src.repository.sqla_models.models import UserModel
-from src.usecase.user.dto import UserUpdateDTO, UserDTO, QueryParametersDTO
+from src.usecase.dto import QueryParametersDTO
+from src.usecase.user.dto import UserUpdateDTO, UserDTO
+
+from pkg.sqlalchemy.utils import get_first, get_all
 
 
 class UserRepo(UserRepoInterface):
@@ -33,7 +36,7 @@ class UserRepo(UserRepoInterface):
 				.where(UserModel.id == id)
 			)
 
-			found_user = s.scalars(query).first()
+			found_user = get_first(session=s, query=query)
 
 		if found_user is None:
 			return None
@@ -48,7 +51,7 @@ class UserRepo(UserRepoInterface):
 				.where(UserModel.username == username)
 			)
 
-			found_user = s.scalars(query).first()
+			found_user = get_first(session=s, query=query)
 
 		if found_user is None:
 			return None
@@ -89,7 +92,7 @@ class UserRepo(UserRepoInterface):
 			if filters is not None:
 				query = query.filter_by(**filters)
 
-			found_users = s.scalars(query).all()
+			found_users = get_all(session=s, query=query)
 
 		found_users_dto = [UserDTO(**user._asdict(User)) for user in found_users]
 
@@ -107,13 +110,13 @@ class UserRepo(UserRepoInterface):
 		return User(**found_user._asdict(User))
 
 
-	def email_exists(self, email: str) -> bool:
+	def field_exists(self, field: dict[str: Any]) -> bool:
 		with Session(self.engine) as s:
 			query = (
 				select(UserModel.id)
-				.filter_by(email=email)
+				.filter_by(**field)
 			)
 
-			found_user = s.scalars(query).first()
+			found_user = get_first(session=s, query=query)
 
 		return found_user is not None

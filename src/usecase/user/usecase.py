@@ -5,8 +5,9 @@ from datetime import datetime
 
 from src.domain.user import User
 from src.interface.repository.user import UserRepoInterface
+from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import (
-	UserCreateDTO, UserDTO, LoginDTO, UserUpdateDTO, QueryParametersDTO
+	UserCreateDTO, UserDTO, UserCheckPasswordDTO, UserUpdateDTO
 )
 
 class UserUsecase():
@@ -34,12 +35,12 @@ class UserUsecase():
 		return UserDTO(**stored_user_dict)
 
 
-	def check_user_password(self, login_dto: LoginDTO) -> bool:
-		found_user = self.repo.get_by_username(username=login_dto.username)
+	def check_user_password(self, check_password_dto: UserCheckPasswordDTO) -> bool:
+		found_user = self.repo.get_by_username(username=check_password_dto.username)
 
 		password_hash = found_user.passwordHash
 
-		return check_password_hash(password_hash, login_dto.password)
+		return check_password_hash(password_hash, check_password_dto.password)
 
 
 	def get_by_username(self, username: str) -> Optional[UserDTO]:
@@ -92,7 +93,10 @@ class UserUsecase():
 		return UserDTO(**deleted_user_dict)
 
 
-	def email_exists(self, email: str) -> bool:
-		exists = self.repo.email_exists(email)
+	def field_exists(self, name: str, value: str) -> bool:
+		field = dict()
+		field[name] = value
+
+		exists = self.repo.field_exists(field)
 
 		return exists

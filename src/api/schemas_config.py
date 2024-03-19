@@ -1,4 +1,5 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import Schema, fields
+
 from src.api.error.custom_error import ApiError, ApiErrorInfo
 
 
@@ -7,24 +8,6 @@ fields.Field.default_error_messages = {
 	        "null": "NOT_NULLABLE",
 	        "validator_failed": "INVALID_VALUE"
 }
-
-
-class Length(validate.Length):
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
-		self.error = 'INVALID_LENGTH'
-
-
-class Range(validate.Range):
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
-		self.error = 'INVALID_RANGE'
-
-
-class Regexp(validate.Regexp):
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
-		self.error = 'REGEXP_MISMATCH'
 
 
 class JsonSchema(Schema):

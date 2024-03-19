@@ -9,11 +9,10 @@ class FileService():
 			destination_path += '/'
 
 		self.destination_path = destination_path
-		self.saved_filename = None
 
 
-	# Пометка: генерирует уникальное имя файла, сохраняет его в self.saved_filename
-	def save(self, data: bytes, extension: str) -> None:
+	# Пометка: генерирует уникальное имя файла, возвращает его
+	def save(self, data: bytes, extension: str) -> str:
 		if not extension.startswith('.'):
 			extension = '.' + extension
 
@@ -23,7 +22,7 @@ class FileService():
 		with open(path, 'wb') as file:
 			file.write(data)
 
-		self.saved_filename = filename
+		return filename
 
 
 	def delete(self, filename: str) -> None:

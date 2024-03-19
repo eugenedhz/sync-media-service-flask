@@ -12,13 +12,13 @@ USER_API_ERRORS = {
 		status_code = 409
 	),
 
-	'NO_USER_FOUND': ApiErrorInfo(
-		error_message = 'NO_USER_FOUND', 
+	'USER_NOT_FOUND': ApiErrorInfo(
+		error_message = 'USER_NOT_FOUND', 
 		status_code = 404
 	),
 
-	'NO_USERS_FOUND': ApiErrorInfo(
-		error_message = 'NO_USERS_FOUND', 
+	'USERS_NOT_FOUND': ApiErrorInfo(
+		error_message = 'USERS_NOT_FOUND', 
 		status_code = 404
 	),
 }

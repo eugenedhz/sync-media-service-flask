@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Union, Optional, Any
-from src.usecase.user.dto import UserUpdateDTO, UserDTO, QueryParametersDTO
+from src.usecase.dto import QueryParametersDTO
+from src.usecase.user.dto import UserUpdateDTO, UserDTO
 from src.domain.user import User
 
 
@@ -37,6 +38,6 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def email_exists(self, email: str) -> bool:
+	def field_exists(self, name: str, value: str) -> bool:
 		raise NotImplementedError
 
