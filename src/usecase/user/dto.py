@@ -1,7 +1,7 @@
-from typing import TypedDict, NamedTuple, Union, Optional
+from typing import TypedDict, NamedTuple, Union, Optional, Any
 
 
-class UserRegisterDTO(NamedTuple):
+class UserCreateDTO(NamedTuple):
 	username: str
 	displayName: str
 	email: str
@@ -14,7 +14,7 @@ class LoginDTO(NamedTuple):
 
 
 class UserDTO(NamedTuple):
-	id: Union[str | int]
+	id: int
 	username: str
 	displayName: str
 	email: str
@@ -32,3 +32,8 @@ class UserUpdateDTO(TypedDict):
 	birthday: int # timestamp
 	description: str
 	avatar: str
+
+
+class QueryParametersDTO(NamedTuple):
+	required_ids: Optional[tuple[int, ...]]
+	filters: Optional[dict[str, Any]]

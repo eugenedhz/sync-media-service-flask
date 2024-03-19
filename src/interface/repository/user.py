@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from src.usecase.user.dto import UserUpdateDTO
-from typing import Union, Optional
+from typing import Union, Optional, Any
+from src.usecase.user.dto import UserUpdateDTO, UserDTO, QueryParametersDTO
 from src.domain.user import User
 
 
@@ -12,7 +12,7 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def get_by_id(self, id: Union[str | int]) -> User:
+	def get_by_id(self, id: int) -> User:
 		raise NotImplementedError
 
 
@@ -22,17 +22,17 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def update(self, id: Union[str, int], update_user_dto: UserUpdateDTO) -> User:
+	def update(self, id: int, update_user_dto: UserUpdateDTO) -> User:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	get_all(self, required_ids: Optional[tuple[int | str, ...]], filter_by: Optional[dict[str, Any]]) -> list[UserDTO]:
+	def get_all(self, query_parameters: QueryParametersDTO) -> list[UserDTO]:
 		raise NotImplementedError
 
 
 	@abstractmethod
-	def delete(self, id: Union[str | int]) -> User:
+	def delete(self, id: int) -> User:
 		raise NotImplementedError
 
 

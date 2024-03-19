@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.types import TypeDecorator
-from datetime import datetime
+from src.repository.sqla_models.types import DateAsTimestamp
 
 
 class Base(DeclarativeBase):
@@ -15,19 +14,6 @@ class Base(DeclarativeBase):
 				del new_dict[key]
 
 		return new_dict
-
-
-class DateAsTimestamp(TypeDecorator):
-    cache_ok = True
-    impl = DateTime
-
-    def process_bind_param(self, value, dialect):
-        if value is not None:
-            return datetime.fromtimestamp(value)
-
-    def process_result_value(self, value, dialect):
-        if value is not None:
-            return int(value.timestamp())
 
 
 class UserModel(Base):
