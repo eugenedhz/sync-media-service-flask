@@ -21,4 +21,22 @@ API_ERRORS = {
 		error_message = 'INVALID_JPG',
 		description = 'Image must be valid .jpg format.'
 	),
+
+	'CANT_SAVE_FILE': ApiErrorInfo(
+		error_message = 'CANNOT_SAVE_FILE_ON_SERVER',
+		description = 'Due to some system errors it was unable to save file on the server.',
+		status_code = 500
+	),
+
+	'INVALID_FILTERS': ApiErrorInfo(
+		error_message = 'INVALID_FILTER_BY',
+		description = 'Check if fields and their value type match requesting entity.',
+		status_code = 400
+	),
+
+	'INVALID_SELECT': ApiErrorInfo(
+		error_message = 'INVALID_SELECT',
+		description = 'Check if fields match requesting entity.',
+		status_code = 400
+	),
 }
