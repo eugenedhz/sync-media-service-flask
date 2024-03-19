@@ -1,8 +1,11 @@
 from datetime import timedelta
 from os import getenv
 
+from pkg.constants.constant import Constant
+from pkg.constants.env import get_from_env
 
-class Default(object):
+
+class Default(Constant):
 	TESTING = False
 
 	JWT_TOKEN_LOCATION = ['cookies']
@@ -11,9 +14,9 @@ class Default(object):
 	JWT_COOKIE_SECURE = True
 	JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=10)
 	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=1)
-	JWT_SECRET_KEY = getenv('JWT_SECRET_KEY')
 
-	POSTGRES_CONN_URL = getenv('POSTGRES_CONN_URL')
+	JWT_SECRET_KEY = get_from_env('JWT_SECRET_KEY')
+	POSTGRES_CONN_URL = get_from_env('POSTGRES_CONN_URL')
 
 	SWAGGER = {
         'uiversion': 3,
@@ -22,6 +25,7 @@ class Default(object):
 
 	STATIC_IMAGES_FOLDER = './src/static/images/'
 	STATIC_IMAGES_URL = '/static/images/'
+	ALLOWED_IMAGE_EXTENSIONS = ('.jpg', '.jpeg')
 
 
 class Development(Default):

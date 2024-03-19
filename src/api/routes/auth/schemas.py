@@ -1,7 +1,9 @@
 from marshmallow import fields
 
 from src.configs.constants import Regex
-from src.api.schemas_config import JsonSchema, Length, Regexp
+from src.api.schemas_config import JsonSchema
+
+from pkg.json.validators import Length, Regexp
 
 
 class RegisterSchema(JsonSchema):

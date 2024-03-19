@@ -8,7 +8,7 @@ class UserCreateDTO(NamedTuple):
 	password: str
 
 
-class LoginDTO(NamedTuple):
+class UserCheckPasswordDTO(NamedTuple):
 	username: str
 	password: str
 
@@ -32,8 +32,3 @@ class UserUpdateDTO(TypedDict):
 	birthday: int # timestamp
 	description: str
 	avatar: str
-
-
-class QueryParametersDTO(NamedTuple):
-	required_ids: Optional[tuple[int, ...]]
-	filters: Optional[dict[str, Any]]

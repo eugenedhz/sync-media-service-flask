@@ -8,7 +8,7 @@ from flask_jwt_extended import (
 from src.app import app
 from src.configs.constants import Role
 from src.usecase.user.usecase import UserUsecase
-from src.usecase.user.dto import UserCreateDTO, LoginDTO
+from src.usecase.user.dto import UserCreateDTO, UserCheckPasswordDTO
 from src.repository.user.repo import UserRepo
 from src.repository.driver.postgres import postgresql_engine
 from src.api.routes.auth.responses import create_response_with_jwt
@@ -29,11 +29,12 @@ def register():
 	username = request_json['username']
 	email = request_json['email']
 
-	found_user = user_service.get_by_username(username=username)
-	if found_user is not None:
+	username_exists = user_service.field_exists(name='username', value=username)
+	if username_exists:
 		raise ApiError(AUTH_API_ERRORS['USERNAME_EXISTS'])
 
-	if user_service.email_exists(email):
+	email_exists = user_service.field_exists(name='email', value=email)
+	if email_exists:
 		raise ApiError(AUTH_API_ERRORS['EMAIL_EXISTS'])
 
 	dto = UserCreateDTO(**request_json)
@@ -57,16 +58,16 @@ def login():
 	found_user = user_service.get_by_username(username)
 
 	if found_user is None:
-		raise ApiError(AUTH_API_ERRORS['USERNAME_NO_EXIST'])
+		raise ApiError(AUTH_API_ERRORS['USERNAME_NOT_FOUND'])
 
 	if found_user.isBanned:
 		raise ApiError(AUTH_API_ERRORS['BANNED'])
 	
-	login_dto = LoginDTO(
+	dto = UserCheckPasswordDTO(
 		username = username,
 		password = password
 	)
-	password_match = user_service.check_user_password(login_dto)
+	password_match = user_service.check_user_password(dto)
 
 	if not password_match:
 		raise ApiError(AUTH_API_ERRORS['WRONG_PWD'])

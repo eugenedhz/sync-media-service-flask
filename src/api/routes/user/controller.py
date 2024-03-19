@@ -1,4 +1,3 @@
-from os.path import basename as convert_to_filename
 from flask import request, jsonify
 from flask_jwt_extended import (
     jwt_required, create_access_token,
@@ -9,19 +8,22 @@ from flask_jwt_extended import (
 from src.app import app
 from src.domain.user import User
 from src.usecase.user.usecase import UserUsecase
-from src.usecase.user.dto import UserDTO, UserUpdateDTO, QueryParametersDTO
+from src.usecase.dto import QueryParametersDTO
+from src.usecase.user.dto import UserDTO, UserUpdateDTO
 from src.repository.user.repo import UserRepo
 from src.repository.driver.postgres import postgresql_engine
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.user.error import USER_API_ERRORS
 from src.api.error.custom_error import ApiError
 from src.api.routes.user.schemas import UserSchema, UpdateUserSchema
+from src.configs.constants import Role
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.query_params.ids.validate import is_valid_ids
 from pkg.image.jpg_validate import is_valid_jpg
-from pkg.file_service import FileService
+from pkg.file.file_service import FileService
+from pkg.file.filename import get_filename, get_extension
 
 
 @app.route('/user', methods=['GET'])
@@ -51,13 +53,13 @@ def get_user_by_username_or_id():
 		user = user_service.get_by_id(id=user_id)
 
 		if user is None:
-			raise ApiError(USER_API_ERRORS['NO_USER_FOUND'])
+			raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
 	else:
 		user = user_service.get_by_username(username=username)
 
 		if user is None:
-			raise ApiError(USER_API_ERRORS['NO_USER_FOUND'])
+			raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
 	serialize_user = UserSchema(only=select).dump
 	serialized_user = serialize_user(user)
@@ -100,7 +102,7 @@ def get_all_users():
 	users = user_service.get_users(query_parameters)
 
 	if len(users) == 0:
-		raise ApiError(USER_API_ERRORS['NO_USERS_FOUND'])
+		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
 
 	serialize_users = UserSchema(only=select, many=True).dump
 	serialized_users = serialize_users(users)
@@ -124,21 +126,25 @@ def update_user():
 
 	if 'username' in parsed_formdata:
 		username = parsed_formdata['username']
-		found_user = user_service.get_by_username(username=username)
 
-		if found_user is not None:
+		username_exists = user_service.field_exists(name='username', value=username)
+		if username_exists:
 			raise ApiError(USER_API_ERRORS['USERNAME_EXISTS'])
 
 	if 'email' in parsed_formdata:
 		email = parsed_formdata['email']
 
-		if user_service.email_exists(email):
+		email_exists = user_service.field_exists(name='email', value=email)
+		if email_exists:
 			raise ApiError(USER_API_ERRORS['EMAIL_EXISTS'])
 
 	if 'avatar' in request.files:
-		image = request.files['avatar'].read()
+		image = request.files['avatar']
+		data = image.read()
+		extension = get_extension(image.filename)
+		valid_extensions = app.config['ALLOWED_IMAGE_EXTENSIONS']
 
-		if not is_valid_jpg(image):
+		if not(is_valid_jpg(data)) and not(extension in valid_extensions):
 			raise ApiError(API_ERRORS['INVALID_JPG'])
 
 		static_folder = app.config['STATIC_IMAGES_FOLDER']
@@ -146,21 +152,25 @@ def update_user():
 		file_service = FileService(destination_path=static_folder)
 
 		try:
-			file_service.save(data=image, extension='.jpg')
+			saved_filename = file_service.save(data=data, extension=extension)
 		except:
 			raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
 		user = user_service.get_by_id(user_id)
 		avatar = user.avatar
-		if avatar is not None:
-			filename = convert_to_filename(avatar)
-			file_service.delete(filename)
 
-		avatar_url = static_url + file_service.saved_filename
+		if avatar is not None:
+			filename = get_filename(avatar)
+			try:
+				file_service.delete(filename)
+			except:
+				pass
+
+		avatar_url = static_url + saved_filename
 		parsed_formdata['avatar'] = avatar_url
 
-	update_dto = UserUpdateDTO(**parsed_formdata)
-	updated_user = user_service.update_user(id=user_id, update_user_dto=update_dto)
+	dto = UserUpdateDTO(**parsed_formdata)
+	updated_user = user_service.update_user(id=user_id, update_user_dto=dto)
 
 	return jsonify(updated_user._asdict())
 
@@ -171,19 +181,39 @@ def delete_user():
 	repo = UserRepo(postgresql_engine)
 	user_service = UserUsecase(repo)
 
-	user_id = get_jwt_identity()
+	request_params = request.args
+	user_id = request_params.get('id')
 
+	if user_id is None:
+		raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
+	if not user_id.isdigit():
+		raise ApiError(API_ERRORS['INVALID_ID'])
+
+	user_id = int(user_id)
+	jwt_user_id = int(get_jwt_identity())
+
+	if user_id != jwt_user_id:
+		claims = get_jwt()
+		admin_rights = claims[Role.ADMIN]
+
+		if not admin_rights:
+			raise ApiError(API_ERRORS['ADMIN_RIGHTS_REQUIRED'])
+
+	user_exists = user_service.field_exists(name='id', value=user_id)
+	if not user_exists:
+		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
+			
 	deleted_user = user_service.delete_user(id=user_id)
-
 	avatar = deleted_user.avatar
+
 	if avatar is not None:
 		static_folder = app.config['STATIC_IMAGES_FOLDER']
 		file_service = FileService(destination_path=static_folder)
 		
-		filename = convert_to_filename(avatar)
-		file_service.delete(filename)
+		filename = get_filename(avatar)
+		try:
+			file_service.delete(filename)
+		except:
+			pass
 
-	response = jsonify(deleted_user._asdict())
-	unset_jwt_cookies(response)
-
-	return response
+	return deleted_user._asdict()

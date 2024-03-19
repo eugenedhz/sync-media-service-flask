@@ -12,8 +12,8 @@ AUTH_API_ERRORS = {
 		status_code = 409
 	),
 
-	'USERNAME_NO_EXIST': ApiErrorInfo(
-		error_message = 'USERNAME_DOESNT_EXIST', 
+	'USERNAME_NOT_FOUND': ApiErrorInfo(
+		error_message = 'USERNAME_NOT_FOUND', 
 		status_code = 409
 	),
 
