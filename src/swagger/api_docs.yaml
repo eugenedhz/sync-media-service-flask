@@ -4,19 +4,9 @@
 info:
   title: 'ilow Media Service API DOCS'
   description: |
-      ## FOR USAGE
+      ## USAGE
 
       Just scroll down to the **interactive API requests**!
-
-      If any not understandable `errors` occur, contact ***@Eugene Toropkin***
-
-      -----------------------------------------------
-        
-      📝 **Note:** Log in as an ***administrator*** or ***user*** before making requests marked with a padlock 🔒
-
-      Before login, sign up as an ***administrator*** or ***user*** in case you dont have admin username and password.
-
-      Check the **Authenticaton API** requests for those purposes.
       
       -----------------------------------------------
 
@@ -32,41 +22,51 @@ info:
 
       -----------------------------------------------
 
-      ## TABLE OF ***ERRORS*** THAT API MAY RETURN
-        
-      | Status Code | Description | Message |
+      ## ***API ERRORS***
+
+      📝 **Note:** Some errors may have human-readable `description` field.
+      
+      | Status Code | Status Description | Message |
       | --- | --- | --- |
       | ***Global errors*** |
       | 405 | METHOD NOT ALLOWED | ***METHOD_NOT_ALLOWED*** |
       | 404 | NOT FOUND | ***RESOURCE_NOT_FOUND*** |
+      | 500 | INTERNAL SERVER ERROR | ***INTERNAL_SERVER_ERROR*** |
+      | ***JSON validation errors*** |
+      | 400 | BAD REQUEST | ***"field_name": "MISSING_FIELD"*** |
+      | 400 | BAD REQUEST | ***"field_name": "UNKNOWN_FIELD"*** |
+      | 400 | BAD REQUEST | ***"field_name": "INVALID_LENGTH"*** |
+      | 400 | BAD REQUEST | ***"field_name": "INVALID_RANGE"*** |
+      | 400 | BAD REQUEST | ***"field_name": "REGEXP_MISMATCH"*** |
+      | 400 | BAD REQUEST | ***"field_name": "INVALID_TYPE"*** |
+      | 400 | BAD REQUEST | ***"field_name": "NOT_NULLABLE"*** |
+      | ***Formdata errors*** |
+      | 400 | BAD REQUEST | ***FORMDATA_IS_EMPTY*** |
+      | ***Query params errors*** |
+      | 400 | BAD REQUEST | ***INVALID_FILTER_BY*** |
+      | 400 | BAD REQUEST | ***INVALID_SELECT*** |
+      | 400 | BAD REQUEST | ***INVALID_ID*** |
+      | 400 | BAD REQUEST | ***NO_IDENTITY_PROVIDED*** |
+      | ***File uploading errors*** |
+      | 400 | BAD REQUEST | ***INVALID_JPG*** |
+      | 500 | INTERNAL SERVER ERROR | ***CANNOT_SAVE_FILE_ON_SERVER*** |
       | ***Authenticaton API errors*** |
-      | 400 | BAD REQUEST | ***NO_SIGNUP_DATA_PROVIDED*** |
-      | 400 | BAD REQUEST | ***NO_LOGIN_DATA_PROVIDED*** |
-      | 400 | BAD REQUEST | ***INVALID_PHONE_NUMBER*** |
-      | 400 | BAD REQUEST | ***INVALID_OTP_CODE*** |+
-      | 409 | CONFLICT | ***INVALID_LOGIN_OR_PASSWORD*** |
-      | 409 | CONFLICT | ***ADMIN_ALREADY_EXISTS*** |
-      | 409 | CONFLICT | ***ADMIN_DOESNT_EXIST*** |
       | 401 | UNAUTHORIZED | ***NO_TOKEN_PROVIDED*** |
       | 401 | UNAUTHORIZED | ***NO_FRESH_TOKEN_PROVIDED*** |
       | 401 | UNAUTHORIZED | ***TOKEN_HAS_EXPIRED*** |
       | 422 | UNPROCESSABLE ENTITY | ***INVALID_TOKEN*** |
-      | 403 | FORBIDDEN | ***ADMIN_RIGHTS_REQUIRED*** |
-      | ***Query params errors*** |
-      | 400 | BAD REQUEST | ***UNKNOWN_QUERY_PARAM*** |
-      | 400 | BAD REQUEST | ***INVALID_SORT_VALUE*** |
-      | 400 | BAD REQUEST | ***INVALID_EXPAND_VALUE*** |
-      | 400 | BAD REQUEST | ***INVALID_EXPAND_VALUE_PARAMETER*** |
-      | 400 | BAD REQUEST | ***INVALID_SELECT_FIELD*** |
-      | ***JSON validation errors*** |
-      | 400 | BAD REQUEST | ***"field_name": "MISSING_DATA"*** |
-      | 400 | BAD REQUEST | ***"field_name": "UNKNOWN_FIELD"*** |
-      | 400 | BAD REQUEST | ***"field_name": "INVALID_LENGTH"*** |
-      | 400 | BAD REQUEST | ***"field_name": "INVALID_TYPE"*** |
-      | 400 | BAD REQUEST | ***"field_name": "NOT_NULLABLE"*** |
+      | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
+      | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
+      | 409 | CONFLICT | ***USERNAME_DOESNT_EXIST*** |
+      | 409 | CONFLICT | ***INCORRECT_PASSWORD*** |
+      | 403 | FORBIDDEN | ***USER_IS_BANNED*** |
+      | ***User API errors*** |
+      | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
+      | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
+      | 404 | NOT FOUND | ***NO_USER_FOUND*** |
+      | 404 | NOT FOUND | ***NO_USERS_FOUND*** |
 
       -----------------------------------------------
-
   
   version: 'beta 0.0.1'
 
@@ -115,7 +115,7 @@ servers: [
 ################################################################################
 
 paths:
-  /user/signup:
+  /auth/signup:
     post:
       summary: Регистрация пользователя
 
@@ -134,13 +134,13 @@ paths:
 
       responses:
         200:
-          description: Пользователь зарегистрироан, возвращается его сущность.
+          description: Пользователь зарегистрироан, возвращается его сущность с access-token и refresh-token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserSchema'
 
-  /user/login:
+  /auth/login:
     post:
       summary: Логин пользователя
 
@@ -159,13 +159,13 @@ paths:
 
       responses:
         200:
-          description: Пользователь залогинился, возвращается его сущность.
+          description: Пользователь залогинился, возвращается его сущность с access-token и refresh-token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserSchema'
 
-  /logout:
+  /auth/logout:
     post:
       security:
         - cookieAuth: []
@@ -181,14 +181,17 @@ paths:
         200:
           description: Выводит {logout = true}, сбрасывает токены из cookies
 
-  /refresh:
+  /auth/refresh:
     post:
       security:
         - cookieAuth: []
 
-      operationId: logout
+      operationId: refresh
 
       summary: Запросить новый токен, когда истечёт срок старого
+
+      description: |
+        Когда access-token для авторизации истекает, используется refresh-token для его обновления
 
       tags:
         - User Authentication API
@@ -213,7 +216,9 @@ paths:
       - in: query
         name: select
         required: false
-        description: Получить только определённые поля пользователей, перечисляются через запятую (id,username). Не возвращает ошибки!!!
+        description: |
+          Получить только определённые поля пользователей, перечисляются через запятую (id,username). 
+          📝 **Note:** Не возвращает ошибки!!!
         type: string
       - in: query
         name: ids
@@ -223,7 +228,8 @@ paths:
       - in: query
         name: filter_by
         required: false
-        description: Отфильтровать пользователей по значениям полей, например (filter_by=displayName=Sasha,isBanned=false). Не возвращает ошибки!!!
+        description: |
+          Отфильтровать пользователей по значениям полей, например `filter_by=displayName=Sasha,isBanned=false,avatar=null`.
         type: string
 
       responses:
@@ -231,7 +237,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserSchema'
 
   /user:
     patch:
@@ -240,7 +246,7 @@ paths:
 
       operationId: update_user
 
-      summary: Обновить аккаунт пользователя
+      summary: Пользователь обновляет данные аккаунта.
 
       tags:
         - User API
@@ -258,10 +264,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserSchema'
 
     get:
-
       operationId: get_user
 
       summary: Получить пользователя
@@ -273,7 +278,9 @@ paths:
       - in: query
         name: select
         required: false
-        description: Получить только определённые поля пользователя, перечисляются через запятую (id,username).
+        description: |
+          Получить только определённые поля пользователя, перечисляются через запятую (id,username).
+          📝 **Note:** Не возвращает ошибки!!
         type: string
       - in: query
         name: id
@@ -291,7 +298,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserSchema'
 
     delete:
       security:
@@ -299,7 +306,7 @@ paths:
 
       operationId: delete_user
 
-      summary: Удалить аккаунт, может только юзер со своего аккаунта
+      summary: Пользователь удаляет аккаунт.
 
       tags:
         - User API
@@ -310,7 +317,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserSchema'
 
 
 ################################################################################
@@ -327,16 +334,19 @@ components:
           type: string
           nullable: false
           maxLength: 30
-          minLength: 1
-          description: Уникальный username пользователя
+          minLength: 5
+          description: |
+            Уникальный username пользователя, имеет `regexp = ^[a-zA-Z0-9._-]+$`
           required: true
           example: "nick2004"
         password:
           type: string
           nullable: false
-          minLength: 1
+          minLength: 8
+          description: |
+            имеет `regexp = ^[a-zA-Z0-9.@_-]+$`
           required: true
-          example: 'pwd'
+          example: 'somepassword'
         email:
           type: string
           nullable: false
@@ -356,49 +366,64 @@ components:
       type: object
       properties:
         username:
-          required: true
-          nullable: false
           type: string
+          nullable: false
           maxLength: 30
-          minLength: 1
-          description: Уникальный username пользователя
-          example: 'nick2004'
+          minLength: 5
+          description: |
+            Уникальный username пользователя, имеет `regexp = ^[a-zA-Z0-9._-]+$`
+          required: true
+          example: "nick2004"
 
         password:
-          required: true
-          nullable: false
           type: string
-          minLength: 1
-          example: 'pwd'
+          nullable: false
+          minLength: 8
+          description: |
+            имеет `regexp = ^[a-zA-Z0-9.@_-]+$`
+          required: true
+          example: 'somepassword'
 
     UserUpdateSchema:
       type: object
       properties:
         username:
           type: string
+          nullable: false
+          maxLength: 30
+          minLength: 5
+          description: |
+            Уникальный username пользователя, имеет `regexp = ^[a-zA-Z0-9._-]+$`
           required: false
-          example: 'nick2004'
+          example: "nick2004"
         displayName:
           type: string
+          minLength: 1
+          maxLength: 30
           required: false
           example: 'Lolkek'
         email:
           type: string
           required: false
+          minLength: 1
           example: 'example@example.org'
         birthday:
           type: int
           required: false
+          min: 86400
           description: 'timestamp'
           example: 1710230677
         description:
           type: string
           required: false
+          minLength: 1
+          maxLength: 140
           example: 'Описание страничкии'
         avatar:
           required: false
           type: string
           format: binary
+          description: только .jpg
 
     UserSchema:
       type: object
