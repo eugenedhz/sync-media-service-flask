@@ -1,4 +1,5 @@
 from datetime import timedelta
+from os import getenv
 
 
 class Default(object):
@@ -10,15 +11,17 @@ class Default(object):
 	JWT_COOKIE_SECURE = True
 	JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=10)
 	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=1)
-	JWT_SECRET_KEY = "NeeDs2BeR3PlacEd" # TODO: get from the env variables
+	JWT_SECRET_KEY = getenv('JWT_SECRET_KEY')
+
+	POSTGRES_CONN_URL = getenv('POSTGRES_CONN_URL')
 
 	SWAGGER = {
         'uiversion': 3,
         'openapi': '3.0.2'
 	}
 
-	# TODO: get password and username from the env variables
-	POSTGRES_CONN_URL = 'postgresql://postgres:test3915@eugenv.ru/ilow' 
+	STATIC_IMAGES_FOLDER = './src/static/images/'
+	STATIC_IMAGES_URL = '/static/images/'
 
 
 class Development(Default):
