@@ -13,7 +13,7 @@ class User:
 	isBanned: bool = False
 
 	# Примечание по Optional[]: по PEP Optional используется только в случае допущения None, кроме значения объявленного типа
-	id: int = None
+	id: Optional[int] = None
 	birthday: Optional[int] = None # timestamp
 	description: Optional[str] = None
 	avatar: Optional[str] = None
