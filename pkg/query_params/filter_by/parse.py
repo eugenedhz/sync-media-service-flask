@@ -1,25 +1,34 @@
 from typing import Optional
 
 
-def parse_filter_by(filter_by: Optional[str], valid_fields: tuple[str, ...]) -> Optional[dict]:
-	if filter_by is None:
+def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) -> Optional[dict]:
+	if filter_query is None:
 		return None
 
-	parsed_filter_by = dict()
-	splitted_filter_by = filter_by.split(',')
+	valid_filters = dict()
+	filters = filter_query.split(',')
+	conversions = {
+		'null': None,
+		'false': False,
+		'true': True
+	}
 
-	for field in splitted_filter_by:
-		splitted_field = field.split('=')
-		if len(splitted_field) != 2:
-			continue
+	for filter in filters:
+		if len(filter.split('=')) != 2:
+			raise KeyError
 
-		key = splitted_field[0]
-		value = splitted_field[1]
+		key, value = filter.split('=')
+
+		if value.isdigit():
+			value = int(value)
+		if value in conversions:
+			value = conversions[value]
 
 		if key in valid_fields:
-			parsed_filter_by[key] = value
+			if not isinstance(value, valid_fields[key]):
+				raise TypeError
+			valid_filters[key] = value
+		else:
+			raise KeyError
 
-	if len(parsed_filter_by) == 0:
-		return None
-
-	return parsed_filter_by
+	return valid_filters
