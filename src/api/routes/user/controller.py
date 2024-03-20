@@ -1,148 +1,195 @@
-from flask import request, jsonify, Response
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import request, jsonify
 from flask_jwt_extended import (
     jwt_required, create_access_token,
-    create_refresh_token, get_jwt_identity, set_access_cookies,
-    set_refresh_cookies, unset_jwt_cookies, get_jwt
+    get_jwt_identity, set_access_cookies,
+    unset_jwt_cookies, get_jwt
 )
 
 from src.app import app
-from src.domain.user import User
-from src.usecase.user.usecase import UserUsecase
-from src.usecase.user.dto import UserRegisterDTO
-from src.repository.user.sqla_repo import UserRepo
-from src.repository.driver.postgres import postgresql_engine
-
-from src.api.routes.user.error import API_ERRORS
+from src.api.services.user import user_service
+from src.api.services.image import image_service
+from src.usecase.dto import QueryParametersDTO
+from src.usecase.user.dto import UserDTO, UserUpdateDTO
+from src.api.error.shared_error import API_ERRORS
+from src.api.routes.user.error import USER_API_ERRORS
 from src.api.error.custom_error import ApiError
-from src.api.routes.user.schemas import (
-	RegisterSchema, 
-	LoginSchema
-)
+from src.api.routes.user.schemas import UserSchema, UpdateUserSchema
+from src.configs.constants import Role, Static
+
+from pkg.query_params.select.parse import parse_select
+from pkg.query_params.filter_by.parse import parse_filter_by
+from pkg.query_params.ids.validate import is_valid_ids
+from pkg.file.image.jpg_validate import is_valid_jpg
+from pkg.file.filename import get_filename, get_extension
 
 
-def create_response_with_jwt(user: User) -> Response:
-	user_dict = user.to_dict()
-	del user_dict['passwordHash']
+@app.route('/user', methods=['GET'])
+def get_user_by_username_or_id():
+	request_params = request.args
 
-	user_id = user_dict['id']
+	username = request_params.get('username')
+	user_id = request_params.get('id')
 
-	access_token = create_access_token(
-		identity = user_id, 
-		additional_claims = {'ADMIN': False}
-	)
+	if (username is None) and (user_id is None):
+		raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
 
-	refresh_token = create_refresh_token(
-		identity = user_id, 
-		additional_claims = {'ADMIN': False}
-	)
+	select = request_params.get('select')
+	user_fields = UserDTO.__match_args__
+	try:
+		select = parse_select(select=select, valid_fields=user_fields)
+	except:
+		raise ApiError(API_ERRORS['INVALID_SELECT'])
 
-	response = jsonify(user_dict)
-	set_access_cookies(response, access_token)
-	set_refresh_cookies(response, refresh_token)
+	if user_id is not None:
+		if not user_id.isdigit():
+			raise ApiError(API_ERRORS['INVALID_ID'])
 
-	return response
+		user = user_service.get_by_id(id=user_id)
 
+		if user is None:
+			raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
-@app.route('/user/signup', methods=['POST'])
-def register():
-	repo = UserRepo(postgresql_engine)
-	service = UserUsecase(repo)
-	
-	request_json = request.json
-	RegisterSchema().validate(request_json)
+	else:
+		user = user_service.get_by_username(username=username)
 
-	username = request_json['username']
-	email = request_json['email']
+		if user is None:
+			raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
-	if service.username_exists(username):
-		raise ApiError(API_ERRORS['USERNAME_EXISTS'])
+	serialize_user = UserSchema(only=select).dump
+	serialized_user = serialize_user(user)
 
-	if service.email_exists(email):
-		raise ApiError(API_ERRORS['EMAIL_EXISTS'])
+	return jsonify(serialized_user)
 
 
-	request_json['passwordHash'] = generate_password_hash(request_json['password'])
-	del request_json['password']
+@app.route('/user/all', methods=['GET'])
+def get_all_users():
+	request_params = request.args
 
-	registered_user = service.register(UserRegisterDTO(**request_json))
-	response = create_response_with_jwt(registered_user)
+	user_ids = request_params.get('ids')
 
-	return response, 200
+	if user_ids is not None:
+		user_ids = tuple(user_ids.split(','))
 
+		if not is_valid_ids(ids=user_ids):
+			raise ApiError(API_ERRORS['INVALID_ID'])
 
-@app.route('/user/login', methods=['POST'])
-def login():
-	repo = UserRepo(postgresql_engine)
-	service = UserUsecase(repo)
-	
-	request_json = request.json
-	LoginSchema().validate(request_json)
+	select = request_params.get('select')
+	filter_by = request_params.get('filter_by')
 
-	username = request_json['username']
+	user_fields = UserDTO.__match_args__
+	try:
+		select = parse_select(select=select, valid_fields=user_fields)
+	except:
+		raise ApiError(API_ERRORS['INVALID_SELECT'])
 
-	if not service.username_exists(username):
-		raise ApiError(API_ERRORS['USERNAME_NO_EXIST'])
+	# .__annotations__ возвращает словарь {поле: тип поля}
+	user_fields = UserDTO.__annotations__
+	try:
+		filter_by = parse_filter_by(filter_query=filter_by, valid_fields=user_fields)
+	except:
+		raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
-	found_user = service.get_by_username(username)
+	query_parameters = QueryParametersDTO(filters=filter_by)
+	users = user_service.get_users(ids=user_ids, query_parameters=query_parameters)
 
-	if found_user.isBanned:
-		raise ApiError(API_ERRORS['BANNED'])
+	if len(users) == 0:
+		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
 
-	request_password = request_json['password']
+	serialize_users = UserSchema(only=select, many=True).dump
+	serialized_users = serialize_users(users)
 
-	password_match = check_password_hash(
-		found_user.passwordHash,
-		request_password
-	)
-
-	if not password_match:
-		raise ApiError(API_ERRORS['WRONG_PWD'])
-
-	response = create_response_with_jwt(found_user)
-
-	return response, 200
+	return jsonify(serialized_users)
 
 
-@app.route('/logout', methods=['POST'])
+@app.route('/user', methods=['PATCH'])
 @jwt_required()
-def logout_post():
-	response = jsonify(logout=True)
-	unset_jwt_cookies(response)
-	
-	return response
-
-
-@app.route('/refresh', methods=['POST'])
-@jwt_required(refresh=True)
-def refresh_token():
-
-	claims = get_jwt()
+def update_user():
 	user_id = get_jwt_identity()
-	adminRights = claims['ADMIN']
 
-	access_token = create_access_token(
-		identity=user_id, 
-		additional_claims={'ADMIN': adminRights}
-	)
+	formdata = request.form.to_dict(flat=True)
+	parsed_formdata = UpdateUserSchema().load(formdata)
 
-	response = jsonify(refresh=True)
-	set_access_cookies(response, access_token)
+	if len(parsed_formdata) == 0 and 'avatar' not in request.files:
+		raise ApiError(API_ERRORS['EMPTY_FORMDATA']) 
 
-	return response
+	if 'username' in parsed_formdata:
+		username = parsed_formdata['username']
+
+		username_exists = user_service.field_exists(name='username', value=username)
+		if username_exists:
+			raise ApiError(USER_API_ERRORS['USERNAME_EXISTS'])
+
+	if 'email' in parsed_formdata:
+		email = parsed_formdata['email']
+
+		email_exists = user_service.field_exists(name='email', value=email)
+		if email_exists:
+			raise ApiError(USER_API_ERRORS['EMAIL_EXISTS'])
+
+	if 'avatar' in request.files:
+		image = request.files['avatar']
+		data = image.read()
+		extension = get_extension(image.filename)
+
+		if not is_valid_jpg(data, extension):
+			raise ApiError(API_ERRORS['INVALID_JPG'])
+
+		try:
+			saved_filename = image_service.save(data=data, extension=extension)
+		except:
+			raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
+
+		user = user_service.get_by_id(user_id)
+		avatar = user.avatar
+
+		if avatar is not None:
+			filename = get_filename(avatar)
+			try:
+				image_service.delete(filename)
+			except:
+				pass
+
+		avatar_url = Static.IMAGES_URL + saved_filename
+		parsed_formdata['avatar'] = avatar_url
+
+	dto = UserUpdateDTO(**parsed_formdata)
+	updated_user = user_service.update_user(id=user_id, update_user_dto=dto)
+
+	return jsonify(updated_user._asdict())
 
 
 @app.route('/user', methods=['DELETE'])
 @jwt_required()
 def delete_user():
-	repo = UserRepo(postgresql_engine)
-	service = UserUsecase(repo)
+	user_id = request.args.get('id')
 
-	user_id = get_jwt_identity()
+	if user_id is None:
+		raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
+	if not user_id.isdigit():
+		raise ApiError(API_ERRORS['INVALID_ID'])
 
-	deleted_user = service.delete_user(id=user_id)
+	user_id = int(user_id)
+	jwt_user_id = int(get_jwt_identity())
 
-	response = jsonify(deleted_user.to_dict())
-	unset_jwt_cookies(response)
+	if user_id != jwt_user_id:
+		claims = get_jwt()
+		admin_rights = claims[Role.ADMIN]
 
-	return response
+		if not admin_rights:
+			raise ApiError(API_ERRORS['ADMIN_RIGHTS_REQUIRED'])
+
+	user_exists = user_service.field_exists(name='id', value=user_id)
+	if not user_exists:
+		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
+			
+	deleted_user = user_service.delete_user(id=user_id)
+	avatar = deleted_user.avatar
+
+	if avatar is not None:
+		filename = get_filename(avatar)
+		try:
+			image_service.delete(filename)
+		except:
+			pass
+
+	return deleted_user._asdict()

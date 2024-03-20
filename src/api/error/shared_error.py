@@ -1,0 +1,48 @@
+from src.api.error.custom_error import ApiErrorInfo
+
+
+API_ERRORS = {
+	'INVALID_ID': ApiErrorInfo(
+		error_message = 'INVALID_ID', 
+		description = 'Incorrect type of entity ID provided.'
+	),
+
+	'NO_IDENTITY_PROVIDED': ApiErrorInfo(
+		error_message = 'NO_IDENTITY_PROVIDED',
+		description = 'No identifier of entity in query parameters to search with.'
+	),
+
+	'EMPTY_FORMDATA': ApiErrorInfo(
+		error_message = 'FORMDATA_IS_EMPTY',
+		description = 'Formdata must contain at least one field.'
+	),
+
+	'INVALID_JPG': ApiErrorInfo(
+		error_message = 'INVALID_JPG',
+		description = 'Image must be valid .jpg format.'
+	),
+
+	'CANT_SAVE_FILE': ApiErrorInfo(
+		error_message = 'CANNOT_SAVE_FILE_ON_SERVER',
+		description = 'Due to some system errors it was unable to save file on the server.',
+		status_code = 500
+	),
+
+	'INVALID_FILTERS': ApiErrorInfo(
+		error_message = 'INVALID_FILTER_BY',
+		description = 'Check if fields and their value type match requesting entity.',
+		status_code = 400
+	),
+
+	'INVALID_SELECT': ApiErrorInfo(
+		error_message = 'INVALID_SELECT',
+		description = 'Check if fields match requesting entity.',
+		status_code = 400
+	),
+
+	'ADMIN_RIGHTS_REQUIRED': ApiErrorInfo(
+		error_message = 'ADMIN_RIGHTS_REQUIRED',
+		description = 'You must log in as admin to do this.',
+		status_code = 403
+	),
+}
