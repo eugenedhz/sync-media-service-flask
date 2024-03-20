@@ -81,7 +81,6 @@ def logout_post():
 @app.route('/auth/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh_token():
-
 	claims = get_jwt()
 	user_id = get_jwt_identity()
 	admin_rights = claims[Role.ADMIN]
