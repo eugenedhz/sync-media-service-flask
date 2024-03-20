@@ -1,11 +1,9 @@
 from datetime import timedelta
-from os import getenv
 
-from pkg.constants.readonly import Readonly
 from pkg.constants.env import get_from_env
 
 
-class Default(Readonly):
+class Default(object):
 	TESTING = False
 
 	JWT_TOKEN_LOCATION = ['cookies']
@@ -22,11 +20,7 @@ class Default(Readonly):
         'uiversion': 3,
         'openapi': '3.0.2'
 	}
-
-	STATIC_IMAGES_FOLDER = './src/static/images/'
-	STATIC_IMAGES_URL = '/static/images/'
-	ALLOWED_IMAGE_EXTENSIONS = ('.jpg', '.jpeg')
-
+	
 
 class Development(Default):
 	DEBUG = False
