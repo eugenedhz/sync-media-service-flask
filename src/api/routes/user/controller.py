@@ -6,12 +6,9 @@ from flask_jwt_extended import (
 )
 
 from src.app import app
-from src.domain.user import User
-from src.usecase.user.usecase import UserUsecase
+from src.api.services.user import user_service
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import UserDTO, UserUpdateDTO
-from src.repository.user.repo import UserRepo
-from src.repository.driver.postgres import postgresql_engine
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.user.error import USER_API_ERRORS
 from src.api.error.custom_error import ApiError
@@ -21,16 +18,13 @@ from src.configs.constants import Role, Static
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.query_params.ids.validate import is_valid_ids
-from pkg.image.jpg_validate import is_valid_jpg
+from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.file_service import FileService
 from pkg.file.filename import get_filename, get_extension
 
 
 @app.route('/user', methods=['GET'])
 def get_user_by_username_or_id():
-	repo = UserRepo(postgresql_engine)
-	user_service = UserUsecase(repo)
-
 	request_params = request.args
 
 	username = request_params.get('username')
@@ -69,9 +63,6 @@ def get_user_by_username_or_id():
 
 @app.route('/user/all', methods=['GET'])
 def get_all_users():
-	repo = UserRepo(postgresql_engine)
-	user_service = UserUsecase(repo)
-
 	request_params = request.args
 
 	user_ids = request_params.get('ids')
@@ -98,8 +89,8 @@ def get_all_users():
 	except:
 		raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
-	query_parameters = QueryParametersDTO(required_ids=user_ids, filters=filter_by)
-	users = user_service.get_users(query_parameters)
+	query_parameters = QueryParametersDTO(filters=filter_by)
+	users = user_service.get_users(ids=user_ids, query_parameters=query_parameters)
 
 	if len(users) == 0:
 		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
@@ -113,9 +104,6 @@ def get_all_users():
 @app.route('/user', methods=['PATCH'])
 @jwt_required()
 def update_user():
-	repo = UserRepo(postgresql_engine)
-	user_service = UserUsecase(repo)
-
 	user_id = get_jwt_identity()
 
 	formdata = request.form.to_dict(flat=True)
@@ -144,7 +132,7 @@ def update_user():
 		extension = get_extension(image.filename)
 		valid_extensions = Static.ALLOWED_IMAGE_EXTENSIONS
 
-		if not(is_valid_jpg(data)) and not(extension in valid_extensions):
+		if not is_valid_jpg(data, extension, valid_extensions):
 			raise ApiError(API_ERRORS['INVALID_JPG'])
 
 		static_folder = Static.IMAGES_FOLDER
@@ -178,9 +166,6 @@ def update_user():
 @app.route('/user', methods=['DELETE'])
 @jwt_required()
 def delete_user():
-	repo = UserRepo(postgresql_engine)
-	user_service = UserUsecase(repo)
-
 	request_params = request.args
 	user_id = request_params.get('id')
 

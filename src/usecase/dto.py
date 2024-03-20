@@ -1,6 +1,6 @@
 from typing import NamedTuple, Optional, Any
 
 
+# ставим дефолты `None`, если ещё параметры будут, чтобы лишний раз не сетить None, если не юзаются.
 class QueryParametersDTO(NamedTuple):
-	required_ids: Optional[tuple[int, ...]]
-	filters: Optional[dict[str, Any]]
+	filters: Optional[dict[str, Any]] = None
