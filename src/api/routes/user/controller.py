@@ -16,7 +16,7 @@ from src.api.error.shared_error import API_ERRORS
 from src.api.routes.user.error import USER_API_ERRORS
 from src.api.error.custom_error import ApiError
 from src.api.routes.user.schemas import UserSchema, UpdateUserSchema
-from src.configs.constants import Role
+from src.configs.constants import Role, Static
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
@@ -142,13 +142,13 @@ def update_user():
 		image = request.files['avatar']
 		data = image.read()
 		extension = get_extension(image.filename)
-		valid_extensions = app.config['ALLOWED_IMAGE_EXTENSIONS']
+		valid_extensions = Static.ALLOWED_IMAGE_EXTENSIONS
 
 		if not(is_valid_jpg(data)) and not(extension in valid_extensions):
 			raise ApiError(API_ERRORS['INVALID_JPG'])
 
-		static_folder = app.config['STATIC_IMAGES_FOLDER']
-		static_url = app.config['STATIC_IMAGES_URL']
+		static_folder = Static.IMAGES_FOLDER
+		static_url = Static.IMAGES_URL
 		file_service = FileService(destination_path=static_folder)
 
 		try:
@@ -207,7 +207,7 @@ def delete_user():
 	avatar = deleted_user.avatar
 
 	if avatar is not None:
-		static_folder = app.config['STATIC_IMAGES_FOLDER']
+		static_folder = Static.IMAGES_FOLDER
 		file_service = FileService(destination_path=static_folder)
 		
 		filename = get_filename(avatar)
