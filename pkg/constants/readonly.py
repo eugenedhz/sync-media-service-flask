@@ -1,4 +1,4 @@
-class Constant:
+class Readonly:
 	def __setattr__():
 		raise AttributeError('Cannot set constant attribute')
 

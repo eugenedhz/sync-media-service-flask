@@ -1,11 +1,11 @@
 from datetime import timedelta
 from os import getenv
 
-from pkg.constants.constant import Constant
+from pkg.constants.readonly import Readonly
 from pkg.constants.env import get_from_env
 
 
-class Default(Constant):
+class Default(Readonly):
 	TESTING = False
 
 	JWT_TOKEN_LOCATION = ['cookies']
