@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, Date
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import DeclarativeBase
+from src.repository.sqla_models.types import DateAsTimestamp
 
 
 class Base(DeclarativeBase):
@@ -22,11 +23,11 @@ class UserModel(Base):
 
 	username = Column(String, unique=True, nullable=False)
 	passwordHash = Column(String, nullable=False)
-	registrationDate = Column(Date, nullable=False)
+	registrationDate = Column(DateAsTimestamp, nullable=False)
 	isBanned = Column(Boolean, nullable=False, default=False)
 	email = Column(String, unique=True, nullable=False)
 	displayName = Column(String, nullable=False)
 
-	birthday = Column(Date)
+	birthday = Column(DateAsTimestamp)
 	description = Column(String)
 	avatar = Column(String)

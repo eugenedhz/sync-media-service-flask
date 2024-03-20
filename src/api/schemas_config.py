@@ -1,4 +1,5 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import Schema, fields
+
 from src.api.error.custom_error import ApiError, ApiErrorInfo
 
 
@@ -7,22 +8,6 @@ fields.Field.default_error_messages = {
 	        "null": "NOT_NULLABLE",
 	        "validator_failed": "INVALID_VALUE"
 }
-
-
-class Length(validate.Length):
-	def __init__(
-		self,
-		min: int | None = None,
-		max: int | None = None,
-		*,
-		equal: int | None = None,
-		error: str | None = None,
-	):
-
-		super().__init__(min=min, max=max, equal=equal, error=error)
-
-		self.error = 'INVALID_LENGTH'
-
 
 
 class JsonSchema(Schema):
@@ -43,6 +28,6 @@ class JsonSchema(Schema):
 			raise ApiError(
 				ApiErrorInfo(
 					error_message = invalid_fields, 
-					description = "JSON не соответствует схеме, смотрите в swagger."
+					description = "JSON you have sent failed validation."
 				)
 			)

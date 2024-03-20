@@ -1,10 +1,14 @@
-from typing import Union
-import datetime
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+from typing import Union, Optional, Any
+from datetime import datetime
 
 from src.domain.user import User
-from src.usecase.user.dto import UserRegisterDTO
 from src.interface.repository.user import UserRepoInterface
-
+from src.usecase.dto import QueryParametersDTO
+from src.usecase.user.dto import (
+	UserCreateDTO, UserDTO, UserCheckPasswordDTO, UserUpdateDTO
+)
 
 class UserUsecase():
 
@@ -12,42 +16,87 @@ class UserUsecase():
 		self.repo = repo
 
 
-	def register(self, user_dto: UserRegisterDTO) -> User:
+	def create_user(self, user_dto: UserCreateDTO) -> UserDTO:
+		password_hash = generate_password_hash(user_dto.password)
+		registration_date = int(datetime.now().timestamp())
+
 		new_user = User(
-			**(user_dto._asdict()),
-			registrationDate = datetime.date.today()
+			username = user_dto.username,
+			displayName = user_dto.displayName,
+			email = user_dto.email,
+			passwordHash = password_hash,
+			registrationDate = registration_date
 		)
 
 		stored_user = self.repo.store(new_user)
+		stored_user_dict = stored_user.to_dict()
+		del stored_user_dict['passwordHash']
 
-		return stored_user
+		return UserDTO(**stored_user_dict)
 
 
-	def get_by_username(self, username: str) -> User:
+	def check_user_password(self, check_password_dto: UserCheckPasswordDTO) -> bool:
+		found_user = self.repo.get_by_username(username=check_password_dto.username)
+
+		password_hash = found_user.passwordHash
+
+		return check_password_hash(password_hash, check_password_dto.password)
+
+
+	def get_by_username(self, username: str) -> Optional[UserDTO]:
+
 		found_user = self.repo.get_by_username(username=username)
 
-		return found_user
+		if found_user is None:
+			return None
+
+		found_user_dict = found_user.to_dict()
+		del found_user_dict['passwordHash']
+
+		return UserDTO(**found_user_dict)
 
 
-	def get_by_id(self, id: str) -> User:
+	def get_by_id(self, id: int) -> Optional[UserDTO]:
+
 		found_user = self.repo.get_by_id(id=id)
 
-		return found_user
+		if found_user is None:
+			return None
+
+		found_user_dict = found_user.to_dict()
+		del found_user_dict['passwordHash']
+
+		return UserDTO(**found_user_dict)
 
 
-	def delete_user(self, id: str) -> User:
-		deleted_user = self.repo.delete_user(id=id)
+	def get_users(self, ids: tuple[int, ...], query_parameters: QueryParametersDTO) -> list[UserDTO]:
+		users = self.repo.get_all(ids, query_parameters)
 
-		return deleted_user
-
-
-	def username_exists(self, username: str) -> bool:
-		exists = self.repo.username_exists(username)
-
-		return exists
+		return users
 
 
-	def email_exists(self, email: str) -> bool:
-		exists = self.repo.email_exists(email)
+	def update_user(self, id: int, update_user_dto: UserUpdateDTO) -> UserDTO:
+		updated_user = self.repo.update(id, update_user_dto)
+
+		updated_user_dict = updated_user.to_dict()
+		del updated_user_dict['passwordHash']
+
+		return UserDTO(**updated_user_dict)
+
+
+	def delete_user(self, id: int) -> UserDTO:
+		deleted_user = self.repo.delete(id=id)
+
+		deleted_user_dict = deleted_user.to_dict()
+		del deleted_user_dict['passwordHash']
+
+		return UserDTO(**deleted_user_dict)
+
+
+	def field_exists(self, name: str, value: str) -> bool:
+		field = dict()
+		field[name] = value
+
+		exists = self.repo.field_exists(field)
 
 		return exists
