@@ -1,5 +1,5 @@
-def is_valid_jpg(data, extension: str, valid_extensions: tuple[str, ...]):
-    if extension not in valid_extensions:
+def is_valid_jpg(data, extension: str):
+    if extension not in ('.jpg', '.jpeg'):
         return False
 
     if len(data) < 16:
