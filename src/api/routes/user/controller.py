@@ -7,6 +7,7 @@ from flask_jwt_extended import (
 
 from src.app import app
 from src.api.services.user import user_service
+from src.api.services.image import image_service
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import UserDTO, UserUpdateDTO
 from src.api.error.shared_error import API_ERRORS
@@ -19,7 +20,6 @@ from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.query_params.ids.validate import is_valid_ids
 from pkg.file.image.jpg_validate import is_valid_jpg
-from pkg.file.file_service import FileService
 from pkg.file.filename import get_filename, get_extension
 
 
@@ -130,17 +130,12 @@ def update_user():
 		image = request.files['avatar']
 		data = image.read()
 		extension = get_extension(image.filename)
-		valid_extensions = Static.ALLOWED_IMAGE_EXTENSIONS
 
-		if not is_valid_jpg(data, extension, valid_extensions):
+		if not is_valid_jpg(data, extension):
 			raise ApiError(API_ERRORS['INVALID_JPG'])
 
-		static_folder = Static.IMAGES_FOLDER
-		static_url = Static.IMAGES_URL
-		file_service = FileService(destination_path=static_folder)
-
 		try:
-			saved_filename = file_service.save(data=data, extension=extension)
+			saved_filename = image_service.save(data=data, extension=extension)
 		except:
 			raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
@@ -150,11 +145,11 @@ def update_user():
 		if avatar is not None:
 			filename = get_filename(avatar)
 			try:
-				file_service.delete(filename)
+				image_service.delete(filename)
 			except:
 				pass
 
-		avatar_url = static_url + saved_filename
+		avatar_url = Static.IMAGES_URL + saved_filename
 		parsed_formdata['avatar'] = avatar_url
 
 	dto = UserUpdateDTO(**parsed_formdata)
@@ -166,8 +161,7 @@ def update_user():
 @app.route('/user', methods=['DELETE'])
 @jwt_required()
 def delete_user():
-	request_params = request.args
-	user_id = request_params.get('id')
+	user_id = request.args.get('id')
 
 	if user_id is None:
 		raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
@@ -192,12 +186,9 @@ def delete_user():
 	avatar = deleted_user.avatar
 
 	if avatar is not None:
-		static_folder = Static.IMAGES_FOLDER
-		file_service = FileService(destination_path=static_folder)
-		
 		filename = get_filename(avatar)
 		try:
-			file_service.delete(filename)
+			image_service.delete(filename)
 		except:
 			pass
 
