@@ -76,18 +76,17 @@ class UserRepo(UserRepoInterface):
 		return User(**updated_user._asdict(User))
 
 
-	def get_all(self, query_parameters: QueryParametersDTO) -> list[UserDTO]:
+	def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[UserDTO]:
 		with Session(self.engine) as s:
 			query = (
 				select(UserModel)
 				.options(defer(UserModel.passwordHash))
 			)
 
-			required_ids = query_parameters.required_ids
 			filters = query_parameters.filters
 
-			if required_ids is not None:
-				query = query.where(UserModel.id.in_(required_ids))
+			if ids is not None:
+				query = query.where(UserModel.id.in_(ids))
 
 			if filters is not None:
 				query = query.filter_by(**filters)

@@ -7,10 +7,8 @@ from flask_jwt_extended import (
 
 from src.app import app
 from src.configs.constants import Role
-from src.usecase.user.usecase import UserUsecase
+from src.api.services.user import user_service
 from src.usecase.user.dto import UserCreateDTO, UserCheckPasswordDTO
-from src.repository.user.repo import UserRepo
-from src.repository.driver.postgres import postgresql_engine
 from src.api.routes.auth.responses import create_response_with_jwt
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.auth.error import AUTH_API_ERRORS
@@ -20,9 +18,6 @@ from src.api.routes.auth.schemas import RegisterSchema, LoginSchema
 
 @app.route('/auth/signup', methods=['POST'])
 def register():
-	repo = UserRepo(postgresql_engine)
-	user_service = UserUsecase(repo)
-	
 	request_json = request.json
 	RegisterSchema().validate(request_json)
 
@@ -47,9 +42,6 @@ def register():
 
 @app.route('/auth/login', methods=['POST'])
 def login():
-	repo = UserRepo(postgresql_engine)
-	user_service = UserUsecase(repo)
-	
 	request_json = request.json
 	LoginSchema().validate(request_json)
 
