@@ -31,3 +31,18 @@ class UserModel(Base):
 	birthday = Column(DateAsTimestamp)
 	description = Column(String)
 	avatar = Column(String)
+
+
+class MediaModel(Base):
+	__tablename__ = 'Media'
+
+	mId = Column(Integer, primary_key=True)
+
+	mName = Column(String, unique=True, nullable=False)
+	description = Column(String, unique=True, nullable=False)
+	thumbnail = Column(String, unique=True, nullable=False)
+	preview = Column(String, unique=True, nullable=False)
+	ratingId = Column(Integer, unique=True, nullable=True)
+	trailer = Column(Integer, unique=True, nullable=True)
+	subtitleId = Column(Integer, unique=True, nullable=True)
+	genreId = Column(Integer, unique=True, nullable=True)
