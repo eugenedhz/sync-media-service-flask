@@ -1,0 +1,214 @@
+from flask import request, jsonify
+from flask_jwt_extended import (
+    jwt_required, create_access_token,
+    get_jwt_identity, set_access_cookies,
+    unset_jwt_cookies, get_jwt
+)
+
+from src.app import app
+from src.api.services.media import media_service
+from src.api.services.image import image_service
+from src.usecase.dto import QueryParametersDTO
+from src.usecase.media.dto import MediaDTO, MediaUpdateDTO, MediaCreateDTO
+from src.api.error.shared_error import API_ERRORS
+from src.api.routes.media.error import MEDIA_API_ERRORS
+from src.api.error.custom_error import ApiError
+from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema
+from src.configs.constants import Role, Static
+
+from pkg.query_params.select.parse import parse_select
+from pkg.query_params.filter_by.parse import parse_filter_by
+from pkg.query_params.ids.validate import is_valid_ids
+from pkg.file.image.jpg_validate import is_valid_jpg
+from pkg.file.filename import get_filename, get_extension
+
+
+@app.route('/media/create', methods=['POST'])
+def media_create():
+	request_json = request.json
+	CreateMediaSchema().validate(request_json)
+
+	name = request_json['name']
+
+	media_exists = media_service.field_exists(name='mName', value=name)
+	if media_exists:
+		raise ApiError(MEDIA_API_ERRORS['MEDIA_EXISTS'])
+
+	dto = MediaCreateDTO(**request_json)
+	created_media = media_service.create_media(dto)
+
+	response = created_media._asdict()
+
+	return response
+
+
+# @app.route('/user', methods=['GET'])
+# def get_media_by_username_or_id():
+#     request_params = request.args
+#
+#     name = request_params.get('name')
+#     user_id = request_params.get('id')
+#
+#     if (username is None) and (user_id is None):
+#         raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
+#
+#     select = request_params.get('select')
+#     user_fields = UserDTO.__match_args__
+#     try:
+#         select = parse_select(select=select, valid_fields=user_fields)
+#     except:
+#         raise ApiError(API_ERRORS['INVALID_SELECT'])
+#
+#     if user_id is not None:
+#         if not user_id.isdigit():
+#             raise ApiError(API_ERRORS['INVALID_ID'])
+#
+#         user = user_service.get_by_id(id=user_id)
+#
+#         if user is None:
+#             raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
+#
+#     else:
+#         user = user_service.get_by_username(username=username)
+#
+#         if user is None:
+#             raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
+#
+#     serialize_user = UserSchema(only=select).dump
+#     serialized_user = serialize_user(user)
+#
+#     return jsonify(serialized_user)
+#
+#
+# @app.route('/user/all', methods=['GET'])
+# def get_all_users():
+#     request_params = request.args
+#
+#     user_ids = request_params.get('ids')
+#
+#     if user_ids is not None:
+#         user_ids = tuple(user_ids.split(','))
+#
+#         if not is_valid_ids(ids=user_ids):
+#             raise ApiError(API_ERRORS['INVALID_ID'])
+#
+#     select = request_params.get('select')
+#     filter_by = request_params.get('filter_by')
+#
+#     user_fields = UserDTO.__match_args__
+#     try:
+#         select = parse_select(select=select, valid_fields=user_fields)
+#     except:
+#         raise ApiError(API_ERRORS['INVALID_SELECT'])
+#
+#     # .__annotations__ возвращает словарь {поле: тип поля}
+#     user_fields = UserDTO.__annotations__
+#     try:
+#         filter_by = parse_filter_by(filter_query=filter_by, valid_fields=user_fields)
+#     except:
+#         raise ApiError(API_ERRORS['INVALID_FILTERS'])
+#
+#     query_parameters = QueryParametersDTO(filters=filter_by)
+#     users = user_service.get_users(ids=user_ids, query_parameters=query_parameters)
+#
+#     if len(users) == 0:
+#         raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
+#
+#     serialize_users = UserSchema(only=select, many=True).dump
+#     serialized_users = serialize_users(users)
+#
+#     return jsonify(serialized_users)
+#
+#
+# @app.route('/user', methods=['PATCH'])
+# @jwt_required()
+# def update_user():
+#     user_id = get_jwt_identity()
+#
+#     formdata = request.form.to_dict(flat=True)
+#     parsed_formdata = UpdateUserSchema().load(formdata)
+#
+#     if len(parsed_formdata) == 0 and 'avatar' not in request.files:
+#         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
+#
+#     if 'username' in parsed_formdata:
+#         username = parsed_formdata['username']
+#
+#         username_exists = user_service.field_exists(name='username', value=username)
+#         if username_exists:
+#             raise ApiError(USER_API_ERRORS['USERNAME_EXISTS'])
+#
+#     if 'email' in parsed_formdata:
+#         email = parsed_formdata['email']
+#
+#         email_exists = user_service.field_exists(name='email', value=email)
+#         if email_exists:
+#             raise ApiError(USER_API_ERRORS['EMAIL_EXISTS'])
+#
+#     if 'avatar' in request.files:
+#         image = request.files['avatar']
+#         data = image.read()
+#         extension = get_extension(image.filename)
+#
+#         if not is_valid_jpg(data, extension):
+#             raise ApiError(API_ERRORS['INVALID_JPG'])
+#
+#         try:
+#             saved_filename = image_service.save(data=data, extension=extension)
+#         except:
+#             raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
+#
+#         user = user_service.get_by_id(user_id)
+#         avatar = user.avatar
+#
+#         if avatar is not None:
+#             filename = get_filename(avatar)
+#             try:
+#                 image_service.delete(filename)
+#             except:
+#                 pass
+#
+#         avatar_url = Static.IMAGES_URL + saved_filename
+#         parsed_formdata['avatar'] = avatar_url
+#
+#     dto = UserUpdateDTO(**parsed_formdata)
+#     updated_user = user_service.update_user(id=user_id, update_user_dto=dto)
+#
+#     return jsonify(updated_user._asdict())
+#
+#
+# @app.route('/user', methods=['DELETE'])
+# @jwt_required()
+# def delete_user():
+#     user_id = request.args.get('id')
+#
+#     if user_id is None:
+#         raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
+#     if not user_id.isdigit():
+#         raise ApiError(API_ERRORS['INVALID_ID'])
+#
+#     user_id = int(user_id)
+#     jwt_user_id = int(get_jwt_identity())
+#
+#     if user_id != jwt_user_id:
+#         claims = get_jwt()
+#         admin_rights = claims[Role.ADMIN]
+#
+#         if not admin_rights:
+#             raise ApiError(API_ERRORS['ADMIN_RIGHTS_REQUIRED'])
+#
+#     user_exists = user_service.field_exists(name='id', value=user_id)
+#     if not user_exists:
+#         raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
+#
+#     deleted_user = user_service.delete_user(id=user_id)
+#     avatar = deleted_user.avatar
+#
+#     if avatar is not None:
+#         filename = get_filename(avatar)
+#         try:
+#             image_service.delete(filename)
+#         except:
+#             pass
+#
+#     return deleted_user._asdict()

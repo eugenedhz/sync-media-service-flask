@@ -329,6 +329,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserSchema'
 
+  /media/create:
+    post:
+      summary: Создание медиа
+
+      tags:
+        - Media API
+
+      operationId: create_media
+
+      requestBody:
+        required: true
+        description: Обязательный JSON
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaCreateSchema'
+
+      responses:
+        200:
+          description: Объект медиа создан, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
 
 ################################################################################
 #                                    Schemas                                   #
@@ -476,3 +500,83 @@ components:
           type: string
           nullable: true
           example: 'ilow-api.eugenv.ru/static/images/avatar_id_1.png'
+
+    MediaSchema:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: false
+          example: 1
+        name:
+          type: string
+          nullable: false
+          example: 'Titanic'
+        description:
+          type: string
+          nullable: false
+          example: 'Описание фильма'
+        thumbnail:
+          type: string
+          nullable: false
+          example: 'ilow-api.eugenv.ru/static/images/thumbnail_titanic.png'
+        preview:
+          type: string
+          nullable: false
+          example: 'ilow-api.eugenv.ru/static/images/preview_titanic.png'
+        ratingId:
+          type: integer
+          nullable: true
+          example: 1
+        trailer:
+          type: integer
+          nullable: true
+          example: 1
+        subtitleId:
+          type: integer
+          nullable: true
+          example: 1
+        genreId:
+          type: integer
+          nullable: true
+          example: 1
+
+    MediaUpdateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          example: 'Titanic'
+        description:
+          type: string
+          nullable: false
+          example: 'Описание фильма'
+        thumbnail:
+          type: string
+          nullable: false
+          example: 'ilow-api.eugenv.ru/static/images/thumbnail_titanic.png'
+        preview:
+          type: string
+          nullable: false
+          example: 'ilow-api.eugenv.ru/static/images/preview_titanic.png'
+
+    MediaCreateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          example: 'Titanic'
+        description:
+          type: string
+          nullable: false
+          example: 'Описание фильма'
+        thumbnail:
+          type: string
+          nullable: false
+          example: 'ilow-api.eugenv.ru/static/images/thumbnail_titanic.png'
+        preview:
+          type: string
+          nullable: false
+          example: 'ilow-api.eugenv.ru/static/images/preview_titanic.png'
