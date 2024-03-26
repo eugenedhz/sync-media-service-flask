@@ -354,6 +354,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/MediaSchema'
 
+  /media/get:
+    get:
+      summary: Получение медиа
+
+      tags:
+        - Media API
+
+      operationId: get_media
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля медиа, например `select=id,name`
+        type: string
+      - in: query
+        name: id
+        required: false
+        description: Получить медиа по id, принимается только id=число, иначе выведет ошибку.
+        type: int
+      - in: query
+        name: name
+        required: false
+        description: Получить пользователя по name
+        type: string
+
+      responses:
+        200:
+          description: Возвращается сущность объекта медиа.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
 ################################################################################
 #                                    Schemas                                   #
 ################################################################################
@@ -504,11 +538,11 @@ components:
     MediaSchema:
       type: object
       properties:
-        id:
+        mId:
           type: integer
           nullable: false
           example: 1
-        name:
+        mName:
           type: string
           nullable: false
           example: 'Titanic'

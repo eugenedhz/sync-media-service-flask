@@ -42,42 +42,42 @@ def media_create():
 	return response
 
 
-# @app.route('/user', methods=['GET'])
-# def get_media_by_username_or_id():
-#     request_params = request.args
-#
-#     name = request_params.get('name')
-#     user_id = request_params.get('id')
-#
-#     if (username is None) and (user_id is None):
-#         raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
-#
-#     select = request_params.get('select')
-#     user_fields = UserDTO.__match_args__
-#     try:
-#         select = parse_select(select=select, valid_fields=user_fields)
-#     except:
-#         raise ApiError(API_ERRORS['INVALID_SELECT'])
-#
-#     if user_id is not None:
-#         if not user_id.isdigit():
-#             raise ApiError(API_ERRORS['INVALID_ID'])
-#
-#         user = user_service.get_by_id(id=user_id)
-#
-#         if user is None:
-#             raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
-#
-#     else:
-#         user = user_service.get_by_username(username=username)
-#
-#         if user is None:
-#             raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
-#
-#     serialize_user = UserSchema(only=select).dump
-#     serialized_user = serialize_user(user)
-#
-#     return jsonify(serialized_user)
+@app.route('/media/get', methods=['GET'])
+def get_media_by_name_or_id():
+    request_params = request.args
+
+    name = request_params.get('name')
+    media_id = request_params.get('id')
+
+    if (name is None) and (media_id is None):
+        raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
+
+    select = request_params.get('select')
+    media_fields = MediaDTO.__match_args__
+    try:
+        select = parse_select(select=select, valid_fields=media_fields)
+    except:
+        raise ApiError(API_ERRORS['INVALID_SELECT'])
+
+    if media_id is not None:
+        if not media_id.isdigit():
+            raise ApiError(API_ERRORS['INVALID_ID'])
+
+        media = media_service.get_by_id(id=media_id)
+
+        if media is None:
+            raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
+
+    else:
+        media = media_service.get_by_name(name=name)
+
+        if media is None:
+            raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
+
+    serialize_media = MediaSchema(only=select).dump
+    serialized_media = serialize_media(media)
+
+    return jsonify(serialized_media)
 #
 #
 # @app.route('/user/all', methods=['GET'])

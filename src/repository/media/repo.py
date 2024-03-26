@@ -27,33 +27,33 @@ class MediaRepo(MediaRepoInterface):
 
         return Media(**new_media._asdict(Media))
 
-    # def get_by_id(self, id: int) -> User:
-    #     with Session(self.engine) as s:
-    #         query = (
-    #             select(UserModel)
-    #             .where(UserModel.id == id)
-    #         )
-    #
-    #         found_user = get_first(session=s, query=query)
-    #
-    #     if found_user is None:
-    #         return None
-    #
-    #     return User(**found_user._asdict(User))
-    #
-    # def get_by_username(self, username: str) -> User:
-    #     with Session(self.engine) as s:
-    #         query = (
-    #             select(UserModel)
-    #             .where(UserModel.username == username)
-    #         )
-    #
-    #         found_user = get_first(session=s, query=query)
-    #
-    #     if found_user is None:
-    #         return None
-    #
-    #     return User(**found_user._asdict(User))
+    def get_by_id(self, id: int) -> Media:
+        with Session(self.engine) as s:
+            query = (
+                select(MediaModel)
+                .where(MediaModel.mId == id)
+            )
+
+            found_media = get_first(session=s, query=query)
+
+        if found_media is None:
+            return None
+
+        return Media(**found_media._asdict(Media))
+
+    def get_by_name(self, name: str) -> Media:
+        with Session(self.engine) as s:
+            query = (
+                select(MediaModel)
+                .where(MediaModel.mName == name)
+            )
+
+            found_media = get_first(session=s, query=query)
+
+        if found_media is None:
+            return None
+
+        return Media(**found_media._asdict(Media))
     #
     # def update(self, id: int, update_user_dto: UserUpdateDTO) -> User:
     #     with Session(self.engine) as s:
