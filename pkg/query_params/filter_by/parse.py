@@ -18,7 +18,7 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 	filters = filter_query.split(',')
 
 	# регулярка для отдельных фильтров, например, id{>}14 или name{in}[name;name2]...
-	filter_pattern = r'^\S+({(==|!=|<|>|<=|>=|)}\S+|{(in|!in)}\[.+\])$'
+	filter_pattern = r'^.+({(==|!=|<|>|<=|>=|)}.+|{(in|!in)}\[.+\])$'
 	operators = ('{<=}', '{>=}', '{==}', '{!=}', '{<}', '{>}', '{in}', '{!in}')
 	bool_operators = ('==', '!=')
 	list_operators = ('in', '!in')
