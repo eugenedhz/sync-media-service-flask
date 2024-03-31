@@ -16,7 +16,7 @@ class MediaUsecase():
 	def create_media(self, media_dto: MediaCreateDTO) -> MediaDTO:
 
 		new_media = Media(
-			mName = media_dto.name,
+			name = media_dto.name,
 			description = media_dto.description,
 			thumbnail = media_dto.thumbnail,
 			preview = media_dto.preview,

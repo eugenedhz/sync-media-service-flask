@@ -36,13 +36,10 @@ class UserModel(Base):
 class MediaModel(Base):
 	__tablename__ = 'Media'
 
-	mId = Column(Integer, primary_key=True)
+	id = Column(Integer, primary_key=True)
 
-	mName = Column(String, unique=True, nullable=False)
-	description = Column(String, unique=True, nullable=False)
-	thumbnail = Column(String, unique=True, nullable=False)
+	name = Column(String, unique=True, nullable=False)
+	description = Column(String, nullable=True)
+	thumbnail = Column(String, nullable=False)
 	preview = Column(String, unique=True, nullable=False)
-	ratingId = Column(Integer, unique=True, nullable=True)
-	trailer = Column(Integer, unique=True, nullable=True)
-	subtitleId = Column(Integer, unique=True, nullable=True)
-	genreId = Column(Integer, unique=True, nullable=True)
+	trailer = Column(String, unique=True, nullable=True)
