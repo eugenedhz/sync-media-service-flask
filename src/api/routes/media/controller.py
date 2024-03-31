@@ -23,26 +23,59 @@ from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import get_filename, get_extension
 
 
-@app.route('/media/create', methods=['POST'])
+@app.route('/media', methods=['POST'])
 def media_create():
-	request_json = request.json
-	CreateMediaSchema().validate(request_json)
+    
+    formdata = request.form.to_dict(flat=True)
+    parsed_formdata = UpdateMediaSchema().load(formdata)
 
-	name = request_json['name']
+    name = parsed_formdata['name']
 
-	media_exists = media_service.field_exists(name='mName', value=name)
-	if media_exists:
-		raise ApiError(MEDIA_API_ERRORS['MEDIA_EXISTS'])
+    if 'thumbnail' in request.files:
+        image = request.files['thumbnail']
+        data = image.read()
+        extension = get_extension(image.filename)
 
-	dto = MediaCreateDTO(**request_json)
-	created_media = media_service.create_media(dto)
+        if not is_valid_jpg(data, extension):
+            raise ApiError(API_ERRORS['INVALID_JPG'])
 
-	response = created_media._asdict()
+        try:
+            saved_filename = image_service.save(data=data, extension=extension)
+        except:
+            raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
-	return response
+        thumbnail_url = Static.IMAGES_URL + saved_filename
+        parsed_formdata['thumbnail'] = thumbnail_url
+        
+    if 'preview' in request.files:
+        image = request.files['preview']
+        data = image.read()
+        extension = get_extension(image.filename)
+
+        if not is_valid_jpg(data, extension):
+            raise ApiError(API_ERRORS['INVALID_JPG'])
+
+        try:
+            saved_filename = image_service.save(data=data, extension=extension)
+        except:
+            raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
+
+        preview_url = Static.IMAGES_URL + saved_filename
+        parsed_formdata['preview'] = preview_url
+
+    media_exists = media_service.field_exists(name='name', value=name)
+    if media_exists:
+        raise ApiError(MEDIA_API_ERRORS['MEDIA_EXISTS'])
+
+    dto = MediaCreateDTO(**parsed_formdata)
+    created_media = media_service.create_media(dto)
+
+    response = created_media._asdict()
+
+    return response
 
 
-@app.route('/media/get', methods=['GET'])
+@app.route('/media', methods=['GET'])
 def get_media_by_name_or_id():
     request_params = request.args
 
@@ -120,61 +153,82 @@ def get_media_by_name_or_id():
 #     return jsonify(serialized_users)
 #
 #
-# @app.route('/user', methods=['PATCH'])
-# @jwt_required()
-# def update_user():
-#     user_id = get_jwt_identity()
-#
-#     formdata = request.form.to_dict(flat=True)
-#     parsed_formdata = UpdateUserSchema().load(formdata)
-#
-#     if len(parsed_formdata) == 0 and 'avatar' not in request.files:
-#         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
-#
-#     if 'username' in parsed_formdata:
-#         username = parsed_formdata['username']
-#
-#         username_exists = user_service.field_exists(name='username', value=username)
-#         if username_exists:
-#             raise ApiError(USER_API_ERRORS['USERNAME_EXISTS'])
-#
-#     if 'email' in parsed_formdata:
-#         email = parsed_formdata['email']
-#
-#         email_exists = user_service.field_exists(name='email', value=email)
-#         if email_exists:
-#             raise ApiError(USER_API_ERRORS['EMAIL_EXISTS'])
-#
-#     if 'avatar' in request.files:
-#         image = request.files['avatar']
-#         data = image.read()
-#         extension = get_extension(image.filename)
-#
-#         if not is_valid_jpg(data, extension):
-#             raise ApiError(API_ERRORS['INVALID_JPG'])
-#
-#         try:
-#             saved_filename = image_service.save(data=data, extension=extension)
-#         except:
-#             raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
-#
-#         user = user_service.get_by_id(user_id)
-#         avatar = user.avatar
-#
-#         if avatar is not None:
-#             filename = get_filename(avatar)
-#             try:
-#                 image_service.delete(filename)
-#             except:
-#                 pass
-#
-#         avatar_url = Static.IMAGES_URL + saved_filename
-#         parsed_formdata['avatar'] = avatar_url
-#
-#     dto = UserUpdateDTO(**parsed_formdata)
-#     updated_user = user_service.update_user(id=user_id, update_user_dto=dto)
-#
-#     return jsonify(updated_user._asdict())
+@app.route('/media', methods=['PATCH'])
+@jwt_required()
+def update_media():
+    media_id = get_jwt_identity()
+
+    formdata = request.form.to_dict(flat=True)
+    parsed_formdata = UpdateMediaSchema().load(formdata)
+
+    if len(parsed_formdata) == 0 and 'preview' not in request.files and 'thumbnail' not in request.files:
+        raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
+
+    if 'name' in parsed_formdata:
+        name = parsed_formdata['name']
+
+        name_exists = media_service.field_exists(name='name', value=name)
+        if name_exists:
+            raise ApiError(MEDIA_API_ERRORS['NAME_EXISTS'])
+
+    if 'thumbnail' in request.files:
+        thumbnail = request.files['thumbnail']
+        data = thumbnail.read()
+        extension = get_extension(thumbnail.filename)
+
+        if not is_valid_jpg(data, extension):
+            raise ApiError(API_ERRORS['INVALID_JPG'])
+
+        try:
+            saved_filename = image_service.save(data=data, extension=extension)
+        except:
+            raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
+
+        media = media_service.get_by_id(media_id)
+        thumbnail = media.thumbnail
+
+        if thumbnail is not None:
+            filename = get_filename(thumbnail)
+            try:
+                image_service.delete(filename)
+            except:
+                pass
+
+        thumbnail_url = Static.IMAGES_URL + saved_filename
+        parsed_formdata['thumbnail'] = thumbnail_url
+
+    if 'preview' in request.files:
+        preview = request.files['preview']
+        data = preview.read()
+        extension = get_extension(preview.filename)
+
+        if not is_valid_jpg(data, extension):
+            raise ApiError(API_ERRORS['INVALID_JPG'])
+
+        try:
+            saved_filename = image_service.save(data=data, extension=extension)
+        except:
+            raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
+
+        media = media_service.get_by_id(media_id)
+        preview = media.preview
+
+        if preview is not None:
+            filename = get_filename(preview)
+            try:
+                image_service.delete(filename)
+            except:
+                pass
+
+        preview_url = Static.IMAGES_URL + saved_filename
+        parsed_formdata['preview'] = preview_url
+
+    dto = MediaUpdateDTO(**parsed_formdata)
+    updated_media = media_service.update_media(id=media_id, update_media_dto=dto)
+
+    return jsonify(updated_media._asdict())
+
+
 #
 #
 # @app.route('/user', methods=['DELETE'])
