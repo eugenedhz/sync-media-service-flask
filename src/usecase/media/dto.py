@@ -2,15 +2,12 @@ from typing import TypedDict, NamedTuple, Union, Optional, Any
 
 
 class MediaDTO(NamedTuple):
-    mId: int
-    mName: str
+    id: int
+    name: str
     description: str
     thumbnail: str
     preview: str
-    ratingId: Optional[int]
-    trailer: Optional[int]
-    subtitleId: Optional[int]
-    genreId: Optional[int]
+    trailer: Optional[str]
 
 
 class MediaCreateDTO(NamedTuple):

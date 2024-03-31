@@ -31,7 +31,7 @@ class MediaRepo(MediaRepoInterface):
         with Session(self.engine) as s:
             query = (
                 select(MediaModel)
-                .where(MediaModel.mId == id)
+                .where(MediaModel.id == id)
             )
 
             found_media = get_first(session=s, query=query)
@@ -45,7 +45,7 @@ class MediaRepo(MediaRepoInterface):
         with Session(self.engine) as s:
             query = (
                 select(MediaModel)
-                .where(MediaModel.mName == name)
+                .where(MediaModel.name == name)
             )
 
             found_media = get_first(session=s, query=query)

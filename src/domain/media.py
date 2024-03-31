@@ -4,16 +4,13 @@ from typing import Optional
 
 @dataclass
 class Media:
-    mName: str
-    description: str
+    name: str
     thumbnail: str
     preview: str
     # Примечание по Optional[]: по PEP Optional используется только в случае допущения None, кроме значения объявленного типа
-    ratingId: Optional[int] = None
-    trailer: Optional[int] = None
-    genreId: Optional[int] = None
-    subtitleId: Optional[int] = None
-    mId: Optional[int] = None
+    trailer: Optional[str] = None
+    id: Optional[int] = None
+    description: Optional[str] = None
 
     # Методы для преобразований в DTO:
     def to_dict(self) -> dict:
