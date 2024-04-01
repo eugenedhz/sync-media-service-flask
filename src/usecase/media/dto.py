@@ -18,7 +18,8 @@ class MediaCreateDTO(NamedTuple):
     preview: str
 
 
-class MediaUpdateDTO(NamedTuple):
+class MediaUpdateDTO(TypedDict):
+    id: int
     name: str
     description: str
     thumbnail: str
