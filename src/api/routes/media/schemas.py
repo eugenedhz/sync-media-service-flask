@@ -13,6 +13,7 @@ class MediaSchema(JsonSchema):
 
 
 class UpdateMediaSchema(JsonSchema):
+    id = fields.Int(required=False)
     name = fields.Str(required=False)
     description = fields.Str(required=False)
     thumbnail = fields.Str(required=False)
