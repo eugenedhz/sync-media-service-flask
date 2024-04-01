@@ -38,7 +38,7 @@ class MediaModel(Base):
 
 	id = Column(Integer, primary_key=True)
 
-	name = Column(String, unique=True, nullable=False)
+	name = Column(String, nullable=False)
 	description = Column(String, nullable=True)
 	thumbnail = Column(String, nullable=False)
 	preview = Column(String, unique=True, nullable=False)
