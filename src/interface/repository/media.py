@@ -19,9 +19,9 @@ class MediaRepoInterface(ABC):
     # def get_by_name(self, name: str) -> Media:
     #     raise NotImplementedError
     #
-    # @abstractmethod
-    # def update(self, id: int, update_media_dto: MediaUpdateDTO) -> Media:
-    #     raise NotImplementedError
+    @abstractmethod
+    def update(self, id: int, update_media_dto: MediaUpdateDTO) -> Media:
+        raise NotImplementedError
     #
     # @abstractmethod
     # def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[MediaDTO]:
