@@ -55,21 +55,21 @@ class MediaRepo(MediaRepoInterface):
 
         return Media(**found_media._asdict(Media))
     #
-    # def update(self, id: int, update_user_dto: UserUpdateDTO) -> User:
-    #     with Session(self.engine) as s:
-    #         query = (
-    #             update(UserModel)
-    #             .where(UserModel.id == id)
-    #             .values(**update_user_dto)
-    #         )
-    #
-    #         s.execute(query)
-    #
-    #         s.commit()
-    #
-    #         updated_user = s.get(UserModel, id)
-    #
-    #     return User(**updated_user._asdict(User))
+    def update(self, id: int, update_media_dto: MediaUpdateDTO) -> Media:
+        with Session(self.engine) as s:
+            query = (
+                update(MediaModel)
+                .where(MediaModel.id == id)
+                .values(**update_media_dto)
+            )
+
+            s.execute(query)
+
+            s.commit()
+
+            updated_media = s.get(MediaModel, id)
+
+        return Media(**updated_media._asdict(Media))
     #
     # def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[UserDTO]:
     #     with Session(self.engine) as s:

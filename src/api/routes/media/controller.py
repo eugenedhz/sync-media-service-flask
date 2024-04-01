@@ -156,20 +156,24 @@ def get_media_by_name_or_id():
 @app.route('/media', methods=['PATCH'])
 @jwt_required()
 def update_media():
-    media_id = get_jwt_identity()
 
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
+    media_id = parsed_formdata['id']
+    media = media_service.get_by_id(media_id)
 
     if len(parsed_formdata) == 0 and 'preview' not in request.files and 'thumbnail' not in request.files:
         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
 
     if 'name' in parsed_formdata:
-        name = parsed_formdata['name']
+        if parsed_formdata['name'] != "":
+            name = parsed_formdata['name']
 
-        name_exists = media_service.field_exists(name='name', value=name)
-        if name_exists:
-            raise ApiError(MEDIA_API_ERRORS['NAME_EXISTS'])
+            name_exists = media_service.field_exists(name='name', value=name)
+            if name_exists:
+                raise ApiError(MEDIA_API_ERRORS['MEDIA_NAME_EXISTS'])
+        else:
+            parsed_formdata['name'] = media.name
 
     if 'thumbnail' in request.files:
         thumbnail = request.files['thumbnail']
@@ -184,18 +188,20 @@ def update_media():
         except:
             raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
-        media = media_service.get_by_id(media_id)
         thumbnail = media.thumbnail
 
-        if thumbnail is not None:
-            filename = get_filename(thumbnail)
-            try:
-                image_service.delete(filename)
-            except:
-                pass
+        if parsed_formdata['thumbnail'] != "":
+            if thumbnail is not None:
+                filename = get_filename(thumbnail)
+                try:
+                    image_service.delete(filename)
+                except:
+                    pass
 
-        thumbnail_url = Static.IMAGES_URL + saved_filename
-        parsed_formdata['thumbnail'] = thumbnail_url
+            thumbnail_url = Static.IMAGES_URL + saved_filename
+            parsed_formdata['thumbnail'] = thumbnail_url
+    else:
+        parsed_formdata['thumbnail'] = media.thumbnail
 
     if 'preview' in request.files:
         preview = request.files['preview']
@@ -210,21 +216,24 @@ def update_media():
         except:
             raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
-        media = media_service.get_by_id(media_id)
+        # media = media_service.get_by_id(media_id)
         preview = media.preview
 
-        if preview is not None:
-            filename = get_filename(preview)
-            try:
-                image_service.delete(filename)
-            except:
-                pass
+        if parsed_formdata['preview'] != "":
+            if preview is not None:
+                filename = get_filename(preview)
+                try:
+                    image_service.delete(filename)
+                except:
+                    pass
 
-        preview_url = Static.IMAGES_URL + saved_filename
-        parsed_formdata['preview'] = preview_url
+            preview_url = Static.IMAGES_URL + saved_filename
+            parsed_formdata['preview'] = preview_url
+    else:
+        parsed_formdata['preview'] = media.preview
 
     dto = MediaUpdateDTO(**parsed_formdata)
-    updated_media = media_service.update_media(id=media_id, update_media_dto=dto)
+    updated_media = media_service.update_media(id=media.id, update_media_dto=dto)
 
     return jsonify(updated_media._asdict())
 
