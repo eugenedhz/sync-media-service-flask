@@ -11,4 +11,13 @@ MEDIA_API_ERRORS = {
         status_code=404
     ),
 
+    'THUMBNAIL_NOT_PROVIDED': ApiErrorInfo(
+        error_message='THUMBNAIL_NOT_PROVIDED',
+        status_code=400
+    ),
+
+    'PREVIEW_NOT_PROVIDED': ApiErrorInfo(
+        error_message='PREVIEW_NOT_PROVIDED',
+        status_code=400
+    ),
 }
