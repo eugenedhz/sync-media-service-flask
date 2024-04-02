@@ -1,8 +1,6 @@
 from flask import request, jsonify
 from flask_jwt_extended import (
-    jwt_required, create_access_token,
-    get_jwt_identity, set_access_cookies,
-    unset_jwt_cookies, get_jwt
+    jwt_required
 )
 
 from src.app import app
@@ -24,6 +22,7 @@ from pkg.file.filename import get_filename, get_extension
 
 
 @app.route('/media', methods=['POST'])
+@jwt_required()
 def media_create():
     
     formdata = request.form.to_dict(flat=True)
@@ -46,6 +45,8 @@ def media_create():
 
         thumbnail_url = Static.IMAGES_URL + saved_filename
         parsed_formdata['thumbnail'] = thumbnail_url
+    else:
+        raise ApiError(MEDIA_API_ERRORS['THUMBNAIL_NOT_PROVIDED'])
         
     if 'preview' in request.files:
         image = request.files['preview']
@@ -62,6 +63,8 @@ def media_create():
 
         preview_url = Static.IMAGES_URL + saved_filename
         parsed_formdata['preview'] = preview_url
+    else:
+        raise ApiError(MEDIA_API_ERRORS['PREVIEW_NOT_PROVIDED'])
 
     media_exists = media_service.field_exists(name='name', value=name)
     if media_exists:
@@ -237,40 +240,39 @@ def update_media():
     return jsonify(updated_media._asdict())
 
 
-#
-#
-# @app.route('/user', methods=['DELETE'])
-# @jwt_required()
-# def delete_user():
-#     user_id = request.args.get('id')
-#
-#     if user_id is None:
-#         raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
-#     if not user_id.isdigit():
-#         raise ApiError(API_ERRORS['INVALID_ID'])
-#
-#     user_id = int(user_id)
-#     jwt_user_id = int(get_jwt_identity())
-#
-#     if user_id != jwt_user_id:
-#         claims = get_jwt()
-#         admin_rights = claims[Role.ADMIN]
-#
-#         if not admin_rights:
-#             raise ApiError(API_ERRORS['ADMIN_RIGHTS_REQUIRED'])
-#
-#     user_exists = user_service.field_exists(name='id', value=user_id)
-#     if not user_exists:
-#         raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
-#
-#     deleted_user = user_service.delete_user(id=user_id)
-#     avatar = deleted_user.avatar
-#
-#     if avatar is not None:
-#         filename = get_filename(avatar)
-#         try:
-#             image_service.delete(filename)
-#         except:
-#             pass
-#
-#     return deleted_user._asdict()
+@app.route('/media', methods=['DELETE'])
+@jwt_required()
+def delete_media():
+    media_id = request.args.get('id')
+
+    if media_id is None:
+        raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
+    if not media_id.isdigit():
+        raise ApiError(API_ERRORS['INVALID_ID'])
+
+    media_id = int(media_id)
+
+    media_exists = media_service.field_exists(name='id', value=media_id)
+    if not media_exists:
+        raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
+
+    deleted_media = media_service.delete_media(id=media_id)
+    thumbnail = deleted_media.thumbnail
+
+    if thumbnail is not None:
+        filename = get_filename(thumbnail)
+        try:
+            image_service.delete(filename)
+        except:
+            pass
+
+    preview = deleted_media.preview
+
+    if preview is not None:
+        filename = get_filename(preview)
+        try:
+            image_service.delete(filename)
+        except:
+            pass
+
+    return deleted_media._asdict()

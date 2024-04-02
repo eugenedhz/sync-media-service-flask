@@ -90,17 +90,17 @@ class MediaRepo(MediaRepoInterface):
         found_medias_dto = [MediaDTO(**media._asdict(Media)) for media in found_medias]
 
         return found_medias_dto
-    #
-    # def delete(self, id: int) -> User:
-    #     with Session(self.engine) as s:
-    #         found_user = s.get(UserModel, id)
-    #
-    #         s.delete(found_user)
-    #
-    #         s.commit()
-    #
-    #     return User(**found_user._asdict(User))
-    #
+
+    def delete(self, id: int) -> Media:
+        with Session(self.engine) as s:
+            found_media = s.get(MediaModel, id)
+
+            s.delete(found_media)
+
+            s.commit()
+
+        return Media(**found_media._asdict(Media))
+
     def field_exists(self, field: dict[str: Any]) -> bool:
         with Session(self.engine) as s:
             query = (
