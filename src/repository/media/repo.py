@@ -54,7 +54,7 @@ class MediaRepo(MediaRepoInterface):
             return None
 
         return Media(**found_media._asdict(Media))
-    #
+
     def update(self, id: int, update_media_dto: MediaUpdateDTO) -> Media:
         with Session(self.engine) as s:
             query = (
@@ -70,27 +70,26 @@ class MediaRepo(MediaRepoInterface):
             updated_media = s.get(MediaModel, id)
 
         return Media(**updated_media._asdict(Media))
-    #
-    # def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[UserDTO]:
-    #     with Session(self.engine) as s:
-    #         query = (
-    #             select(UserModel)
-    #             .options(defer(UserModel.passwordHash))
-    #         )
-    #
-    #         filters = query_parameters.filters
-    #
-    #         if ids is not None:
-    #             query = query.where(UserModel.id.in_(ids))
-    #
-    #         if filters is not None:
-    #             query = query.filter_by(**filters)
-    #
-    #         found_users = get_all(session=s, query=query)
-    #
-    #     found_users_dto = [UserDTO(**user._asdict(User)) for user in found_users]
-    #
-    #     return found_users_dto
+
+    def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[MediaDTO]:
+        with Session(self.engine) as s:
+            query = (
+                select(MediaModel)
+            )
+
+            filters = query_parameters.filters
+
+            if ids is not None:
+                query = query.where(MediaModel.id.in_(ids))
+
+            if filters is not None:
+                query = query.filter_by(**filters)
+
+            found_medias = get_all(session=s, query=query)
+
+        found_medias_dto = [MediaDTO(**media._asdict(Media)) for media in found_medias]
+
+        return found_medias_dto
     #
     # def delete(self, id: int) -> User:
     #     with Session(self.engine) as s:
