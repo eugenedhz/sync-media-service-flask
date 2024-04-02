@@ -414,6 +414,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/MediaSchema'
 
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_media
+
+      summary: Удаление медиа.
+
+      description: Этим может воспользоваться админ для удаления медиа
+
+      tags:
+        - Media API
+
+      parameters:
+      - in: query
+        name: id
+        required: false
+        description: Удалить media по id, принимается только id=число, иначе выведет ошибку.
+        type: int
+
+      responses:
+        200:
+          description: Объект медиа удаляется, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
+
   /media/all:
     get:
 
@@ -639,6 +667,7 @@ components:
           type: string
           nullable: false
           example: 'Titanic'
+          description: При пустом поле остаётся прежнее значение.
         description:
           type: string
           nullable: false
@@ -647,12 +676,12 @@ components:
           required: false
           type: string
           format: binary
-          description: только .jpg
+          description: только .jpg. При пустом поле остаётся прежнее значение.
         preview:
           required: false
           type: string
           format: binary
-          description: только .jpg
+          description: только .jpg. При пустом поле остаётся прежнее значение.
 
     MediaCreateSchema:
       type: object
