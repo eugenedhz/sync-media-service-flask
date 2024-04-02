@@ -443,7 +443,7 @@ paths:
         name: filter_by
         required: false
         description: |
-          Отфильтровать медиа по значениям полей, например `filter_by=name=Барби,description='Почему всё розовое'`.
+          Отфильтровать медиа по значениям полей, например `filter_by=name=Барби,description=Почему всё розовое`.
         type: string
 
       responses:
