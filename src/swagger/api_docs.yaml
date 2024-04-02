@@ -414,6 +414,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/MediaSchema'
 
+  /media/all:
+    get:
+
+      operationId: get_medias
+
+      summary: Получить все медиа
+
+      description: Если медиа не найдены, возвращает пустой список.
+
+      tags:
+        - Media API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля медиа, например `select=id,name`
+        type: string
+      - in: query
+        name: ids
+        required: false
+        description: |
+          Получить медиа по id, перечисляются через запятую `id=1,2,4`
+        type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: |
+          Отфильтровать медиа по значениям полей, например `filter_by=name=Барби,description='Почему всё розовое'`.
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
+
 ################################################################################
 #                                    Schemas                                   #
 ################################################################################

@@ -111,48 +111,48 @@ def get_media_by_name_or_id():
     serialized_media = serialize_media(media)
 
     return jsonify(serialized_media)
-#
-#
-# @app.route('/user/all', methods=['GET'])
-# def get_all_users():
-#     request_params = request.args
-#
-#     user_ids = request_params.get('ids')
-#
-#     if user_ids is not None:
-#         user_ids = tuple(user_ids.split(','))
-#
-#         if not is_valid_ids(ids=user_ids):
-#             raise ApiError(API_ERRORS['INVALID_ID'])
-#
-#     select = request_params.get('select')
-#     filter_by = request_params.get('filter_by')
-#
-#     user_fields = UserDTO.__match_args__
-#     try:
-#         select = parse_select(select=select, valid_fields=user_fields)
-#     except:
-#         raise ApiError(API_ERRORS['INVALID_SELECT'])
-#
-#     # .__annotations__ возвращает словарь {поле: тип поля}
-#     user_fields = UserDTO.__annotations__
-#     try:
-#         filter_by = parse_filter_by(filter_query=filter_by, valid_fields=user_fields)
-#     except:
-#         raise ApiError(API_ERRORS['INVALID_FILTERS'])
-#
-#     query_parameters = QueryParametersDTO(filters=filter_by)
-#     users = user_service.get_users(ids=user_ids, query_parameters=query_parameters)
-#
-#     if len(users) == 0:
-#         raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
-#
-#     serialize_users = UserSchema(only=select, many=True).dump
-#     serialized_users = serialize_users(users)
-#
-#     return jsonify(serialized_users)
-#
-#
+
+
+@app.route('/media/all', methods=['GET'])
+def get_all_medias():
+    request_params = request.args
+
+    media_ids = request_params.get('ids')
+
+    if media_ids is not None:
+        media_ids = tuple(media_ids.split(','))
+
+        if not is_valid_ids(ids=media_ids):
+            raise ApiError(API_ERRORS['INVALID_ID'])
+
+    select = request_params.get('select')
+    filter_by = request_params.get('filter_by')
+
+    media_fields = MediaDTO.__match_args__
+    try:
+        select = parse_select(select=select, valid_fields=media_fields)
+    except:
+        raise ApiError(API_ERRORS['INVALID_SELECT'])
+
+    # .__annotations__ возвращает словарь {поле: тип поля}
+    media_fields = MediaDTO.__annotations__
+    try:
+        filter_by = parse_filter_by(filter_query=filter_by, valid_fields=media_fields)
+    except:
+        raise ApiError(API_ERRORS['INVALID_FILTERS'])
+
+    query_parameters = QueryParametersDTO(filters=filter_by)
+    medias = media_service.get_medias(ids=media_ids, query_parameters=query_parameters)
+
+    if len(medias) == 0:
+        raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
+
+    serialize_medias = MediaSchema(only=select, many=True).dump
+    serialized_medias = serialize_medias(medias)
+
+    return jsonify(serialized_medias)
+
+
 @app.route('/media', methods=['PATCH'])
 @jwt_required()
 def update_media():
@@ -216,7 +216,6 @@ def update_media():
         except:
             raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
-        # media = media_service.get_by_id(media_id)
         preview = media.preview
 
         if parsed_formdata['preview'] != "":
