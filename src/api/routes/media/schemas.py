@@ -6,18 +6,18 @@ from pkg.json.validators import Length
 
 
 class MediaSchema(JsonSchema):
-    id = fields.Int(required=False)
-    name = fields.Str(required=False)
-    description = fields.Str(required=False)
-    thumbnail = fields.Str(required=False)
-    preview = fields.Str(required=False)
+    id = fields.Int(required=True)
+    name = fields.Str(required=True)
+    description = fields.Str(required=True)
+    thumbnail = fields.Str(required=True)
+    preview = fields.Str(required=True)
     trailer = fields.Str(required=False)
 
 
 class UpdateMediaSchema(JsonSchema):
-    id = fields.Int(required=False)
-    name = fields.Str(required=False)
-    description = fields.Str(required=False)
+    id = fields.Int(required=True)
+    name = fields.Str(required=True)
+    description = fields.Str(required=True)
 
 
 class CreateMediaSchema(JsonSchema):
