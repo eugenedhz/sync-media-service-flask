@@ -12,7 +12,7 @@ from src.api.error.shared_error import API_ERRORS
 from src.api.routes.media.error import MEDIA_API_ERRORS
 from src.api.error.custom_error import ApiError
 from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema
-from src.configs.constants import Role, Static
+from src.configs.constants import Static
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
