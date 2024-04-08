@@ -11,7 +11,6 @@ class MediaDTO(NamedTuple):
 
 
 class MediaCreateDTO(NamedTuple):
-
     name: str
     description: str
     thumbnail: str

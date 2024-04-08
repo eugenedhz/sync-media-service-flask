@@ -22,7 +22,6 @@ from pkg.file.filename import get_filename, get_extension
 @app.route('/media', methods=['POST'])
 @jwt_required()
 def media_create():
-
     MediaFilesSchema().validate(request.files)
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
@@ -158,7 +157,6 @@ def get_all_medias():
 @app.route('/media', methods=['PATCH'])
 @jwt_required()
 def update_media():
-
     MediaFilesSchema().validate(request.files)
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
