@@ -64,10 +64,6 @@ def media_create():
     else:
         raise ApiError(MEDIA_API_ERRORS['PREVIEW_NOT_PROVIDED'])
 
-    media_exists = media_service.field_exists(name='name', value=name)
-    if media_exists:
-        raise ApiError(MEDIA_API_ERRORS['MEDIA_EXISTS'])
-
     dto = MediaCreateDTO(**parsed_formdata)
     created_media = media_service.create_media(dto)
 
