@@ -41,5 +41,5 @@ class MediaModel(Base):
 	name = Column(String, nullable=False)
 	description = Column(String, nullable=True)
 	thumbnail = Column(String, nullable=False)
-	preview = Column(String, unique=True, nullable=False)
-	trailer = Column(String, unique=True, nullable=True)
+	preview = Column(String, nullable=False)
+	trailer = Column(String, nullable=True)
