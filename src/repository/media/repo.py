@@ -8,7 +8,7 @@ from src.repository.sqla_models.models import MediaModel
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.media.dto import MediaUpdateDTO, MediaDTO, MediaCreateDTO
 
-from pkg.sqlalchemy.utils import get_first, get_all
+from pkg.sqlalchemy.utils import get_first, get_all, formalize_filters
 
 
 class MediaRepo(MediaRepoInterface):
@@ -83,7 +83,8 @@ class MediaRepo(MediaRepoInterface):
                 query = query.where(MediaModel.id.in_(ids))
 
             if filters is not None:
-                query = query.filter_by(**filters)
+                filters = formalize_filters(filters, MediaModel)
+                query = query.filter(*filters)
 
             found_medias = get_all(session=s, query=query)
 
