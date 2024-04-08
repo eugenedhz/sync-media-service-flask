@@ -9,7 +9,7 @@ from src.usecase.media.dto import MediaDTO, MediaUpdateDTO, MediaCreateDTO
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.media.error import MEDIA_API_ERRORS
 from src.api.error.custom_error import ApiError
-from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema
+from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema, MediaFilesSchema
 from src.configs.constants import Static
 
 from pkg.query_params.select.parse import parse_select
@@ -22,7 +22,8 @@ from pkg.file.filename import get_filename, get_extension
 @app.route('/media', methods=['POST'])
 @jwt_required()
 def media_create():
-    
+
+    MediaFilesSchema().validate(request.files)
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
 
@@ -158,6 +159,7 @@ def get_all_medias():
 @jwt_required()
 def update_media():
 
+    MediaFilesSchema().validate(request.files)
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
     media_id = parsed_formdata['id']
