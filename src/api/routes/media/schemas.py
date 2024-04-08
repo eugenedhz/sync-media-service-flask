@@ -16,8 +16,8 @@ class MediaSchema(JsonSchema):
 
 class UpdateMediaSchema(JsonSchema):
     id = fields.Int(required=True)
-    name = fields.Str(required=True)
-    description = fields.Str(required=True)
+    name = fields.Str(required=True, validate=[Length(min=1, max=50)])
+    description = fields.Str(required=True, validate=[Length(max=200)])
 
 
 class CreateMediaSchema(JsonSchema):
