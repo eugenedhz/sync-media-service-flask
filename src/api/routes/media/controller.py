@@ -67,9 +67,7 @@ def media_create():
     dto = MediaCreateDTO(**parsed_formdata)
     created_media = media_service.create_media(dto)
 
-    response = created_media._asdict()
-
-    return response
+    return created_media._asdict()
 
 
 @app.route('/media', methods=['GET'])
