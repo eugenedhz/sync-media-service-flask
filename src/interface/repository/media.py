@@ -16,10 +16,6 @@ class MediaRepoInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_by_name(self, name: str) -> Media:
-        raise NotImplementedError
-
-    @abstractmethod
     def update(self, id: int, update_media_dto: MediaUpdateDTO) -> Media:
         raise NotImplementedError
 

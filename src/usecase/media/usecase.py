@@ -9,17 +9,16 @@ from src.usecase.media.dto import (
 
 
 class MediaUsecase():
-
 	def __init__(self, repo: MediaRepoInterface):
 		self.repo = repo
 
 	def create_media(self, media_dto: MediaCreateDTO) -> MediaDTO:
-
 		new_media = Media(
 			name = media_dto.name,
 			description = media_dto.description,
 			thumbnail = media_dto.thumbnail,
 			preview = media_dto.preview,
+			trailer = media_dto.trailer,
 		)
 
 		stored_media = self.repo.store(new_media)
@@ -27,19 +26,7 @@ class MediaUsecase():
 
 		return MediaDTO(**stored_media_dict)
 
-	def get_by_name(self, name: str) -> Optional[MediaDTO]:
-
-		found_media = self.repo.get_by_name(name=name)
-
-		if found_media is None:
-			return None
-
-		found_media_dict = found_media.to_dict()
-
-		return MediaDTO(**found_media_dict)
-
 	def get_by_id(self, id: int) -> Optional[MediaDTO]:
-
 		found_media = self.repo.get_by_id(id=id)
 
 		if found_media is None:
@@ -49,8 +36,8 @@ class MediaUsecase():
 
 		return MediaDTO(**found_media_dict)
 
-	def get_medias(self, ids: tuple[int, ...], query_parameters: QueryParametersDTO) -> list[MediaDTO]:
-		medias = self.repo.get_all(ids, query_parameters)
+	def get_medias(self, query_parameters: QueryParametersDTO) -> list[MediaDTO]:
+		medias = self.repo.get_all(query_parameters)
 
 		return medias
 

@@ -7,7 +7,6 @@ class Media:
     name: str
     thumbnail: str
     preview: str
-    # Примечание по Optional[]: по PEP Optional используется только в случае допущения None, кроме значения объявленного типа
     trailer: Optional[str] = None
     id: Optional[int] = None
     description: Optional[str] = None

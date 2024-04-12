@@ -8,6 +8,7 @@ class Role(Readonly):
 class Regex(Readonly):
 	USERNAME = r'^[a-zA-Z0-9._-]+$'
 	PASSWORD = r'^[a-zA-Z0-9.@_-]+$'
+	TRAILER = r'(^[0-9a-z]+\.[a-z0-9]+$)?'
 
 
 class Static(Readonly):
