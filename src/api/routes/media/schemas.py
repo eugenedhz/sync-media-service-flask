@@ -2,29 +2,37 @@ from marshmallow import fields
 
 from src.api.schemas_config import JsonSchema
 
-from pkg.json.validators import Length
+from src.configs.constants import Regex
+from pkg.json.validators import Length, Regexp
 
 
 class MediaSchema(JsonSchema):
-    id = fields.Int(required=False)
-    name = fields.Str(required=True)
-    description = fields.Str(required=True)
-    thumbnail = fields.Str(required=True)
-    preview = fields.Str(required=True)
-    trailer = fields.Str(required=False)
+    id = fields.Integer()
+    name = fields.String()
+    description = fields.String()
+    thumbnail = fields.String()
+    preview = fields.String()
+    trailer = fields.String()
 
 
 class UpdateMediaSchema(JsonSchema):
     id = fields.Int(required=False)
     name = fields.Str(required=True, validate=[Length(min=1, max=50)])
     description = fields.Str(required=True, validate=[Length(max=200)])
+    trailer = fields.Str(required=False, validate=Regexp(regex=Regex.TRAILER))
 
 
 class CreateMediaSchema(JsonSchema):
     name = fields.Str(required=True, validate=[Length(min=1, max=50)])
     description = fields.Str(required=True, validate=[Length(max=200)])
+    trailer = fields.Str(required=False, validate=Regexp(regex=Regex.TRAILER))
+
+
+class MediaFilesRequiredSchema(JsonSchema):
+    thumbnail = fields.Field(required=True)
+    preview = fields.Field(required=True)
 
 
 class MediaFilesSchema(JsonSchema):
-    thumbnail = fields.Field(required=True)
-    preview = fields.Field(required=True)
+    thumbnail = fields.Field(required=False)
+    preview = fields.Field(required=False)

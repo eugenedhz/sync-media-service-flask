@@ -41,20 +41,6 @@ class MediaRepo(MediaRepoInterface):
 
         return Media(**found_media._asdict(Media))
 
-    def get_by_name(self, name: str) -> Media:
-        with Session(self.engine) as s:
-            query = (
-                select(MediaModel)
-                .where(MediaModel.name == name)
-            )
-
-            found_media = get_first(session=s, query=query)
-
-        if found_media is None:
-            return None
-
-        return Media(**found_media._asdict(Media))
-
     def update(self, id: int, update_media_dto: MediaUpdateDTO) -> Media:
         with Session(self.engine) as s:
             query = (
@@ -71,16 +57,13 @@ class MediaRepo(MediaRepoInterface):
 
         return Media(**updated_media._asdict(Media))
 
-    def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[MediaDTO]:
+    def get_all(self, query_parameters: QueryParametersDTO) -> list[MediaDTO]:
         with Session(self.engine) as s:
             query = (
                 select(MediaModel)
             )
 
             filters = query_parameters.filters
-
-            if ids is not None:
-                query = query.where(MediaModel.id.in_(ids))
 
             if filters is not None:
                 filters = formalize_filters(filters, MediaModel)

@@ -379,11 +379,6 @@ paths:
           required: false
           description: Получить медиа по id, принимается только id=число, иначе выведет ошибку.
           type: int
-        - in: query
-          name: name
-          required: false
-          description: Получить пользователя по name
-          type: string
 
       responses:
         200:
@@ -410,6 +405,13 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/MediaUpdateSchema'
+
+      parameters:
+        - in: query
+          name: id
+          required: false
+          description: Обновить media по id, принимается только id=число, иначе выведет ошибку.
+          type: int
 
       responses:
         200:
@@ -465,12 +467,6 @@ paths:
         required: false
         description: |
           Получить только определённые поля медиа, например `select=id,name`
-        type: string
-      - in: query
-        name: ids
-        required: false
-        description: |
-          Получить медиа по id, перечисляются через запятую `id=1,2,4`
         type: string
       - in: query
         name: filter_by
@@ -658,16 +654,12 @@ components:
           example: 'ilow-api.eugenv.ru/static/images/preview_film.png'
         trailer:
           type: string
-          nullable: true
-          example: 1
+          nullable: false
+          example: 'abc1.xyz2'
 
     MediaUpdateSchema:
       type: object
       properties:
-        id:
-          type: integer
-          nullable: false
-          example: 1
         name:
           type: string
           nullable: false
@@ -687,6 +679,11 @@ components:
           type: string
           format: binary
           description: только .jpg. При пустом поле остаётся прежнее значение.
+        trailer:
+          required: false
+          type: string
+          nullable: true
+          example: 'abc1.xyz2'
 
     MediaCreateSchema:
       type: object
@@ -700,12 +697,17 @@ components:
           nullable: false
           example: 'Описание фильма'
         thumbnail:
-          required: false
+          required: true
           type: string
           format: binary
           description: только .jpg
         preview:
-          required: false
+          required: true
           type: string
           format: binary
           description: только .jpg
+        trailer:
+          required: false
+          type: string
+          nullable: false
+          example: 'abc1.xyz2'

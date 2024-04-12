@@ -15,11 +15,12 @@ class MediaCreateDTO(NamedTuple):
     description: str
     thumbnail: str
     preview: str
+    trailer: Optional[str]
 
 
 class MediaUpdateDTO(TypedDict):
-    id: int
     name: str
     description: str
     thumbnail: str
     preview: str
+    trailer: Optional[str]
