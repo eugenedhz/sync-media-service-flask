@@ -1,3 +1,5 @@
+import os
+
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required
 
@@ -116,9 +118,6 @@ def get_all_medias():
 @app.route('/media', methods=['PATCH'])
 @jwt_required()
 def update_media():
-    UpdateMediaFilesSchema().validate(request.files)
-    formdata = request.form.to_dict(flat=True)
-    parsed_formdata = UpdateMediaSchema().load(formdata)
     media_id = request.args.get('id')
 
     if media_id is None:
@@ -127,7 +126,14 @@ def update_media():
     if not media_id.isdigit():
         raise ApiError(API_ERRORS['INVALID_ID'])
 
+    UpdateMediaFilesSchema().validate(request.files)
+    formdata = request.form.to_dict(flat=True)
+    parsed_formdata = UpdateMediaSchema().load(formdata)
+
     media = media_service.get_by_id(media_id)
+
+    if media is None:
+        raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
 
     files = find_keys(request.files, Media.FILES)
 
@@ -141,6 +147,10 @@ def update_media():
 
         if not is_valid_jpg(data, extension):
             raise ApiError(API_ERRORS['INVALID_JPG'])
+
+        filename = getattr(media, file)
+
+        os.remove('./src' + filename)
 
         try:
             saved_filename = image_service.save(data=data, extension=extension)
