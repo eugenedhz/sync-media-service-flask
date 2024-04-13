@@ -1,6 +1,6 @@
 from sqlalchemy import Engine, update, select
-from sqlalchemy.orm import Session, defer
-from typing import Union, Optional, Any
+from sqlalchemy.orm import Session
+from typing import Any
 
 from src.domain.media import Media
 from src.interface.repository.media import MediaRepoInterface

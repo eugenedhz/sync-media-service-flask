@@ -1,4 +1,4 @@
-from typing import TypedDict, NamedTuple, Union, Optional, Any
+from typing import TypedDict, NamedTuple, Optional
 
 
 class MediaDTO(NamedTuple):
@@ -15,7 +15,7 @@ class MediaCreateDTO(NamedTuple):
     description: str
     thumbnail: str
     preview: str
-    trailer: str = None
+    trailer: Optional[str] = None
 
 
 class MediaUpdateDTO(TypedDict):
@@ -23,4 +23,4 @@ class MediaUpdateDTO(TypedDict):
     description: str
     thumbnail: str
     preview: str
-    trailer: Optional[str]
+    trailer: str

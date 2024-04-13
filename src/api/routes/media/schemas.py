@@ -17,17 +17,17 @@ class MediaSchema(JsonSchema):
 
 class UpdateMediaSchema(JsonSchema):
     name = fields.Str(required=False, validate=Length(min=1, max=50))
-    description = fields.Str(required=False, validate=Length(max=200))
-    trailer = fields.Str(required=False, validate=Regexp(regex=Regex.TRAILER))
+    description = fields.Str(required=False, validate=Length(min=1, max=200))
+    trailer = fields.Str(required=False, validate=Regexp(regex=Regex.VIDEO))
 
 
 class CreateMediaSchema(JsonSchema):
     name = fields.Str(required=True, validate=Length(min=1, max=50))
-    description = fields.Str(required=True, validate=Length(max=200))
-    trailer = fields.Str(required=False, validate=Regexp(regex=Regex.TRAILER))
+    description = fields.Str(required=True, validate=Length(min=1, max=200))
+    trailer = fields.Str(required=False, validate=Regexp(regex=Regex.VIDEO))
 
 
-class CreateUpdateMediaFilesSchema(JsonSchema):
+class CreateMediaFilesSchema(JsonSchema):
     thumbnail = fields.Field(required=True)
     preview = fields.Field(required=True)
 

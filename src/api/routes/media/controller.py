@@ -9,22 +9,21 @@ from src.usecase.media.dto import MediaDTO, MediaUpdateDTO, MediaCreateDTO
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.media.error import MEDIA_API_ERRORS
 from src.api.error.custom_error import ApiError
-from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema, UpdateMediaFilesSchema
+from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema, UpdateMediaFilesSchema, CreateMediaFilesSchema
 from src.configs.constants import Static
-from src.configs.constants import MediaFiles
+from src.api.routes.media.constants import Media
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
-from pkg.query_params.ids.validate import is_valid_ids
 from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import get_filename, get_extension
-from pkg.file.files_in_request import files_in_request
+from pkg.dict.keys_check import find_keys
 
 
 @app.route('/media', methods=['POST'])
 @jwt_required()
 def media_create():
-    UpdateMediaFilesSchema().validate(request.files)
+    CreateMediaFilesSchema().validate(request.files)
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = CreateMediaSchema().load(formdata)
 
@@ -118,18 +117,22 @@ def update_media():
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
     media_id = request.args.get('id')
+
+    if media_id is None:
+        raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
+
+    if not media_id.isdigit():
+        raise ApiError(API_ERRORS['INVALID_ID'])
+
     media = media_service.get_by_id(media_id)
 
-    form_contain_files = files_in_request(request, MediaFiles.FILES)
+    form_contain_files = find_keys(request.files, Media.FILES)
 
     if len(parsed_formdata) == 0 and not form_contain_files:
         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
 
-    if 'trailer' not in parsed_formdata:
-        parsed_formdata['trailer'] = None
-
-    for file in MediaFiles.FILES:
-        if file in request.files:
+    if form_contain_files:
+        for file in form_contain_files:
             media_file = request.files[file]
             data = media_file.read()
             extension = get_extension(media_file.filename)
@@ -172,11 +175,10 @@ def delete_media():
     files = [deleted_media.thumbnail, deleted_media.preview]
 
     for file in files:
-        if file is not None:
-            filename = get_filename(file)
-            try:
-                image_service.delete(filename)
-            except:
-                pass
+        filename = get_filename(file)
+        try:
+            image_service.delete(filename)
+        except:
+            pass
 
     return deleted_media._asdict()
