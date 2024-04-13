@@ -15,6 +15,7 @@ class MediaRepo(MediaRepoInterface):
     def __init__(self, engine: Engine):
         self.engine = engine
 
+
     def store(self, media: Media) -> Media:
         with Session(self.engine) as s:
             new_media = MediaModel(**(media.to_dict()))
@@ -26,6 +27,7 @@ class MediaRepo(MediaRepoInterface):
             s.refresh(new_media)
 
         return Media(**new_media._asdict(Media))
+
 
     def get_by_id(self, id: int) -> Media:
         with Session(self.engine) as s:
@@ -40,6 +42,7 @@ class MediaRepo(MediaRepoInterface):
             return None
 
         return Media(**found_media._asdict(Media))
+
 
     def update(self, id: int, update_media_dto: MediaUpdateDTO) -> Media:
         with Session(self.engine) as s:
@@ -56,6 +59,7 @@ class MediaRepo(MediaRepoInterface):
             updated_media = s.get(MediaModel, id)
 
         return Media(**updated_media._asdict(Media))
+
 
     def get_all(self, query_parameters: QueryParametersDTO) -> list[MediaDTO]:
         with Session(self.engine) as s:
@@ -75,6 +79,7 @@ class MediaRepo(MediaRepoInterface):
 
         return found_medias_dto
 
+
     def delete(self, id: int) -> Media:
         with Session(self.engine) as s:
             found_media = s.get(MediaModel, id)
@@ -84,6 +89,7 @@ class MediaRepo(MediaRepoInterface):
             s.commit()
 
         return Media(**found_media._asdict(Media))
+
 
     def field_exists(self, field: dict[str: Any]) -> bool:
         with Session(self.engine) as s:

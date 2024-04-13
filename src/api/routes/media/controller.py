@@ -9,57 +9,39 @@ from src.usecase.media.dto import MediaDTO, MediaUpdateDTO, MediaCreateDTO
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.media.error import MEDIA_API_ERRORS
 from src.api.error.custom_error import ApiError
-from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema, MediaFilesSchema
+from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema, UpdateMediaFilesSchema
 from src.configs.constants import Static
+from src.configs.constants import MediaFiles
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.query_params.ids.validate import is_valid_ids
 from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import get_filename, get_extension
-
-from src.api.routes.media.const import files
+from pkg.file.files_in_request import files_in_request
 
 
 @app.route('/media', methods=['POST'])
 @jwt_required()
 def media_create():
-    MediaFilesSchema().validate(request.files)
+    UpdateMediaFilesSchema().validate(request.files)
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = CreateMediaSchema().load(formdata)
 
-    if 'trailer' not in parsed_formdata or parsed_formdata['trailer'] == '':
-        parsed_formdata['trailer'] = None
+    for key, image in request.files.items():
+        data = image.read()
+        extension = get_extension(image.filename)
 
-    image = request.files['thumbnail']
-    data = image.read()
-    extension = get_extension(image.filename)
+        if not is_valid_jpg(data, extension):
+            raise ApiError(API_ERRORS['INVALID_JPG'])
 
-    if not is_valid_jpg(data, extension):
-        raise ApiError(API_ERRORS['INVALID_JPG'])
+        try:
+            saved_filename = image_service.save(data=data, extension=extension)
+        except:
+            raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
-    try:
-        saved_filename = image_service.save(data=data, extension=extension)
-    except:
-        raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
-
-    thumbnail_url = Static.IMAGES_URL + saved_filename
-    parsed_formdata['thumbnail'] = thumbnail_url
-
-    image = request.files['preview']
-    data = image.read()
-    extension = get_extension(image.filename)
-
-    if not is_valid_jpg(data, extension):
-        raise ApiError(API_ERRORS['INVALID_JPG'])
-
-    try:
-        saved_filename = image_service.save(data=data, extension=extension)
-    except:
-        raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
-
-    preview_url = Static.IMAGES_URL + saved_filename
-    parsed_formdata['preview'] = preview_url
+        image_url = Static.IMAGES_URL + saved_filename
+        parsed_formdata[key] = image_url
 
     dto = MediaCreateDTO(**parsed_formdata)
     created_media = media_service.create_media(dto)
@@ -76,15 +58,15 @@ def get_media_by_id():
     if media_id is None:
         raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
 
+    if not media_id.isdigit():
+        raise ApiError(API_ERRORS['INVALID_ID'])
+
     select = request_params.get('select')
     media_fields = MediaDTO.__match_args__
     try:
         select = parse_select(select=select, valid_fields=media_fields)
     except:
         raise ApiError(API_ERRORS['INVALID_SELECT'])
-
-    if not media_id.isdigit():
-        raise ApiError(API_ERRORS['INVALID_ID'])
 
     media = media_service.get_by_id(id=media_id)
 
@@ -132,62 +114,36 @@ def get_all_medias():
 @app.route('/media', methods=['PATCH'])
 @jwt_required()
 def update_media():
-    MediaFilesSchema().validate(request.files)
+    UpdateMediaFilesSchema().validate(request.files)
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
     media_id = request.args.get('id')
     media = media_service.get_by_id(media_id)
 
-    form_contain_files = False
-
-    for filename in files:
-        if filename in request.files:
-            form_contain_files = True
-            break
+    form_contain_files = files_in_request(request, MediaFiles.FILES)
 
     if len(parsed_formdata) == 0 and not form_contain_files:
         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
 
     if 'trailer' not in parsed_formdata:
         parsed_formdata['trailer'] = None
-    if parsed_formdata['trailer'] == '':
-        parsed_formdata['trailer'] = media.trailer
 
-    if 'thumbnail' in request.files:
-        thumbnail = request.files['thumbnail']
-        data = thumbnail.read()
-        extension = get_extension(thumbnail.filename)
+    for file in MediaFiles.FILES:
+        if file in request.files:
+            media_file = request.files[file]
+            data = media_file.read()
+            extension = get_extension(media_file.filename)
 
-        if not is_valid_jpg(data, extension):
-            raise ApiError(API_ERRORS['INVALID_JPG'])
+            if not is_valid_jpg(data, extension):
+                raise ApiError(API_ERRORS['INVALID_JPG'])
 
-        try:
-            saved_filename = image_service.save(data=data, extension=extension)
-        except:
-            raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
+            try:
+                saved_filename = image_service.save(data=data, extension=extension)
+            except:
+                raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
-        thumbnail_url = Static.IMAGES_URL + saved_filename
-        parsed_formdata['thumbnail'] = thumbnail_url
-    else:
-        parsed_formdata['thumbnail'] = media.thumbnail
-
-    if 'preview' in request.files:
-        preview = request.files['preview']
-        data = preview.read()
-        extension = get_extension(preview.filename)
-
-        if not is_valid_jpg(data, extension):
-            raise ApiError(API_ERRORS['INVALID_JPG'])
-
-        try:
-            saved_filename = image_service.save(data=data, extension=extension)
-        except:
-            raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
-
-        preview_url = Static.IMAGES_URL + saved_filename
-        parsed_formdata['preview'] = preview_url
-    else:
-        parsed_formdata['preview'] = media.preview
+            media_file_url = Static.IMAGES_URL + saved_filename
+            parsed_formdata[file] = media_file_url
 
     dto = MediaUpdateDTO(**parsed_formdata)
     updated_media = media_service.update_media(id=media.id, update_media_dto=dto)
@@ -213,9 +169,9 @@ def delete_media():
 
     deleted_media = media_service.delete_media(id=media_id)
 
-    del_files = [deleted_media.thumbnail, deleted_media.preview]
+    files = [deleted_media.thumbnail, deleted_media.preview]
 
-    for file in del_files:
+    for file in files:
         if file is not None:
             filename = get_filename(file)
             try:

@@ -15,7 +15,7 @@ class MediaCreateDTO(NamedTuple):
     description: str
     thumbnail: str
     preview: str
-    trailer: Optional[str]
+    trailer: str = None
 
 
 class MediaUpdateDTO(TypedDict):
