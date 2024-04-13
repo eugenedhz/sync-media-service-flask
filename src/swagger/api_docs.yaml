@@ -67,10 +67,8 @@ info:
       | 404 | NOT FOUND | ***USERS_NOT_FOUND*** |
       | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
       | ***Media API errors*** |
-      | 409 | CONFLICT | ***MEDIA_ALREADY_EXISTS*** |
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
-      | 400 | BAD REQUEST | ***THUMBNAIL_NOT_PROVIDED*** |
-      | 400 | BAD REQUEST | ***PREVIEW_NOT_PROVIDED*** |
+      | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
 
       -----------------------------------------------
   
