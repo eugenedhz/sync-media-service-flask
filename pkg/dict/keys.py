@@ -1,7 +1,7 @@
 from typing import Any
 
 
-def find_keys(dict: dict[str, Any], keys: tuple[str, ...]) -> list[str, ...] | None:
+def find_keys(dict: dict[str, Any], keys: tuple[str, ...]) -> list[str, ...]:
     found_keys = []
     for key in keys:
         if key in dict.keys():
