@@ -9,7 +9,10 @@ from src.usecase.media.dto import MediaDTO, MediaUpdateDTO, MediaCreateDTO
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.media.error import MEDIA_API_ERRORS
 from src.api.error.custom_error import ApiError
-from src.api.routes.media.schemas import MediaSchema, UpdateMediaSchema, CreateMediaSchema, UpdateMediaFilesSchema, CreateMediaFilesSchema
+from src.api.routes.media.schemas import (
+    MediaSchema, UpdateMediaSchema, CreateMediaSchema,
+    UpdateMediaFilesSchema, CreateMediaFilesSchema
+)
 from src.configs.constants import Static
 from src.api.routes.media.constants import Media
 
@@ -17,7 +20,7 @@ from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import get_filename, get_extension
-from pkg.dict.keys_check import find_keys
+from pkg.dict.keys import find_keys
 
 
 @app.route('/media', methods=['POST'])
@@ -126,27 +129,26 @@ def update_media():
 
     media = media_service.get_by_id(media_id)
 
-    form_contain_files = find_keys(request.files, Media.FILES)
+    files = find_keys(request.files, Media.FILES)
 
-    if len(parsed_formdata) == 0 and not form_contain_files:
+    if len(parsed_formdata) == 0 and not files:
         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
 
-    if form_contain_files:
-        for file in form_contain_files:
-            media_file = request.files[file]
-            data = media_file.read()
-            extension = get_extension(media_file.filename)
+    for file in files:
+        media_file = request.files[file]
+        data = media_file.read()
+        extension = get_extension(media_file.filename)
 
-            if not is_valid_jpg(data, extension):
-                raise ApiError(API_ERRORS['INVALID_JPG'])
+        if not is_valid_jpg(data, extension):
+            raise ApiError(API_ERRORS['INVALID_JPG'])
 
-            try:
-                saved_filename = image_service.save(data=data, extension=extension)
-            except:
-                raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
+        try:
+            saved_filename = image_service.save(data=data, extension=extension)
+        except:
+            raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
-            media_file_url = Static.IMAGES_URL + saved_filename
-            parsed_formdata[file] = media_file_url
+        media_file_url = Static.IMAGES_URL + saved_filename
+        parsed_formdata[file] = media_file_url
 
     dto = MediaUpdateDTO(**parsed_formdata)
     updated_media = media_service.update_media(id=media.id, update_media_dto=dto)
