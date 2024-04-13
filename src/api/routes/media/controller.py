@@ -150,7 +150,10 @@ def update_media():
 
         filename = getattr(media, file)
 
-        os.remove('./src' + filename)
+        try:
+            os.remove('./src' + filename)
+        except:
+            pass
 
         try:
             saved_filename = image_service.save(data=data, extension=extension)
