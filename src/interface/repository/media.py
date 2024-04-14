@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Any
+
+from typing import Any
+
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.media.dto import MediaUpdateDTO, MediaDTO
 from src.domain.media import Media
