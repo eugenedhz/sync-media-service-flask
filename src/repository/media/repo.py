@@ -94,7 +94,7 @@ class MediaRepo(MediaRepoInterface):
     def field_exists(self, field: dict[str: Any]) -> bool:
         with Session(self.engine) as s:
             query = (
-                select(MediaModel)
+                select(MediaModel.id)
                 .filter_by(**field)
             )
 

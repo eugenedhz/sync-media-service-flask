@@ -17,9 +17,8 @@ class MediaUsecase():
 		new_media = Media(**media_dto._asdict())
 
 		stored_media = self.repo.store(new_media)
-		stored_media_dict = stored_media.to_dict()
 
-		return MediaDTO(**stored_media_dict)
+		return MediaDTO(**stored_media.to_dict())
 
 
 	def get_by_id(self, id: int) -> Optional[MediaDTO]:
@@ -28,9 +27,7 @@ class MediaUsecase():
 		if found_media is None:
 			return None
 
-		found_media_dict = found_media.to_dict()
-
-		return MediaDTO(**found_media_dict)
+		return MediaDTO(**found_media.to_dict())
 
 
 	def get_medias(self, query_parameters: QueryParametersDTO) -> list[MediaDTO]:
@@ -42,17 +39,13 @@ class MediaUsecase():
 	def update_media(self, id: int, update_media_dto: MediaUpdateDTO) -> MediaDTO:
 		updated_media = self.repo.update(id, update_media_dto)
 
-		updated_media_dict = updated_media.to_dict()
-
-		return MediaDTO(**updated_media_dict)
+		return MediaDTO(**updated_media.to_dict())
 
 
 	def delete_media(self, id: int) -> MediaDTO:
 		deleted_media = self.repo.delete(id=id)
 
-		deleted_media_dict = deleted_media.to_dict()
-
-		return MediaDTO(**deleted_media_dict)
+		return MediaDTO(**deleted_media.to_dict())
 
 
 	def field_exists(self, name: str, value: str) -> bool:
