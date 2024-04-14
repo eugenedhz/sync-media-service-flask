@@ -22,7 +22,7 @@ class MediaRepoInterface(ABC):
 
 
     @abstractmethod
-    def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[MediaDTO]:
+    def get_all(self, query_parameters: QueryParametersDTO) -> list[MediaDTO]:
         raise NotImplementedError
 
 

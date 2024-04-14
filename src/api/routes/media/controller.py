@@ -130,15 +130,15 @@ def update_media():
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
 
-    media = media_service.get_by_id(media_id)
-
-    if media is None:
-        raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
-
     files = find_keys(request.files, Media.FILES)
 
     if len(parsed_formdata) == 0 and not files:
         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
+
+    media = media_service.get_by_id(media_id)
+
+    if media is None:
+        raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
 
     for file in files:
         media_file = request.files[file]
@@ -148,10 +148,9 @@ def update_media():
         if not is_valid_jpg(data, extension):
             raise ApiError(API_ERRORS['INVALID_JPG'])
 
-        filename = getattr(media, file)
-
+        filename = get_filename(getattr(media, file))
         try:
-            os.remove('./src' + filename)
+            image_service.delete(filename)
         except:
             pass
 

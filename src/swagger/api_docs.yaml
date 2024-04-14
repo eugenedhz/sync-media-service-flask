@@ -334,6 +334,9 @@ paths:
 
   /media:
     post:
+      security:
+        - cookieAuth: []
+
       summary: Создание медиа
 
       tags:
