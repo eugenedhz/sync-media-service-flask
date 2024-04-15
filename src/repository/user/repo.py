@@ -76,14 +76,14 @@ class UserRepo(UserRepoInterface):
 		return User(**updated_user._asdict(User))
 
 
-	def get_all(self, query_parameters: QueryParametersDTO) -> list[UserDTO]:
+	def get_all(self, query_parameters_dto: QueryParametersDTO) -> list[UserDTO]:
 		with Session(self.engine) as s:
 			query = (
 				select(UserModel)
 				.options(defer(UserModel.passwordHash))
 			)
 
-			filters = query_parameters.filters
+			filters = query_parameters_dto.filters
 
 			if filters is not None:
 				filters = formalize_filters(filters, UserModel)
