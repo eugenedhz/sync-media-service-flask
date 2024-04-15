@@ -86,6 +86,11 @@ def refresh_token():
 	is_admin = claims[Role.ADMIN]
 
 	user = user_service.get_by_id(user_id)
-	response = create_response_with_jwt(user=user._asdict(), is_admin=is_admin, is_refresh_request=True)
+
+	response = create_response_with_jwt(
+		user = user._asdict(), 
+		is_admin = is_admin, 
+		is_refresh_request = True
+	)
 
 	return response
