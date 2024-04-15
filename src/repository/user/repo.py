@@ -8,7 +8,7 @@ from src.repository.sqla_models.models import UserModel
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import UserUpdateDTO, UserDTO
 
-from pkg.sqlalchemy.utils import get_first, get_all
+from pkg.sqlalchemy.utils import get_first, get_all, formalize_filters
 
 
 class UserRepo(UserRepoInterface):
@@ -86,7 +86,8 @@ class UserRepo(UserRepoInterface):
 			filters = query_parameters.filters
 
 			if filters is not None:
-				query = query.filter_by(**filters)
+				filters = formalize_filters(filters, UserModel)
+				query = query.filter(*filters)
 
 			found_users = get_all(session=s, query=query)
 
