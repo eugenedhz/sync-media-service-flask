@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Union, Optional, Any
+
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import UserUpdateDTO, UserDTO
 from src.domain.user import User
 
 
 class UserRepoInterface(ABC):
-
 	@abstractmethod
 	def store(self, user: User) -> User:
 		raise NotImplementedError
