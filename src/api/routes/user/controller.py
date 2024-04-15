@@ -165,17 +165,17 @@ def delete_user():
 
 	if user_id != jwt_user_id:
 		claims = get_jwt()
-		admin_rights = claims[Role.ADMIN]
+		is_admin = claims[Role.ADMIN]
 
-		if not admin_rights:
+		if not is_admin:
 			raise ApiError(API_ERRORS['ADMIN_RIGHTS_REQUIRED'])
 
 	is_user_exists = user_service.is_field_exists(name='id', value=user_id)
 	if not is_user_exists:
 		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 			
-	deleted_user = user_service.delete_user(id=user_id)
-	avatar = deleted_user.avatar
+	user = user_service.delete_user(id=user_id)
+	avatar = user.avatar
 
 	if avatar is not None:
 		filename = get_filename(avatar)
@@ -184,4 +184,4 @@ def delete_user():
 		except:
 			pass
 
-	return jsonify(deleted_user._asdict())
+	return jsonify(user._asdict())
