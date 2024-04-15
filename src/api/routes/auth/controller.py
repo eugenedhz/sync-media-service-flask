@@ -35,7 +35,7 @@ def register():
 	dto = UserCreateDTO(**request_json)
 	user = user_service.create_user(dto)
 
-	response = create_response_with_jwt(user=user._asdict(), is_refresh=False)
+	response = create_response_with_jwt(user=user._asdict())
 
 	return response
 
@@ -64,7 +64,7 @@ def login():
 	if not password_match:
 		raise ApiError(AUTH_API_ERRORS['WRONG_PWD'])
 
-	response = create_response_with_jwt(user=user._asdict(), is_refresh=False)
+	response = create_response_with_jwt(user=user._asdict())
 
 	return response
 
@@ -91,6 +91,6 @@ def refresh_token():
 	)
 
 	user = user_service.get_by_id(user_id)
-	response = create_response_with_jwt(user=user._asdict(), is_refresh=True)
+	response = create_response_with_jwt(user=user._asdict(), is_refresh_request=True)
 
 	return response
