@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Union, Optional, Any
+from typing import Any
 
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import UserUpdateDTO, UserDTO
@@ -38,5 +38,5 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def is_field_exists(self, name: str, value: str) -> bool:
+	def is_field_exists(self, field: dict[str: Any]) -> bool:
 		raise NotImplementedError
