@@ -81,8 +81,8 @@ def get_all_users():
 	except:
 		raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
-	query_parameters = QueryParametersDTO(filters=filter_by)
-	users = user_service.get_users(query_parameters=query_parameters)
+	dto = QueryParametersDTO(filters=filter_by)
+	users = user_service.get_users(query_parameters_dto=dto)
 
 	if len(users) == 0:
 		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
