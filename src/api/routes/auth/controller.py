@@ -85,12 +85,7 @@ def refresh_token():
 	user_id = get_jwt_identity()
 	is_admin = claims[Role.ADMIN]
 
-	access_token = create_access_token(
-		identity=user_id, 
-		additional_claims={Role.ADMIN: is_admin}
-	)
-
 	user = user_service.get_by_id(user_id)
-	response = create_response_with_jwt(user=user._asdict(), is_refresh_request=True)
+	response = create_response_with_jwt(user=user._asdict(), is_admin=is_admin, is_refresh_request=True)
 
 	return response
