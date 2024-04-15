@@ -1,6 +1,12 @@
+from operator import lt, le, eq, ne, ge, gt
+
 from sqlalchemy.orm import Session
-from sqlalchemy import Select
+from sqlalchemy import Select, or_, and_
 from sqlalchemy.engine import Row
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.sql.elements import BinaryExpression
+
+from pkg.query_params.filter_by.parse import Filter
 
 
 def get_first(session: Session, query: Select) -> Row:
@@ -9,3 +15,43 @@ def get_first(session: Session, query: Select) -> Row:
 
 def get_all(session: Session, query: Select) -> list[Row]:
 	return session.scalars(query).all()
+
+
+def formalize_filters(filters: list[Filter], Model: DeclarativeBase) -> list[BinaryExpression]:
+	formalized_filters = []
+	operators = {
+		'==': eq,
+		'!=': ne,
+		'>': gt,
+		'<': lt,
+		'>=': ge,
+		'<=': le
+	}
+
+	for filter in filters:
+		column = filter.field
+		operator = filter.operator
+		value = filter.value
+		attribute = getattr(Model, column)
+
+		if operator == 'in':
+			# проверка на None, потому что sqlalchemy не может сравнивать None в .in_ (также в .not_in)
+			if None in value:
+				filter = or_(attribute.in_(value), attribute.is_(None))
+			else:
+				filter = attribute.in_(value)
+
+		elif operator == '!in':
+			if None in value:
+				# очистка списка от None, потому что .not_in в sqlalchemy почему-то с value=[None] ничего не найдёт (криворуки)
+				value = [val for val in value if val != None]
+				filter = and_(attribute.not_in(value), attribute.is_not(None))
+			else:
+				filter = or_(attribute.not_in(value), attribute.is_(None))
+
+		else:
+			filter = operators[operator](attribute, value)
+		
+		formalized_filters.append(filter)
+
+	return formalized_filters

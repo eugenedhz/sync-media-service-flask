@@ -1,4 +1,4 @@
 *env/*
 __pycache__
-static/
-alembic/versions/*
+src/static/
+src/alembic/versions/

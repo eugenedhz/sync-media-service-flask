@@ -28,7 +28,7 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def get_all(self, query_parameters: QueryParametersDTO) -> list[UserDTO]:
+	def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[UserDTO]:
 		raise NotImplementedError
 
 
@@ -40,4 +40,3 @@ class UserRepoInterface(ABC):
 	@abstractmethod
 	def is_field_exists(self, name: str, value: str) -> bool:
 		raise NotImplementedError
-
