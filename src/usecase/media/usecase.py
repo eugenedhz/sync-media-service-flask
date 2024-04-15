@@ -49,8 +49,6 @@ class MediaUsecase():
 
 
 	def is_field_exists(self, name: str, value: str) -> bool:
-		field = {name: value}
+		is_exists = self.repo.is_field_exists({name: value})
 
-		exists = self.repo.is_field_exists(field)
-
-		return exists
+		return is_exists
