@@ -81,8 +81,8 @@ def get_all_users():
 	except:
 		raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
-	dto = QueryParametersDTO(filters=filter_by)
-	users = user_service.get_users(query_parameters_dto=dto)
+	query_parameters = QueryParametersDTO(filters=filter_by)
+	users = user_service.get_users(query_parameters_dto=query_parameters)
 
 	if len(users) == 0:
 		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
@@ -97,6 +97,10 @@ def get_all_users():
 @jwt_required()
 def update_user():
 	user_id = get_jwt_identity()
+	is_user_exists = user_service.is_field_exists(name='id', value=int(user_id))
+
+	if not is_user_exists:
+		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
 	formdata = request.form.to_dict(flat=True)
 	parsed_formdata = UpdateUserSchema().load(formdata)
