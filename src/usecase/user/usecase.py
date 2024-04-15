@@ -67,7 +67,7 @@ class UserUsecase():
 
 
 	def get_users(self, query_parameters: QueryParametersDTO) -> list[UserDTO]:
-		users = self.repo.get_all(ids, query_parameters)
+		users = self.repo.get_all(query_parameters)
 
 		return users
 
