@@ -222,11 +222,6 @@ paths:
           📝 **Note:** Не возвращает ошибки!!!
         type: string
       - in: query
-        name: ids
-        required: false
-        description: Получить пользователей по id, перечисляются через запятую (1,2,4). 
-        type: string
-      - in: query
         name: filter_by
         required: false
         description: |

@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import DeclarativeBase
+
 from src.repository.sqla_models.types import DateAsTimestamp
 
 

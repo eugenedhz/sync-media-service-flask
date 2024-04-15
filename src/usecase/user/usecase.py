@@ -11,7 +11,6 @@ from src.usecase.user.dto import (
 )
 
 class UserUsecase():
-
 	def __init__(self, repo: UserRepoInterface):
 		self.repo = repo
 
@@ -44,7 +43,6 @@ class UserUsecase():
 
 
 	def get_by_username(self, username: str) -> Optional[UserDTO]:
-
 		found_user = self.repo.get_by_username(username=username)
 
 		if found_user is None:
@@ -57,7 +55,6 @@ class UserUsecase():
 
 
 	def get_by_id(self, id: int) -> Optional[UserDTO]:
-
 		found_user = self.repo.get_by_id(id=id)
 
 		if found_user is None:
@@ -93,10 +90,7 @@ class UserUsecase():
 		return UserDTO(**deleted_user_dict)
 
 
-	def field_exists(self, name: str, value: str) -> bool:
-		field = dict()
-		field[name] = value
+	def is_field_exists(self, name: str, value: str) -> bool:
+		is_exists = self.repo.is_field_exists({name: value})
 
-		exists = self.repo.field_exists(field)
-
-		return exists
+		return is_exists

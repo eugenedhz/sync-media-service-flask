@@ -109,7 +109,7 @@ class UserRepo(UserRepoInterface):
 		return User(**found_user._asdict(User))
 
 
-	def field_exists(self, field: dict[str: Any]) -> bool:
+	def is_field_exists(self, field: dict[str: Any]) -> bool:
 		with Session(self.engine) as s:
 			query = (
 				select(UserModel.id)
