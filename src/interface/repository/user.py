@@ -38,6 +38,6 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def field_exists(self, name: str, value: str) -> bool:
+	def is_field_exists(self, name: str, value: str) -> bool:
 		raise NotImplementedError
 
