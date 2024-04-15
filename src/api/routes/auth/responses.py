@@ -9,23 +9,23 @@ from flask_jwt_extended import (
 from src.configs.constants import Role
 
 
-def create_response_with_jwt(user: dict, is_admin: bool = False, is_refresh_request: bool = False) -> Response:
+def create_response_with_jwt(user: dict, claims: dict) -> Response:
 	user_id = user['id']
+	is_admin = claims[Role.ADMIN]
+	is_refresh_request = (claims['type'] == 'refresh')
 
-	access_token = create_access_token(
-		identity = user_id, 
-		additional_claims = {Role.ADMIN: is_admin}
-	)
+	token_info = {
+		'identity': user_id,
+		'additional_claims': {Role.ADMIN: is_admin}
+	}
 
 	response = jsonify(user)
+
+	access_token = create_access_token(**token_info)
 	set_access_cookies(response, access_token)
 
 	if not is_refresh_request:
-		refresh_token = create_refresh_token(
-			identity = user_id, 
-			additional_claims = {Role.ADMIN: is_admin}
-		)
-
+		refresh_token = create_refresh_token(**token_info)
 		set_refresh_cookies(response, refresh_token)
 
 	return response

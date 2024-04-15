@@ -61,6 +61,7 @@ info:
       | 409 | CONFLICT | ***USERNAME_NOT_FOUND*** |
       | 409 | CONFLICT | ***INCORRECT_PASSWORD*** |
       | 403 | FORBIDDEN | ***USER_IS_BANNED*** |
+      | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
       | ***User API errors*** |
       | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
       | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |

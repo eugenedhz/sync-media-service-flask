@@ -12,6 +12,7 @@ from src.usecase.user.dto import UserCreateDTO, UserCheckPasswordDTO
 from src.api.routes.auth.responses import create_response_with_jwt
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.auth.error import AUTH_API_ERRORS
+from src.api.routes.user.error import USER_API_ERRORS
 from src.api.error.custom_error import ApiError
 from src.api.routes.auth.schemas import RegisterSchema, LoginSchema
 
@@ -35,7 +36,14 @@ def register():
 	dto = UserCreateDTO(**request_json)
 	user = user_service.create_user(dto)
 
-	response = create_response_with_jwt(user=user._asdict())
+	claims = {
+		Role.ADMIN: False,
+		'type': 'access'
+	}
+	response = create_response_with_jwt(
+		user = user._asdict(),
+		claims = claims
+	)
 
 	return response
 
@@ -64,7 +72,14 @@ def login():
 	if not password_match:
 		raise ApiError(AUTH_API_ERRORS['WRONG_PWD'])
 
-	response = create_response_with_jwt(user=user._asdict())
+	claims = {
+		Role.ADMIN: False,
+		'type': 'access'
+	}
+	response = create_response_with_jwt(
+		user = user._asdict(),
+		claims = claims
+	)
 
 	return response
 
@@ -83,14 +98,15 @@ def logout_post():
 def refresh_token():
 	claims = get_jwt()
 	user_id = get_jwt_identity()
-	is_admin = claims[Role.ADMIN]
 
 	user = user_service.get_by_id(user_id)
 
+	if user is None:
+		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
+
 	response = create_response_with_jwt(
 		user = user._asdict(), 
-		is_admin = is_admin, 
-		is_refresh_request = True
+		claims = claims
 	)
 
 	return response
