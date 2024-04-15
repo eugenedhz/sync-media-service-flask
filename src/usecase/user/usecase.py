@@ -66,8 +66,8 @@ class UserUsecase():
 		return UserDTO(**found_user_dict)
 
 
-	def get_users(self, query_parameters: QueryParametersDTO) -> list[UserDTO]:
-		users = self.repo.get_all(query_parameters)
+	def get_users(self, query_parameters_dto: QueryParametersDTO) -> list[UserDTO]:
+		users = self.repo.get_all(query_parameters_dto)
 
 		return users
 
