@@ -2,6 +2,10 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import DeclarativeBase
 from src.repository.sqla_models.types import DateAsTimestamp
 
+tables = {
+	'media': 'Media'
+}
+
 
 class Base(DeclarativeBase):
 	def _asdict(self, domain_class):
@@ -34,7 +38,7 @@ class UserModel(Base):
 
 
 class MediaModel(Base):
-	__tablename__ = 'Media'
+	__tablename__ = tables['media']
 
 	id = Column(Integer, primary_key=True)
 

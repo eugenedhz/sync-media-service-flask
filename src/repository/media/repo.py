@@ -91,7 +91,7 @@ class MediaRepo(MediaRepoInterface):
         return Media(**found_media._asdict(Media))
 
 
-    def field_exists(self, field: dict[str: Any]) -> bool:
+    def is_field_exists(self, field: dict[str: Any]) -> bool:
         with Session(self.engine) as s:
             query = (
                 select(MediaModel.id)

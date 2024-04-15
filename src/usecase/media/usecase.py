@@ -30,8 +30,8 @@ class MediaUsecase():
 		return MediaDTO(**found_media.to_dict())
 
 
-	def get_medias(self, query_parameters: QueryParametersDTO) -> list[MediaDTO]:
-		medias = self.repo.get_all(query_parameters)
+	def get_medias(self, query_parameters_dto: QueryParametersDTO) -> list[MediaDTO]:
+		medias = self.repo.get_all(query_parameters_dto)
 
 		return medias
 
@@ -48,10 +48,9 @@ class MediaUsecase():
 		return MediaDTO(**deleted_media.to_dict())
 
 
-	def field_exists(self, name: str, value: str) -> bool:
-		field = dict()
-		field[name] = value
+	def is_field_exists(self, name: str, value: str) -> bool:
+		field = {name: value}
 
-		exists = self.repo.field_exists(field)
+		exists = self.repo.is_field_exists(field)
 
 		return exists
