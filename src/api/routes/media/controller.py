@@ -14,13 +14,15 @@ from src.api.routes.media.schemas import (
     UpdateMediaFilesSchema, CreateMediaFilesSchema
 )
 from src.configs.constants import Static
-from src.api.routes.media.constants import Media
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import get_filename, get_extension
 from pkg.dict.keys import find_keys
+
+
+FILES = ('preview', 'thumbnail')
 
 
 @app.route('/media', methods=['POST'])
@@ -101,8 +103,8 @@ def get_all_medias():
     except:
         raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
-    query_parameters = QueryParametersDTO(filters=filter_by)
-    medias = media_service.get_medias(query_parameters=query_parameters)
+    query_parameters_dto = QueryParametersDTO(filters=filter_by)
+    medias = media_service.get_medias(query_parameters_dto=query_parameters_dto)
 
     if len(medias) == 0:
         raise ApiError(MEDIA_API_ERRORS['MEDIAS_NOT_FOUND'])
@@ -128,7 +130,7 @@ def update_media():
     formdata = request.form.to_dict(flat=True)
     parsed_formdata = UpdateMediaSchema().load(formdata)
 
-    files = find_keys(request.files, Media.FILES)
+    files = find_keys(request.files, FILES)
 
     if len(parsed_formdata) == 0 and not files:
         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
@@ -178,8 +180,8 @@ def delete_media():
 
     media_id = int(media_id)
 
-    media_exists = media_service.field_exists(name='id', value=media_id)
-    if not media_exists:
+    is_media_exists = media_service.is_field_exists(name='id', value=media_id)
+    if not is_media_exists:
         raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
 
     deleted_media = media_service.delete_media(id=media_id)

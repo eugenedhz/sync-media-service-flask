@@ -24,7 +24,7 @@ class MediaRepoInterface(ABC):
 
 
     @abstractmethod
-    def get_all(self, query_parameters: QueryParametersDTO) -> list[MediaDTO]:
+    def get_all(self, query_parameters_dto: QueryParametersDTO) -> list[MediaDTO]:
         raise NotImplementedError
 
 
@@ -34,6 +34,6 @@ class MediaRepoInterface(ABC):
 
 
     @abstractmethod
-    def field_exists(self, field: dict[str: Any]) -> bool:
+    def is_field_exists(self, field: dict[str: Any]) -> bool:
         raise NotImplementedError
 
