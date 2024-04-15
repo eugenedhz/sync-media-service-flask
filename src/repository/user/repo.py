@@ -85,9 +85,6 @@ class UserRepo(UserRepoInterface):
 
 			filters = query_parameters.filters
 
-			if ids is not None:
-				query = query.where(UserModel.id.in_(ids))
-
 			if filters is not None:
 				query = query.filter_by(**filters)
 
