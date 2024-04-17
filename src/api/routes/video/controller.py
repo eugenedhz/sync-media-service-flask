@@ -131,10 +131,9 @@ def get_transcode_statuses():
 
     for quality in qualities:
         status = transcode_session.get(upload_session+quality)
-        statuses[quality] = Session.TRANSCODE_STATUSES[status]
+        if isinstance(status, str):
+            status = int(status.split()[0])
 
-    if status in (1, 2):
-        for quality in qualities:
-            transcode_session.delete(upload_session+quality)
+        statuses[quality] = Session.TRANSCODE_STATUSES[status]
 
     return jsonify(statuses)

@@ -18,15 +18,16 @@ class Static(Readonly):
 
 	VIDEOS_FOLDER = './src/static/videos/'
 	VIDEOS_URL = '/static/videos/'
-	VIDEOS_SIZES = ('360p', '480p', '720p', '1080p')
+	VIDEOS_QUALITIES = ('360p', '480p', '720p', '1080p')
 
 
 class Session(Readonly):
 	UPLOAD_GROUP = 'upload'
-	UPLOAD_TIMEOUT = timedelta(seconds=20)
-	UPLOAD_CLEANER_SLEEP = timedelta(days=1).total_seconds()
+	UPLOAD_TIMEOUT = timedelta(minutes=1)
+	UPLOAD_CLEANER_SLEEP = timedelta(seconds=30).total_seconds()
 
 	TRANSCODE_GROUP = 'transcode'
+	TRANSCODE_STATUS_LIFE = timedelta(minutes=1)
 	TRANSCODE_STATUSES = {
 		3: 'pending',
 		2: 'processing',

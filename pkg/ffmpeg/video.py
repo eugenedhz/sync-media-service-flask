@@ -1,7 +1,7 @@
 from subprocess import call
 
 
-SIZES = {
+QUALITIES = {
 	'360p': 'nhd',
 	'480p': 'hd480',
 	'720p': 'hd720',
@@ -10,8 +10,8 @@ SIZES = {
 
 
 # returns 0 (ok) or 1 (error)
-def transcode(input: str, output: str, size: str) -> int:
-	command = f'ffmpeg -y -i { input } -preset veryslow -c:v libx264 -s { SIZES[size] } -crf 20 -pix_fmt yuv420p -c:a copy -movflags +faststart { output }'
+def transcode(input: str, output: str, quality: str) -> int:
+	command = f'ffmpeg -y -i { input } -preset veryslow -c:v libx264 -s { QUALITIES[quality] } -crf 20 -pix_fmt yuv420p -c:a copy -movflags +faststart { output }'
 	exit_code = call(command, shell=True)
 	
 	return exit_code
