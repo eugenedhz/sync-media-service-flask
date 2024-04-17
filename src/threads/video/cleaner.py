@@ -22,7 +22,7 @@ def remove_inactive_sessions() -> None:
                     video_service.delete(filename)
 
         for session in transcode_session.keys():
-            status = upload_session.get(session)
+            status = transcode_session.get(session)
             if isinstance(status, int):
                 continue
 
