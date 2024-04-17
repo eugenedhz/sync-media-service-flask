@@ -169,9 +169,9 @@ def delete_user():
 
 	if user_id != jwt_user_id:
 		claims = get_jwt()
-		is_admin = claims[Role.ADMIN]
+		role = claims['role']
 
-		if not is_admin:
+		if role != Role.ADMIN:
 			raise ApiError(API_ERRORS['ADMIN_RIGHTS_REQUIRED'])
 
 	is_user_exists = user_service.is_field_exists(name='id', value=user_id)

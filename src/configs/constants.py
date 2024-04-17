@@ -3,6 +3,7 @@ from pkg.constants.readonly import Readonly
 
 class Role(Readonly):
 	ADMIN = 'ADMIN'
+	USER = 'USER'
 
 
 class Regex(Readonly):
