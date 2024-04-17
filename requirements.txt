@@ -9,7 +9,7 @@ Werkzeug
 sqlalchemy
 alembic
 gunicorn
-python-dotenv
 marshmallow
 flasgger
 pyyml
+redis[hiredis]
