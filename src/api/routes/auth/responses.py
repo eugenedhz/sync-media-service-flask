@@ -1,3 +1,5 @@
+from typing import TypedDict
+
 from flask import jsonify, Response
 from flask_jwt_extended import (
     create_access_token, 
@@ -9,14 +11,19 @@ from flask_jwt_extended import (
 from src.configs.constants import Role
 
 
-def create_response_with_jwt(user: dict, claims: dict) -> Response:
+class Claims(TypedDict):
+	type: str = 'access'
+	role: str
+
+
+def create_response_with_jwt(user: dict, claims: Claims) -> Response:
 	user_id = user['id']
-	is_admin = claims[Role.ADMIN]
+	role = claims['role']
 	is_refresh_request = (claims['type'] == 'refresh')
 
 	token_info = {
 		'identity': user_id,
-		'additional_claims': {Role.ADMIN: is_admin}
+		'additional_claims': {'role': role}
 	}
 
 	response = jsonify(user)
