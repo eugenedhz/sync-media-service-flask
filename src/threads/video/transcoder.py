@@ -10,20 +10,25 @@ def transcode_video(queue: Queue) -> None:
         filename = queue.get()
         upload_session = filename[1].split('.')[0]
 
-        for size in Static.VIDEO_SIZES:
+        for quality in Static.VIDEOS_QUALITIES:
             session = upload_session + size
 
             # значение сессии = 3 эквивалентно статусу [pending]
             transcode_session.set(session, 3)
 
-        for size in Static.VIDEO_SIZES:
-            session = upload_session + size
+        for quality in Static.VIDEOS_QUALITIES:
+            session = upload_session + quality
 
             # значение сессии = 2 эквивалентно статусу [processing]
             transcode_session.set(session, 2)
 
-            # значения сессии = 1 - статус ошибка [error], 0 - статус выполнено [success]
-            status = video_service.transcode_video(filename[1], size)
+            # значения: 1 - ошибка [error], 0 - выполнено [success]
+            exit_code = video_service.transcode_video(filename[1], quality)
+            current_time = int(datetime.now().timestamp())
+
+            # ставится вместе с временем, чтобы потом очистить
+            status = f'{ exit_code } { current_time }'
+
             transcode_session.set(session, status)
 
         queue.task_done()
