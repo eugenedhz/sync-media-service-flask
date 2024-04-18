@@ -23,5 +23,5 @@ class SessionRepoInterface(ABC):
 
 
 	@abstractmethod
-	def keys(self) -> tuple(Key, ...):
+	def keys(self) -> tuple[Key, ...]:
 		raise NotImplementedError

@@ -27,7 +27,7 @@ class Session(Readonly):
 	UPLOAD_CLEANER_SLEEP = timedelta(seconds=30).total_seconds()
 
 	TRANSCODE_GROUP = 'transcode'
-	TRANSCODE_STATUS_LIFE = timedelta(minutes=1)
+	TRANSCODE_STATUS_EXPIRES = timedelta(minutes=1)
 	TRANSCODE_STATUSES = {
 		3: 'pending',
 		2: 'processing',

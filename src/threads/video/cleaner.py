@@ -29,7 +29,7 @@ def remove_inactive_sessions() -> None:
             timestamp = status.split(' ')[1]
             time_finished = datetime.fromtimestamp(int(timestamp))
 
-            if current_time - time_finished > Session.TRANSCODE_STATUS_LIFE:
+            if current_time - time_finished > Session.TRANSCODE_STATUS_EXPIRES:
                 transcode_session.delete(session)
 
         sleep(
