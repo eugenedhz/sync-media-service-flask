@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from threading import Thread
 from queue import PriorityQueue, Queue
 
@@ -7,11 +9,11 @@ from src.api.services.video import video_service, transcode_session
 
 def transcode_video(queue: Queue) -> None:
     while True:
-        filename = queue.get()
-        upload_session = filename[1].split('.')[0]
+        filename = queue.get()[1]
+        upload_session = filename.split('.')[0]
 
         for quality in Static.VIDEOS_QUALITIES:
-            session = upload_session + size
+            session = upload_session + quality
 
             # значение сессии = 3 эквивалентно статусу [pending]
             transcode_session.set(session, 3)
@@ -23,7 +25,7 @@ def transcode_video(queue: Queue) -> None:
             transcode_session.set(session, 2)
 
             # значения: 1 - ошибка [error], 0 - выполнено [success]
-            exit_code = video_service.transcode_video(filename[1], quality)
+            exit_code = video_service.transcode_video(filename, quality)
             current_time = int(datetime.now().timestamp())
 
             # ставится вместе с временем, чтобы потом очистить
@@ -31,6 +33,7 @@ def transcode_video(queue: Queue) -> None:
 
             transcode_session.set(session, status)
 
+        video_service.delete(filename)
         queue.task_done()
 
 

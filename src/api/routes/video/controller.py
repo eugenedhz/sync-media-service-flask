@@ -3,16 +3,16 @@ from uuid import uuid4
 
 from flask import request, jsonify, send_from_directory
 from flask_jwt_extended import jwt_required
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 from src.app import app
 from src.configs.constants import Static, Session
 from src.api.services.video import video_service, upload_session, transcode_session
 from src.api.routes.video.schemas import UploadSchema, ChunkSchema
-from src.threads.video.transcoder import transcode_queue
 from src.api.error.custom_error import ApiError
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.video.error import VIDEO_API_ERRORS
+from src.threads.video.transcoder import transcode_queue
 
 from pkg.file.video.video_validate import is_valid_video
 from pkg.file.filename import get_extension
@@ -96,7 +96,7 @@ def get_video(filename):
     return send_from_directory('static/videos', filename)
 
 
-@app.route('/upload', methods=['DELETE'])
+@app.route('/upload/session', methods=['DELETE'])
 def abort_upload():
     session = request.args.get('session')
 
@@ -117,20 +117,20 @@ def abort_upload():
 
 @app.route('/upload/transcode_status', methods=['GET'])
 def get_transcode_statuses():
-    upload_session = request.args.get('session')
+    session = request.args.get('session')
 
     if session is None:
         raise ApiError(VIDEO_API_ERRORS['UPLOAD_SESSION_NOT_PROVIDED'])
 
     statuses = dict()
-    qualities = Static.VIDEO_SIZES.keys()
-    first_session = upload_session + qualities[0]
+    qualities = Static.VIDEOS_QUALITIES
+    first_session = session + qualities[0]
 
     if transcode_session.get(first_session) is None:
         raise ApiError(VIDEO_API_ERRORS['TRANSCODE_SESSION_NOT_FOUND'])
 
     for quality in qualities:
-        status = transcode_session.get(upload_session+quality)
+        status = transcode_session.get(session+quality)
         if isinstance(status, str):
             status = int(status.split()[0])
 

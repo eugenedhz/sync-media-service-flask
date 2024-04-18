@@ -1,6 +1,10 @@
-import os
-from uuid import uuid4
 from typing import Optional
+
+import os
+from glob import glob
+from uuid import uuid4
+
+from pkg.file.filename import get_filename, get_extension
 
 
 class FileService():
@@ -23,6 +27,25 @@ class FileService():
 			file.write(data)
 
 		return filename
+
+
+	def find_file(self, name: str) -> Optional[str]:
+		if get_extension(name) == '':
+			pattern = f'{ self.destination_path }{ name }.*'
+		else:
+			pattern = f'{ self.destination_path }{ name }'
+
+		filenames = glob(pattern)
+		if len(filenames) == 0:
+			return None
+
+		return get_filename(filenames[0])
+
+
+	def file_size(self, filename: str) -> int:
+		path = self.destination_path + filename
+
+		return os.path.getsize(path)
 
 
 	def delete(self, filename: str) -> None:

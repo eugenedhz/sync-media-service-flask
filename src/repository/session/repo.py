@@ -34,7 +34,7 @@ class SessionRepo(SessionRepoInterface):
 		self.redis.hdel(self.group, key)
 
 
-	def keys(self) -> tuple(Key, ...):
+	def keys(self) -> tuple[Key, ...]:
 		keys = self.redis.hkeys(self.group)
 
 		return tuple(keys)
