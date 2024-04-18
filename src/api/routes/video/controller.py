@@ -80,6 +80,8 @@ def upload_chunk():
             raise ApiError(VIDEO_API_ERRORS['SIZE_MISMATCH'])
 
         transcode_queue.put_nowait((size, filename))
+
+        filename = session + Static.VIDEOS_TRANSCODED_EXTENSION
         return jsonify(video=filename)
 
     return jsonify(chunk_uploaded=index)
@@ -93,7 +95,7 @@ def get_video(filename):
     name, extension = filename.split('.')
     filename = f'{ name }{ quality }.{ extension }'
 
-    return send_from_directory('static/videos', filename)
+    return send_from_directory(Static.VIDEOS_URL, filename)
 
 
 @app.route('/upload/session', methods=['DELETE'])

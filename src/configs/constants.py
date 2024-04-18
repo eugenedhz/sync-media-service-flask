@@ -19,6 +19,7 @@ class Static(Readonly):
 	VIDEOS_FOLDER = './src/static/videos/'
 	VIDEOS_URL = '/static/videos/'
 	VIDEOS_QUALITIES = ('360p', '480p', '720p', '1080p')
+	VIDEOS_TRANSCODED_EXTENSION = '.mp4'
 
 
 class Session(Readonly):
