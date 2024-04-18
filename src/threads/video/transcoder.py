@@ -24,8 +24,10 @@ def transcode_video(queue: Queue) -> None:
             # значение сессии = 2 эквивалентно статусу [processing]
             transcode_session.set(session, 2)
 
+            output_extension = Static.VIDEOS_TRANSCODED_EXTENSION
+
             # значения: 1 - ошибка [error], 0 - выполнено [success]
-            exit_code = video_service.transcode_video(filename, quality)
+            exit_code = video_service.transcode_video(filename, quality, output_extension)
             current_time = int(datetime.now().timestamp())
 
             # ставится вместе с временем, чтобы потом очистить
