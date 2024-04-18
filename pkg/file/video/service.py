@@ -11,10 +11,10 @@ class VideoService(FileService):
 			file.write(data)
 
 
-	def transcode_video(self, filename: str, quality: str) -> int:
+	def transcode_video(self, filename: str, quality: str, output_extension: str) -> int:
 		input = self.destination_path + filename
 		name, _ = filename.split('.')
-		output = self.destination_path + name + quality + '.mp4'
+		output = self.destination_path + name + quality + output_extension
 
 		exit_code = transcode(input, output, quality)
 
