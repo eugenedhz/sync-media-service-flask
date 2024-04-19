@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import DeclarativeBase
+
 from src.repository.sqla_models.types import DateAsTimestamp
+from src.configs.constants import Tables
 
 
 class Base(DeclarativeBase):
@@ -17,7 +19,7 @@ class Base(DeclarativeBase):
 
 
 class UserModel(Base):
-	__tablename__ = 'User'
+	__tablename__ = Tables.USER
 
 	id = Column(Integer, primary_key=True)
 
@@ -31,3 +33,15 @@ class UserModel(Base):
 	birthday = Column(DateAsTimestamp)
 	description = Column(String)
 	avatar = Column(String)
+
+
+class MediaModel(Base):
+	__tablename__ = Tables.MEDIA
+
+	id = Column(Integer, primary_key=True)
+
+	name = Column(String, nullable=False)
+	description = Column(String, nullable=False)
+	thumbnail = Column(String, nullable=False)
+	preview = Column(String, nullable=False)
+	trailer = Column(String, nullable=True)
