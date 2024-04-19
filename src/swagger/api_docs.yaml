@@ -657,6 +657,7 @@ components:
           type: string
           nullable: false
           example: 'abc1.xyz2'
+          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
 
     MediaUpdateSchema:
       type: object
@@ -685,6 +686,7 @@ components:
           type: string
           nullable: true
           example: 'abc1.xyz2'
+          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
 
     MediaCreateSchema:
       type: object
@@ -712,3 +714,4 @@ components:
           type: string
           nullable: false
           example: 'abc1.xyz2'
+          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
