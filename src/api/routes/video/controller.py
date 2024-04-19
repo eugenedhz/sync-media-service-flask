@@ -14,7 +14,7 @@ from src.api.error.shared_error import API_ERRORS
 from src.api.routes.video.error import VIDEO_API_ERRORS
 from src.threads.video.transcoder import transcode_queue
 
-from pkg.file.video.video_validate import is_valid_video
+from pkg.file.video.validate import is_valid_video
 from pkg.file.filename import get_extension
 
 
