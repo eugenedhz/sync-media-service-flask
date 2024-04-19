@@ -40,5 +40,6 @@ class Session(Readonly):
 		3: 'pending',
 		2: 'processing',
 		1: 'error',
-		0: 'success'
+		0: 'success',
+		None: 'not found'
 	}
