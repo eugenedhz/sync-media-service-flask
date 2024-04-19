@@ -1,5 +1,3 @@
-from typing import TypedDict
-
 from flask import jsonify, Response
 from flask_jwt_extended import (
     create_access_token, 
@@ -8,12 +6,8 @@ from flask_jwt_extended import (
     set_refresh_cookies
 )
 
+from src.api.routes.auth.types import Claims
 from src.configs.constants import Role
-
-
-class Claims(TypedDict):
-	type: str = 'access'
-	role: str
 
 
 def create_response_with_jwt(user: dict, claims: Claims) -> Response:
