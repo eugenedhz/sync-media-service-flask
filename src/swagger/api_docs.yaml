@@ -66,6 +66,9 @@ info:
       | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
       | 404 | NOT FOUND | ***USERS_NOT_FOUND*** |
       | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
+      | ***Media API errors*** |
+      | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
 
       -----------------------------------------------
   
@@ -329,6 +332,156 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserSchema'
 
+  /media:
+    post:
+      security:
+        - cookieAuth: []
+
+      summary: Создание медиа
+
+      tags:
+        - Media API
+
+      operationId: create_media
+
+      requestBody:
+        required: true
+        description: Обязательный JSON
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MediaCreateSchema'
+
+      responses:
+        200:
+          description: Объект медиа создан, возвращается его сущность.
+          content:
+            multipart/form-data:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
+
+    get:
+      summary: Получение медиа
+
+      tags:
+        - Media API
+
+      operationId: get_media
+
+      parameters:
+        - in: query
+          name: select
+          required: false
+          description: |
+            Получить только определённые поля медиа, например `select=id,name`
+          type: string
+        - in: query
+          name: id
+          required: false
+          description: Получить медиа по id, принимается только id=число, иначе выведет ошибку.
+          type: int
+
+      responses:
+        200:
+          description: Возвращается сущность объекта медиа.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
+
+    patch:
+      security:
+        - cookieAuth: []
+
+      operationId: update_media
+
+      summary: Обновление медиа.
+
+      tags:
+        - Media API
+
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MediaUpdateSchema'
+
+      parameters:
+        - in: query
+          name: id
+          required: false
+          description: Обновить media по id, принимается только id=число, иначе выведет ошибку.
+          type: int
+
+      responses:
+        200:
+          description: Объект медиа обновляется, возвращается его сущность.
+          content:
+            multipart/form-data:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
+
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_media
+
+      summary: Удаление медиа.
+
+      description: Этим может воспользоваться админ для удаления медиа
+
+      tags:
+        - Media API
+
+      parameters:
+      - in: query
+        name: id
+        required: false
+        description: Удалить media по id, принимается только id=число, иначе выведет ошибку.
+        type: int
+
+      responses:
+        200:
+          description: Объект медиа удаляется, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
+
+  /media/all:
+    get:
+
+      operationId: get_medias
+
+      summary: Получить все медиа
+
+      description: Если медиа не найдены, возвращает пустой список.
+
+      tags:
+        - Media API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля медиа, например `select=id,name`
+        type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: |
+          Отфильтровать медиа по значениям полей, например `filter_by=name=Барби,description=Почему всё розовое`.
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaSchema'
 
 ################################################################################
 #                                    Schemas                                   #
@@ -476,3 +629,89 @@ components:
           type: string
           nullable: true
           example: 'ilow-api.eugenv.ru/static/images/avatar_id_1.png'
+
+    MediaSchema:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: false
+          example: 1
+        name:
+          type: string
+          nullable: false
+          example: 'Titanic'
+        description:
+          type: string
+          nullable: false
+          example: 'Описание фильма'
+        thumbnail:
+          type: string
+          nullable: false
+          example: 'ilow-api.eugenv.ru/static/images/thumbnail_film.png'
+        preview:
+          type: string
+          nullable: false
+          example: 'ilow-api.eugenv.ru/static/images/preview_film.png'
+        trailer:
+          type: string
+          nullable: false
+          example: 'abc1.xyz2'
+          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+
+    MediaUpdateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          example: 'Titanic'
+          description: При пустом поле остаётся прежнее значение.
+        description:
+          type: string
+          nullable: false
+          example: 'Описание фильма'
+        thumbnail:
+          required: false
+          type: string
+          format: binary
+          description: только .jpg. При пустом поле остаётся прежнее значение.
+        preview:
+          required: false
+          type: string
+          format: binary
+          description: только .jpg. При пустом поле остаётся прежнее значение.
+        trailer:
+          required: false
+          type: string
+          nullable: true
+          example: 'abc1.xyz2'
+          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+
+    MediaCreateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          example: 'Titanic'
+        description:
+          type: string
+          nullable: false
+          example: 'Описание фильма'
+        thumbnail:
+          required: true
+          type: string
+          format: binary
+          description: только .jpg
+        preview:
+          required: true
+          type: string
+          format: binary
+          description: только .jpg
+        trailer:
+          required: false
+          type: string
+          nullable: false
+          example: 'abc1.xyz2'
+          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
