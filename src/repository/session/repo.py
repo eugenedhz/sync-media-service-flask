@@ -21,7 +21,7 @@ class SessionRepo(SessionRepoInterface):
 		if not value:
 			return None
 
-		if value.replace('.', '').isdigit():
+		if value.replace('.', '', 1).isdigit():
 			try:
 				return int(value)
 			except:
