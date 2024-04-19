@@ -84,7 +84,7 @@ def upload_chunk():
         filename = session + Static.VIDEOS_TRANSCODED_EXTENSION
         return jsonify(video=filename)
 
-    return jsonify(chunk_uploaded=index)
+    return jsonify(chunkUploaded=index)
 
 
 @app.route('/static/videos/<path:filename>', methods=['GET'])
@@ -125,16 +125,12 @@ def get_transcode_statuses():
         raise ApiError(VIDEO_API_ERRORS['UPLOAD_SESSION_NOT_PROVIDED'])
 
     statuses = dict()
-    qualities = Static.VIDEOS_QUALITIES
 
-    for quality in qualities:
+    for quality in Static.VIDEOS_QUALITIES:
         status = transcode_session.get(session+quality)
         if isinstance(status, str):
             status = int(status.split()[0])
 
-        statuses[quality] = Session.TRANSCODE_STATUSES.get(status)
+        statuses[quality] = Session.TRANSCODE_STATUSES[status]
 
-    for status in statuses.values():
-        return jsonify(statuses) if status
-
-    raise ApiError(VIDEO_API_ERRORS['TRANSCODE_SESSION_NOT_FOUND'])
+    return jsonify(statuses)
