@@ -95,7 +95,7 @@ def get_video(filename):
     name, extension = filename.split('.')
     filename = f'{ name }{ quality }.{ extension }'
 
-    return send_from_directory(Static.VIDEOS_URL, filename)
+    return send_from_directory(Static.VIDEOS_URL[1:-1], filename)
 
 
 @app.route('/upload/session', methods=['DELETE'])
@@ -126,16 +126,15 @@ def get_transcode_statuses():
 
     statuses = dict()
     qualities = Static.VIDEOS_QUALITIES
-    first_session = session + qualities[0]
-
-    if transcode_session.get(first_session) is None:
-        raise ApiError(VIDEO_API_ERRORS['TRANSCODE_SESSION_NOT_FOUND'])
 
     for quality in qualities:
         status = transcode_session.get(session+quality)
         if isinstance(status, str):
             status = int(status.split()[0])
 
-        statuses[quality] = Session.TRANSCODE_STATUSES[status]
+        statuses[quality] = Session.TRANSCODE_STATUSES.get(status)
 
-    return jsonify(statuses)
+    for status in statuses.values():
+        return jsonify(statuses) if status
+
+    raise ApiError(VIDEO_API_ERRORS['TRANSCODE_SESSION_NOT_FOUND'])
