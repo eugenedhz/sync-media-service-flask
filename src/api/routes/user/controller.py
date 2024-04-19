@@ -65,14 +65,6 @@ def get_user_by_username_or_id():
 def get_all_users():
 	request_params = request.args
 
-	user_ids = request_params.get('ids')
-
-	if user_ids is not None:
-		user_ids = tuple(user_ids.split(','))
-
-		if not is_valid_ids(ids=user_ids):
-			raise ApiError(API_ERRORS['INVALID_ID'])
-
 	select = request_params.get('select')
 	filter_by = request_params.get('filter_by')
 
@@ -90,7 +82,7 @@ def get_all_users():
 		raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
 	query_parameters = QueryParametersDTO(filters=filter_by)
-	users = user_service.get_users(ids=user_ids, query_parameters=query_parameters)
+	users = user_service.get_users(query_parameters_dto=query_parameters)
 
 	if len(users) == 0:
 		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
@@ -105,6 +97,10 @@ def get_all_users():
 @jwt_required()
 def update_user():
 	user_id = get_jwt_identity()
+	is_user_exists = user_service.is_field_exists(name='id', value=int(user_id))
+
+	if not is_user_exists:
+		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
 	formdata = request.form.to_dict(flat=True)
 	parsed_formdata = UpdateUserSchema().load(formdata)
@@ -115,15 +111,15 @@ def update_user():
 	if 'username' in parsed_formdata:
 		username = parsed_formdata['username']
 
-		username_exists = user_service.field_exists(name='username', value=username)
-		if username_exists:
+		is_username_exists = user_service.is_field_exists(name='username', value=username)
+		if is_username_exists:
 			raise ApiError(USER_API_ERRORS['USERNAME_EXISTS'])
 
 	if 'email' in parsed_formdata:
 		email = parsed_formdata['email']
 
-		email_exists = user_service.field_exists(name='email', value=email)
-		if email_exists:
+		is_email_exists = user_service.is_field_exists(name='email', value=email)
+		if is_email_exists:
 			raise ApiError(USER_API_ERRORS['EMAIL_EXISTS'])
 
 	if 'avatar' in request.files:
@@ -173,17 +169,17 @@ def delete_user():
 
 	if user_id != jwt_user_id:
 		claims = get_jwt()
-		admin_rights = claims[Role.ADMIN]
+		role = claims['role']
 
-		if not admin_rights:
+		if role != Role.ADMIN:
 			raise ApiError(API_ERRORS['ADMIN_RIGHTS_REQUIRED'])
 
-	user_exists = user_service.field_exists(name='id', value=user_id)
-	if not user_exists:
+	is_user_exists = user_service.is_field_exists(name='id', value=user_id)
+	if not is_user_exists:
 		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 			
-	deleted_user = user_service.delete_user(id=user_id)
-	avatar = deleted_user.avatar
+	user = user_service.delete_user(id=user_id)
+	avatar = user.avatar
 
 	if avatar is not None:
 		filename = get_filename(avatar)
@@ -192,4 +188,4 @@ def delete_user():
 		except:
 			pass
 
-	return deleted_user._asdict()
+	return jsonify(user._asdict())
