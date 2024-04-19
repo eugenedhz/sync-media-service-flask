@@ -14,3 +14,7 @@ class Regex(Readonly):
 class Static(Readonly):
 	IMAGES_FOLDER = './src/static/images/'
 	IMAGES_URL = '/static/images/'
+
+class Tables(Readonly):
+	USER = 'User'
+	MEDIA = 'Media'

@@ -1,10 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import DeclarativeBase
-from src.repository.sqla_models.types import DateAsTimestamp
 
-tables = {
-	'media': 'Media'
-}
+from src.repository.sqla_models.types import DateAsTimestamp
+from src.configs.constants import Tables
 
 
 class Base(DeclarativeBase):
@@ -21,7 +19,7 @@ class Base(DeclarativeBase):
 
 
 class UserModel(Base):
-	__tablename__ = 'User'
+	__tablename__ = Tables.USER
 
 	id = Column(Integer, primary_key=True)
 
@@ -38,7 +36,7 @@ class UserModel(Base):
 
 
 class MediaModel(Base):
-	__tablename__ = tables['media']
+	__tablename__ = Tables.MEDIA
 
 	id = Column(Integer, primary_key=True)
 
