@@ -9,7 +9,8 @@ from src.app import app
 from src.configs.constants import Role
 from src.api.services.user import user_service
 from src.usecase.user.dto import UserCreateDTO, UserCheckPasswordDTO
-from src.api.routes.auth.responses import create_response_with_jwt, Claims
+from src.api.routes.auth.responses import create_response_with_jwt
+from src.api.routes.auth.types import Claims
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.auth.error import AUTH_API_ERRORS
 from src.api.routes.user.error import USER_API_ERRORS
