@@ -133,4 +133,8 @@ def get_transcode_statuses():
 
         statuses[quality] = Session.TRANSCODE_STATUSES[status]
 
-    return jsonify(statuses)
+    for status in statuses:
+        if status != Session.TRANSCODE_STATUSES[None]:
+            return jsonify(statuses)
+
+    raise ApiError(VIDEO_API_ERRORS['TRANSCODE_SESSION_NOT_FOUND'])
