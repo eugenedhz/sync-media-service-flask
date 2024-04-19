@@ -6,24 +6,27 @@ from flask_jwt_extended import (
     set_refresh_cookies
 )
 
+from src.api.routes.auth.types import Claims
 from src.configs.constants import Role
 
 
-def create_response_with_jwt(response_user: dict) -> Response:
-	user_id = response_user['id']
+def create_response_with_jwt(user: dict, claims: Claims) -> Response:
+	user_id = user['id']
+	role = claims['role']
+	is_refresh_request = (claims['type'] == 'refresh')
 
-	access_token = create_access_token(
-		identity = user_id, 
-		additional_claims = {Role.ADMIN: False}
-	)
+	token_info = {
+		'identity': user_id,
+		'additional_claims': {'role': role}
+	}
 
-	refresh_token = create_refresh_token(
-		identity = user_id, 
-		additional_claims = {Role.ADMIN: False}
-	)
+	response = jsonify(user)
 
-	response = jsonify(response_user)
+	access_token = create_access_token(**token_info)
 	set_access_cookies(response, access_token)
-	set_refresh_cookies(response, refresh_token)
+
+	if not is_refresh_request:
+		refresh_token = create_refresh_token(**token_info)
+		set_refresh_cookies(response, refresh_token)
 
 	return response
