@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Union, Optional, Any
+from typing import Any
+
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import UserUpdateDTO, UserDTO
 from src.domain.user import User
 
 
 class UserRepoInterface(ABC):
-
 	@abstractmethod
 	def store(self, user: User) -> User:
 		raise NotImplementedError
@@ -28,7 +28,7 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def get_all(self, ids: Optional[tuple[int, ...]], query_parameters: QueryParametersDTO) -> list[UserDTO]:
+	def get_all(self, query_parameters_dto: QueryParametersDTO) -> list[UserDTO]:
 		raise NotImplementedError
 
 
@@ -38,6 +38,5 @@ class UserRepoInterface(ABC):
 
 
 	@abstractmethod
-	def field_exists(self, field: dict[str: Any]) -> bool:
+	def is_field_exists(self, field: dict[str: Any]) -> bool:
 		raise NotImplementedError
-
