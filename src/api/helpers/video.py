@@ -25,3 +25,13 @@ def get_videos_with_quality(filename: str) -> list[str]:
 		videos.append(filename)
 
 	return videos
+
+
+def delete_videos_with_quality(filename: str) -> None:
+	files = get_videos_with_quality(filename)
+
+	for filename in files:
+        try:
+            video_service.delete(filename)
+        except:
+            pass
