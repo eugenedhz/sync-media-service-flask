@@ -488,12 +488,12 @@ paths:
       tags:
         - Video API
 
-    responses:
-        200:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionSchema'
+      responses:
+          200:
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SessionSchema'
 
     delete:
       operationId: abort_session
@@ -532,16 +532,18 @@ paths:
 
       responses:
         200:
+          description: возвращается индекс загруженного чанка
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChunkUploadedSchema'
 
-        200:
+        201:
+          description: при загрузке последнего чанка, возвращается имя загруженного файла (статус код тоже 200, просто сваггер не дал ещё второй сделать)
           content:
             application/json:
               schema:
-                $red: '#/components/schemas/FileUploadedSchema'
+                $ref: '#/components/schemas/FileUploadedSchema'
 
   /upload/transcode_status:
     get:
