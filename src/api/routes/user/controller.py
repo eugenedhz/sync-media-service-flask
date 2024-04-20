@@ -102,21 +102,20 @@ def update_user():
 	if not is_user_exists:
 		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
-	formdata = request.form.to_dict(flat=True)
-	parsed_formdata = UpdateUserSchema().load(formdata)
+	formdata = UpdateUserSchema().load(request.form)
 
-	if len(parsed_formdata) == 0 and 'avatar' not in request.files:
+	if len(formdata) == 0 and 'avatar' not in request.files:
 		raise ApiError(API_ERRORS['EMPTY_FORMDATA']) 
 
-	if 'username' in parsed_formdata:
-		username = parsed_formdata['username']
+	if 'username' in formdata:
+		username = formdata['username']
 
 		is_username_exists = user_service.is_field_exists(name='username', value=username)
 		if is_username_exists:
 			raise ApiError(USER_API_ERRORS['USERNAME_EXISTS'])
 
-	if 'email' in parsed_formdata:
-		email = parsed_formdata['email']
+	if 'email' in formdata:
+		email = formdata['email']
 
 		is_email_exists = user_service.is_field_exists(name='email', value=email)
 		if is_email_exists:
@@ -146,9 +145,9 @@ def update_user():
 				pass
 
 		avatar_url = Static.IMAGES_URL + saved_filename
-		parsed_formdata['avatar'] = avatar_url
+		formdata['avatar'] = avatar_url
 
-	dto = UserUpdateDTO(**parsed_formdata)
+	dto = UserUpdateDTO(**formdata)
 	updated_user = user_service.update_user(id=user_id, update_user_dto=dto)
 
 	return jsonify(updated_user._asdict())

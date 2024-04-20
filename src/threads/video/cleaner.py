@@ -26,7 +26,7 @@ def remove_inactive_sessions() -> None:
             if isinstance(status, int):
                 continue
 
-            timestamp = status.split(' ')[1]
+            timestamp = status.split()[1]
             time_finished = datetime.fromtimestamp(int(timestamp))
 
             if current_time - time_finished > Session.TRANSCODE_STATUS_EXPIRES:

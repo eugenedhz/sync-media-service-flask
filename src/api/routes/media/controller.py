@@ -14,6 +14,7 @@ from src.api.routes.media.schemas import (
     UpdateMediaFilesSchema, CreateMediaFilesSchema
 )
 from src.configs.constants import Static
+from src.api.helpers.video import get_video_url, get_videos_with_quality
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
@@ -29,8 +30,7 @@ FILES = ('preview', 'thumbnail')
 @jwt_required()
 def media_create():
     CreateMediaFilesSchema().validate(request.files)
-    formdata = request.form.to_dict(flat=True)
-    parsed_formdata = CreateMediaSchema().load(formdata)
+    formdata = CreateMediaSchema().load(request.form)
 
     for key, image in request.files.items():
         data = image.read()
@@ -45,9 +45,12 @@ def media_create():
             raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
         image_url = Static.IMAGES_URL + saved_filename
-        parsed_formdata[key] = image_url
+        formdata[key] = image_url
 
-    dto = MediaCreateDTO(**parsed_formdata)
+    if 'trailer' in formdata:
+        formdata['trailer'] = get_video_url(formdata['trailer'])
+
+    dto = MediaCreateDTO(**formdata)
     created_media = media_service.create_media(dto)
 
     return created_media._asdict()
@@ -127,12 +130,11 @@ def update_media():
         raise ApiError(API_ERRORS['INVALID_ID'])
 
     UpdateMediaFilesSchema().validate(request.files)
-    formdata = request.form.to_dict(flat=True)
-    parsed_formdata = UpdateMediaSchema().load(formdata)
+    formdata = UpdateMediaSchema().load(request.form)
 
     files = find_keys(request.files, FILES)
 
-    if len(parsed_formdata) == 0 and not files:
+    if len(formdata) == 0 and not files:
         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
 
     media = media_service.get_by_id(media_id)
@@ -160,9 +162,12 @@ def update_media():
             raise ApiError(API_ERRORS['CANT_SAVE_FILE'])
 
         media_file_url = Static.IMAGES_URL + saved_filename
-        parsed_formdata[file] = media_file_url
+        formdata[file] = media_file_url
 
-    dto = MediaUpdateDTO(**parsed_formdata)
+    if 'trailer' in formdata:
+        formdata['trailer'] = get_video_url(formdata['trailer'])
+
+    dto = MediaUpdateDTO(**formdata)
     updated_media = media_service.update_media(id=media.id, update_media_dto=dto)
 
     return jsonify(updated_media._asdict())
@@ -187,6 +192,9 @@ def delete_media():
     deleted_media = media_service.delete_media(id=media_id)
 
     files = [deleted_media.thumbnail, deleted_media.preview]
+
+    if deleted_media.trailer:
+        files += get_videos_with_quality(deleted_media.trailer)
 
     for file in files:
         filename = get_filename(file)

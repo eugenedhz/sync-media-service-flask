@@ -30,10 +30,7 @@ class FileService():
 
 
 	def find_file(self, name: str) -> Optional[str]:
-		if get_extension(name) == '':
-			pattern = f'{ self.destination_path }{ name }.*'
-		else:
-			pattern = f'{ self.destination_path }{ name }'
+		pattern = f'{ self.destination_path }{ name }*'
 
 		filenames = glob(pattern)
 		if len(filenames) == 0:

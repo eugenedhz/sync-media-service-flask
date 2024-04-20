@@ -94,6 +94,8 @@ tags:
     description: Do everything with users :)
   - name: Media API
     description: Do everything with media :)
+  - name: Video API
+    description: Do everything with videos :)
   - name: Rooms API
     description: Do everything with rooms :)
 
@@ -623,7 +625,7 @@ components:
         avatar:
           type: string
           nullable: true
-          example: 'ilow-api.eugenv.ru/static/images/avatar_id_1.png'
+          example: '/static/images/avatar_id_1.png'
 
     MediaSchema:
       type: object
@@ -643,29 +645,34 @@ components:
         thumbnail:
           type: string
           nullable: false
-          example: 'ilow-api.eugenv.ru/static/images/thumbnail_film.png'
+          example: '/static/images/thumbnail_film.png'
         preview:
           type: string
           nullable: false
-          example: 'ilow-api.eugenv.ru/static/images/preview_film.png'
+          example: '/static/images/preview_film.png'
         trailer:
           type: string
-          nullable: false
-          example: 'abc1.xyz2'
-          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+          nullable: true
+          example: '/static/videos/abc1.mp4'
 
     MediaUpdateSchema:
       type: object
       properties:
         name:
+          minLength: 1
+          maxLength: 50
           type: string
           nullable: false
           example: 'Titanic'
           description: При пустом поле остаётся прежнее значение.
+          required: false
         description:
+          minLength: 1
+          maxLength: 200
           type: string
           nullable: false
           example: 'Описание фильма'
+          required: false
         thumbnail:
           required: false
           type: string
@@ -677,36 +684,69 @@ components:
           format: binary
           description: только .jpg. При пустом поле остаётся прежнее значение.
         trailer:
+          minLength: 3
           required: false
           type: string
-          nullable: true
-          example: 'abc1.xyz2'
-          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+          nullable: false
+          example: 'abc1.mp4'
+          description: |
+            В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
 
     MediaCreateSchema:
       type: object
       properties:
         name:
+          minLength: 1
+          maxLength: 50
           type: string
           nullable: false
           example: 'Titanic'
+          required: true
         description:
+          minLength: 1
+          maxLength: 200
           type: string
           nullable: false
           example: 'Описание фильма'
+          required: true
         thumbnail:
+          nullable: false
           required: true
           type: string
           format: binary
           description: только .jpg
         preview:
+          nullable: false
           required: true
           type: string
           format: binary
           description: только .jpg
         trailer:
+          minLength: 3
           required: false
           type: string
           nullable: false
-          example: 'abc1.xyz2'
-          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+          example: 'abc1.mp4'
+          description: |
+            В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+
+    ChunkSchema:
+      type: object
+      properties:
+        session:
+          type: string
+          nullable: false
+          required: true
+          description: |
+            Перед загрузкой необходимо получить uuid сессии `(/upload/session [GET])`
+        totalFileSize:
+          type: int
+          nullable: false
+          required: true
+        totalChunkCount:
+          type: int
+          nullable: false
+          required: true
+        chunkIndex:
+          type: int
+          nullable: false
