@@ -17,12 +17,6 @@ def transcode_video(queue: Queue) -> None:
         for quality in Static.VIDEOS_QUALITIES:
             session = upload_session + quality
 
-            # значение сессии = 3 эквивалентно статусу [pending]
-            transcode_session.set(session, 3)
-
-        for quality in Static.VIDEOS_QUALITIES:
-            session = upload_session + quality
-
             # значение сессии = 2 эквивалентно статусу [processing]
             transcode_session.set(session, 2)
 
