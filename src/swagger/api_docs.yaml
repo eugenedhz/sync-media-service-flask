@@ -77,8 +77,8 @@ info:
       | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
       | 404 | NOT FOUND | ***QUALITY_NOT_FOUND*** |
       | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
-      | 409 | CONFLICT | ***NO_UPLOAD_SESSION_PROVIDED*** |
-      | 409 | CONFLICT | ***NO_QUALITY_PROVIDED*** |
+      | 400 | BAD REQUEST | ***NO_UPLOAD_SESSION_PROVIDED*** |
+      | 400 | BAD REQUEST | ***NO_QUALITY_PROVIDED*** |
       | 409 | CONFLICT | ***SIZE_MISMATCH*** |
 
       -----------------------------------------------
