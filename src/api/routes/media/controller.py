@@ -15,7 +15,7 @@ from src.api.routes.media.schemas import (
     UpdateMediaFilesSchema, CreateMediaFilesSchema
 )
 from src.configs.constants import Static
-from src.api.helpers.video import get_video_url, get_videos_with_quality
+from src.api.helpers.video import get_video_url, delete_videos_with_quality
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
@@ -169,8 +169,7 @@ def update_media():
         formdata['trailer'] = get_video_url(formdata['trailer'])
 
         if media.trailer:
-            filename = get_filename(media.trailer)
-            video_service.delete(filename)
+            delete_videos_with_quality(media.trailer)
 
     dto = MediaUpdateDTO(**formdata)
     updated_media = media_service.update_media(id=media.id, update_media_dto=dto)
@@ -205,14 +204,7 @@ def delete_media():
         except:
             pass
 
-    files = []
     if deleted_media.trailer:
-        files = get_videos_with_quality(deleted_media.trailer)
-
-    for filename in files:
-        try:
-            video_service.delete(filename)
-        except:
-            pass
+        delete_videos_with_quality(deleted_media.trailer)
 
     return deleted_media._asdict()
