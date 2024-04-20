@@ -41,5 +41,5 @@ class Session(Readonly):
 		2: 'processing',
 		1: 'error',
 		0: 'success',
-		None: 'not found'
+		None: 'expired'
 	}
