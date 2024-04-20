@@ -79,6 +79,9 @@ def upload_chunk():
 
             raise ApiError(VIDEO_API_ERRORS['SIZE_MISMATCH'])
 
+        for quality in Static.VIDEOS_QUALITIES:
+            transcode_session.set(session+quality, 3) # значение сессии = 3 эквивалентно статусу [pending]
+
         transcode_queue.put_nowait((size, filename))
 
         filename = session + Static.VIDEOS_TRANSCODED_EXTENSION
@@ -90,6 +93,9 @@ def upload_chunk():
 @app.route('/static/videos/<path:filename>', methods=['GET'])
 def get_video(filename):
     quality = request.args.get('quality')
+
+    if quality is None:
+        raise ApiError(VIDEO_API_ERRORS['QUALITY_NOT_PROVIDED'])
 
     filename = secure_filename(filename) # убирает ненужные слеши и пути, санитайзер по сути
     name, extension = filename.split('.')
@@ -136,8 +142,8 @@ def get_transcode_statuses():
 
         statuses[quality] = Session.TRANSCODE_STATUSES[status]
 
-    for status in statuses:
-        if status != Session.TRANSCODE_STATUSES[None]:
+    for quality in statuses:
+        if statuses[quality] != Session.TRANSCODE_STATUSES[None]:
             return jsonify(statuses)
 
     raise ApiError(VIDEO_API_ERRORS['TRANSCODE_SESSION_NOT_FOUND'])
