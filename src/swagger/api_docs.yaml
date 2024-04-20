@@ -50,6 +50,7 @@ info:
       | 400 | BAD REQUEST | ***NO_IDENTITY_PROVIDED*** |
       | ***File uploading errors*** |
       | 400 | BAD REQUEST | ***INVALID_JPG*** |
+      | 400 | BAD REQUEST | ***INVALID_VIDEO*** |
       | 500 | INTERNAL SERVER ERROR | ***CANNOT_SAVE_FILE_ON_SERVER*** |
       | ***Authenticaton API errors*** |
       | 401 | UNAUTHORIZED | ***NO_TOKEN_PROVIDED*** |
@@ -70,6 +71,15 @@ info:
       | ***Media API errors*** |
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | ***Video API errors*** |
+      | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***QUALITY_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | 409 | CONFLICT | ***NO_UPLOAD_SESSION_PROVIDED*** |
+      | 409 | CONFLICT | ***NO_QUALITY_PROVIDED*** |
+      | 409 | CONFLICT | ***SIZE_MISMATCH*** |
 
       -----------------------------------------------
   
