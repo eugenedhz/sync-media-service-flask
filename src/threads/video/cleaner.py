@@ -33,7 +33,7 @@ def remove_inactive_sessions() -> None:
                 transcode_session.delete(session)
 
         sleep(
-            Session.UPLOAD_CLEANER_SLEEP
+            Session.CLEANER_SLEEP
         )
 
 
