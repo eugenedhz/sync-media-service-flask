@@ -97,6 +97,9 @@ def get_video(filename):
     if quality is None:
         raise ApiError(VIDEO_API_ERRORS['QUALITY_NOT_PROVIDED'])
 
+    if not quality in Static.VIDEOS_QUALITIES:
+        raise ApiError(VIDEO_API_ERRORS['QUALITY_NOT_FOUND'])
+
     filename = secure_filename(filename) # убирает ненужные слеши и пути, санитайзер по сути
     name, extension = filename.split('.')
     filename = f'{ name }{ quality }.{ extension }'

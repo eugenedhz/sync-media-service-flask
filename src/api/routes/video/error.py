@@ -34,4 +34,9 @@ VIDEO_API_ERRORS = {
 		error_message = 'QUALITY_NOT_PROVIDED',
 		status_code = 400
 	),
+
+	'QUALITY_NOT_FOUND': ApiErrorInfo(
+		error_message = 'QUALITY_NOT_FOUND',
+		status_code = 404
+	),
 }
