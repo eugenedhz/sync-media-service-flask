@@ -480,6 +480,85 @@ paths:
               schema:
                 $ref: '#/components/schemas/MediaSchema'
 
+  /upload/session:
+    get:
+      operationId: get_session_uuid
+      summary: Получить uuid загрузочной сессии
+      description: получение uuid сессии, если сессия некоторое время не использовалась, она удаляется, берётся на каждую загрузку отдельно
+      tags:
+        - Video API
+
+    responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionSchema'
+
+    delete:
+      operationId: abort_session
+      summary: отменить загрузочную сессию по её uuid
+      tags:
+        - Video API
+
+      parameters:
+      - in: query
+        name: session
+        required: true
+        description: |
+          uuid сессии
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbortSchema'
+
+  /upload:
+    post:
+      operationId: load_chunk
+      summary: загрузить чанк файла
+      tags:
+        - Video API
+
+      requestBody:
+        required: true
+        description: Обязательный JSON
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChunkSchema'
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChunkUploadedSchema'
+
+  /upload/transcode_status:
+    get:
+      operationId: get_transcode_status
+      summary: получить статусы обработки видео
+      tags:
+        - Video API
+
+      parameters:
+      - in: query
+        name: session
+        required: true
+        description: |
+          uuid загрузочной сессии
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusesSchema'
+
+
 ################################################################################
 #                                    Schemas                                   #
 ################################################################################
@@ -743,10 +822,79 @@ components:
           type: int
           nullable: false
           required: true
+          min: 1
         totalChunkCount:
           type: int
           nullable: false
           required: true
+          min: 1
         chunkIndex:
           type: int
           nullable: false
+          required: true
+          min: 0
+        chunkByteOffset:
+          type: int
+          nullable: false
+          required: true
+          min: 0
+        chunk:
+          type: string
+          format: binary
+          required: true
+          nullable: false
+          description: |
+            файл чанка, доступные форматы: `.mp4`, `.mov`, `.avi`, `.m4v`
+
+    SessionSchema:
+      type: object
+      properties:
+        session:
+          type: string
+          nullable: false
+          example: jrj2rij2oriej23i324
+          description: uuid созданной сессии
+
+    ChunkUploadedSchema:
+      type: object
+      properties:
+        chunkUploaded:
+          type: int
+          nullable: false
+          example: 0
+          description: индекс загруженного чанка
+
+    AbortSchema:
+      type: object
+      properties:
+        aborted:
+          type: string
+          nullable: false
+          example: jrj2rij2oriej23i324
+          description: uuid отменённой сессии
+
+    StatusesSchema:
+      type: object
+      description: |
+        может также возвращать статус not found у некоторых качеств, если они были завершены определённое время назад и удалены из сессии
+      properties:
+        360p:
+          type: string
+          nullable: false
+          example: success
+          description: статус успешного завершения обработки качества
+        480p:
+          type: string
+          nullable: false
+          example: error
+          description: статус завершения обработки качества с ошибкой
+        720p:
+          type: string
+          nullable: false
+          example: processing
+          description: статус идущей обработки качества
+        1080p:
+          type: string
+          nullable: false
+          example: pending
+          description: статус ожидания обработки качества
