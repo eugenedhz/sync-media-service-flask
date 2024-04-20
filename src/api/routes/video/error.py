@@ -24,4 +24,9 @@ VIDEO_API_ERRORS = {
 		status_code = 409,
 		description = 'File uploaded with chunks has different size to initial file size.'
 	),
+
+	'VIDEO_NOT_FOUND': ApiErrorInfo(
+		error_message = 'VIDEO_NOT_FOUND',
+		status_code = 404
+	),
 }

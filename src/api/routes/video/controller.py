@@ -95,7 +95,10 @@ def get_video(filename):
     name, extension = filename.split('.')
     filename = f'{ name }{ quality }.{ extension }'
 
-    return send_from_directory(Static.VIDEOS_URL[1:-1], filename)
+    try:
+        return send_from_directory(Static.VIDEOS_URL[1:-1], filename)
+    except:
+        raise ApiError(VIDEO_API_ERRORS['VIDEO_NOT_FOUND'])
 
 
 @app.route('/upload/session', methods=['DELETE'])
