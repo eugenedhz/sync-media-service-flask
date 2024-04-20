@@ -534,9 +534,8 @@ paths:
 
       requestBody:
         required: true
-        description: Обязательный JSON
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: '#/components/schemas/ChunkSchema'
 
