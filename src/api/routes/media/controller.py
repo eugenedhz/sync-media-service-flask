@@ -168,6 +168,10 @@ def update_media():
     if 'trailer' in formdata:
         formdata['trailer'] = get_video_url(formdata['trailer'])
 
+        if media.trailer:
+            filename = get_filename(media.trailer)
+            video_service.delete(filename)
+
     dto = MediaUpdateDTO(**formdata)
     updated_media = media_service.update_media(id=media.id, update_media_dto=dto)
 
