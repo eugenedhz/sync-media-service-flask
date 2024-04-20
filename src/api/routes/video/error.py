@@ -31,7 +31,7 @@ VIDEO_API_ERRORS = {
 	),
 
 	'QUALITY_NOT_PROVIDED': ApiErrorInfo(
-		error_message: 'QUALITY_NOT_PROVIDED',
-		status_code: 400
+		error_message = 'QUALITY_NOT_PROVIDED',
+		status_code = 400
 	),
 }
