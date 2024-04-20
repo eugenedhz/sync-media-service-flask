@@ -537,6 +537,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ChunkUploadedSchema'
 
+        200:
+          content:
+            application/json:
+              schema:
+                $red: '#/components/schemas/FileUploadedSchema'
+
   /upload/transcode_status:
     get:
       operationId: get_transcode_status
@@ -647,7 +653,7 @@ components:
           minLength: 1
           example: 'example@example.org'
         birthday:
-          type: int
+          type: integer
           required: false
           min: 86400
           description: 'timestamp'
@@ -688,12 +694,12 @@ components:
           nullable: false
           example: false
         registrationDate:
-          type: int
+          type: integer
           nullable: false
           description: 'timestamp'
           example: 1710230677
         birthday:
-          type: int
+          type: integer
           nullable: true
           description: 'timestamp'
           example: 1710230677
@@ -819,22 +825,22 @@ components:
           description: |
             Перед загрузкой необходимо получить uuid сессии `(/upload/session [GET])`
         totalFileSize:
-          type: int
+          type: integer
           nullable: false
           required: true
           min: 1
         totalChunkCount:
-          type: int
+          type: integer
           nullable: false
           required: true
           min: 1
         chunkIndex:
-          type: int
+          type: integer
           nullable: false
           required: true
           min: 0
         chunkByteOffset:
-          type: int
+          type: integer
           nullable: false
           required: true
           min: 0
@@ -859,10 +865,19 @@ components:
       type: object
       properties:
         chunkUploaded:
-          type: int
+          type: integer
           nullable: false
           example: 0
           description: индекс загруженного чанка
+
+    FileUploadedSchema:
+      type: object
+      properties:
+        video:
+          type: string
+          nullable: false
+          example: video.mp4
+          description: возвращается имя загруженного файла после последнего чанка
 
     AbortSchema:
       type: object
