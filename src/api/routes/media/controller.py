@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required
 from src.app import app
 from src.api.services.media import media_service
 from src.api.services.image import image_service
+from src.api.services.video import video_service
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.media.dto import MediaDTO, MediaUpdateDTO, MediaCreateDTO
 from src.api.error.shared_error import API_ERRORS
@@ -193,13 +194,20 @@ def delete_media():
 
     files = [deleted_media.thumbnail, deleted_media.preview]
 
-    if deleted_media.trailer:
-        files += get_videos_with_quality(deleted_media.trailer)
-
     for file in files:
         filename = get_filename(file)
         try:
             image_service.delete(filename)
+        except:
+            pass
+
+    files = []
+    if deleted_media.trailer:
+        files = get_videos_with_quality(deleted_media.trailer)
+
+    for filename in files:
+        try:
+            video_service.delete(filename)
         except:
             pass
 
