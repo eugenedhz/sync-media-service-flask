@@ -31,7 +31,7 @@ def delete_videos_with_quality(filename: str) -> None:
 	files = get_videos_with_quality(filename)
 
 	for filename in files:
-        try:
-            video_service.delete(filename)
-        except:
-            pass
+		try:
+			video_service.delete(filename)
+		except:
+			pass
