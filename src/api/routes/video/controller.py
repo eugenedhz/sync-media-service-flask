@@ -95,7 +95,7 @@ def get_video(filename):
     quality = request.args.get('quality')
 
     if quality is None:
-        raise ApiError(VIDEO_API_ERRORS['QUALITY_NOT_PROVIDED'])
+        raise ApiError(VIDEO_API_ERRORS['NO_QUALITY_PROVIDED'])
 
     if not quality in Static.VIDEOS_QUALITIES:
         raise ApiError(VIDEO_API_ERRORS['QUALITY_NOT_FOUND'])
@@ -115,7 +115,7 @@ def abort_upload():
     session = request.args.get('session')
 
     if session is None:
-        raise ApiError(VIDEO_API_ERRORS['UPLOAD_SESSION_NOT_PROVIDED'])
+        raise ApiError(VIDEO_API_ERRORS['NO_UPLOAD_SESSION_PROVIDED'])
 
     if upload_session.get(session) is None:
         raise ApiError(VIDEO_API_ERRORS['UPLOAD_SESSION_NOT_FOUND'])
@@ -134,7 +134,7 @@ def get_transcode_statuses():
     session = request.args.get('session')
 
     if session is None:
-        raise ApiError(VIDEO_API_ERRORS['UPLOAD_SESSION_NOT_PROVIDED'])
+        raise ApiError(VIDEO_API_ERRORS['NO_UPLOAD_SESSION_PROVIDED'])
 
     statuses = dict()
 

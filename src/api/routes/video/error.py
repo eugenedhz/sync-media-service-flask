@@ -14,8 +14,8 @@ VIDEO_API_ERRORS = {
 		description = 'Transcoding might not be started or transcoding already finished.'
 	),
 
-	'UPLOAD_SESSION_NOT_PROVIDED': ApiErrorInfo(
-		error_message = 'UPLOAD_SESSION_NOT_PROVIDED',
+	'NO_UPLOAD_SESSION_PROVIDED': ApiErrorInfo(
+		error_message = 'NO_UPLOAD_SESSION_PROVIDED',
 		status_code = 400
 	),
 	
@@ -30,8 +30,8 @@ VIDEO_API_ERRORS = {
 		status_code = 404
 	),
 
-	'QUALITY_NOT_PROVIDED': ApiErrorInfo(
-		error_message = 'QUALITY_NOT_PROVIDED',
+	'NO_QUALITY_PROVIDED': ApiErrorInfo(
+		error_message = 'NO_QUALITY_PROVIDED',
 		status_code = 400
 	),
 
