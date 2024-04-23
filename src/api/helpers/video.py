@@ -18,19 +18,19 @@ def get_video_url(filename: str) -> str:
 def get_videos_with_quality(filename: str) -> list[str]:
 	name = get_name(filename)
 	extension = Static.VIDEOS_TRANSCODED_EXTENSION
-	videos = []
+	filenames = []
 
 	for quality in Static.VIDEOS_QUALITIES:
 		filename = f'{ name }{ quality }{ extension }'
-		videos.append(filename)
+		filenames.append(filename)
 
-	return videos
+	return filenames
 
 
 def delete_videos_with_quality(filename: str) -> None:
-	files = get_videos_with_quality(filename)
+	filenames = get_videos_with_quality(filename)
 
-	for filename in files:
+	for filename in filenames:
 		try:
 			video_service.delete(filename)
 		except:
