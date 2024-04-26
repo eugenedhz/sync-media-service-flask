@@ -16,7 +16,7 @@ def remove_inactive_sessions() -> None:
 
             if current_time - last_access > Session.UPLOAD_TIMEOUT:
                 upload_session.delete(session)
-                filename = video_service.find_file(session)
+                filename = video_service.find(session)
 
                 if filename != None:
                     video_service.delete(filename)

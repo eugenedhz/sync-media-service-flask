@@ -10,8 +10,12 @@ QUALITIES = {
 
 
 # returns 0 (ok) or 1 (error)
-def transcode(input: str, output: str, quality: str) -> int:
-	command = f'ffmpeg -y -i { input } -preset veryslow -c:v libx264 -s { QUALITIES[quality] } -crf 20 -pix_fmt yuv420p -c:a copy -movflags +faststart { output }'
+def transcode(input_path: str, output_path: str, quality: str) -> int:
+	command = f'ffmpeg -y -i { input_path } \
+	-preset veryslow -c:v libx264 -s { QUALITIES[quality] } \
+	-crf 20 -pix_fmt yuv420p -c:a copy \
+	-movflags +faststart { output_path }'
+
 	exit_code = call(command, shell=True)
 	
 	return exit_code
