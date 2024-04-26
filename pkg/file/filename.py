@@ -2,7 +2,7 @@ from typing import NamedTuple
 from os.path import basename, splitext
 
 
-class SplittedFilename(NamedTuple):
+class Filename(NamedTuple):
     name: str
     extension: str
 
@@ -10,7 +10,7 @@ class SplittedFilename(NamedTuple):
         return self.name + self.extension
 
 
-def split_filename(filename: str) -> SplittedFilename:
+def split_filename(filename: str) -> Filename:
 	filename = basename(filename)
 
 	return Filename(*splitext(filename))
