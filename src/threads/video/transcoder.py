@@ -6,13 +6,13 @@ from queue import PriorityQueue, Queue
 from src.configs.constants import Static
 from src.api.services.video import video_service, transcode_session
 
-from pkg.file.filename import get_name
+from pkg.file.filename import split_filename
 
 
 def transcode_video(queue: Queue) -> None:
     while True:
         filename = queue.get()[1]
-        upload_session = get_name(filename)
+        upload_session = split_filename(filename).name
 
         for quality in Static.VIDEOS_QUALITIES:
             session = upload_session + quality

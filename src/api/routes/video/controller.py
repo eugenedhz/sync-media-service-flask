@@ -15,7 +15,7 @@ from src.api.routes.video.error import VIDEO_API_ERRORS
 from src.threads.video.transcoder import transcode_queue
 
 from pkg.file.video.validate import is_valid_video
-from pkg.file.filename import get_extension
+from pkg.file.filename import split_filename
 
 
 @app.route('/upload/session', methods=['GET'])
@@ -37,7 +37,7 @@ def upload_chunk():
         raise ApiError(VIDEO_API_ERRORS['UPLOAD_SESSION_NOT_FOUND'])
 
     chunk = request.files['chunk']
-    extension = get_extension(chunk.filename)
+    extension = split_filename(chunk.filename).extension
 
     if not is_valid_video(extension):
         raise ApiError(API_ERRORS['INVALID_VIDEO'])
@@ -101,7 +101,7 @@ def get_video(filename):
         raise ApiError(VIDEO_API_ERRORS['QUALITY_NOT_FOUND'])
 
     filename = secure_filename(filename) # убирает ненужные слеши и пути, санитайзер по сути
-    name, extension = filename.split('.')
+    name, extension = split_filename(filename)
     filename = f'{ name }{ quality }.{ extension }'
 
     try:

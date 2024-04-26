@@ -20,7 +20,7 @@ from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.query_params.ids.validate import is_valid_ids
 from pkg.file.image.jpg_validate import is_valid_jpg
-from pkg.file.filename import get_filename, get_extension
+from pkg.file.filename import split_filename
 
 
 @app.route('/user', methods=['GET'])
@@ -124,7 +124,7 @@ def update_user():
 	if 'avatar' in request.files:
 		image = request.files['avatar']
 		data = image.read()
-		extension = get_extension(image.filename)
+		extension = split_filename(image.filename).extension
 
 		if not is_valid_jpg(data, extension):
 			raise ApiError(API_ERRORS['INVALID_JPG'])
@@ -138,7 +138,7 @@ def update_user():
 		avatar = user.avatar
 
 		if avatar is not None:
-			filename = get_filename(avatar)
+			filename = split_filename(avatar).filename()
 			try:
 				image_service.delete(filename)
 			except:
@@ -181,7 +181,7 @@ def delete_user():
 	avatar = user.avatar
 
 	if avatar is not None:
-		filename = get_filename(avatar)
+		filename = split_filename(avatar).filename()
 		try:
 			image_service.delete(filename)
 		except:
