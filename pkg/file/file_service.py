@@ -32,11 +32,11 @@ class FileService():
 	def find(self, name: str) -> Optional[str]:
 		pattern = f'{ self.destination_path }{ name }*'
 
-		filenames = glob(pattern)
-		if len(filenames) == 0:
+		paths = glob(pattern)
+		if len(paths) == 0:
 			return None
 
-		return split_filename(filenames[0]).filename()
+		return split_filename(paths[0]).filename()
 
 
 	def get_size(self, filename: str) -> int:
