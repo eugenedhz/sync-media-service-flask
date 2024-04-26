@@ -20,7 +20,7 @@ from src.api.helpers.video import get_video_url, delete_videos_with_quality
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
 from pkg.file.image.jpg_validate import is_valid_jpg
-from pkg.file.filename import get_filename, get_extension
+from pkg.file.filename import split_filename
 from pkg.dict.keys import find_keys
 
 
@@ -35,7 +35,7 @@ def media_create():
 
     for key, image in request.files.items():
         data = image.read()
-        extension = get_extension(image.filename)
+        extension = split_filename(image.filename).extension
 
         if not is_valid_jpg(data, extension):
             raise ApiError(API_ERRORS['INVALID_JPG'])
@@ -146,12 +146,12 @@ def update_media():
     for file in files:
         media_file = request.files[file]
         data = media_file.read()
-        extension = get_extension(media_file.filename)
+        extension = split_filename(media_file.filename).extension
 
         if not is_valid_jpg(data, extension):
             raise ApiError(API_ERRORS['INVALID_JPG'])
 
-        filename = get_filename(getattr(media, file))
+        filename = split_filename(getattr(media, file)).filename()
         try:
             image_service.delete(filename)
         except:
@@ -198,7 +198,7 @@ def delete_media():
     files = [deleted_media.thumbnail, deleted_media.preview]
 
     for file in files:
-        filename = get_filename(file)
+        filename = split_filename(file).filename()
         try:
             image_service.delete(filename)
         except:

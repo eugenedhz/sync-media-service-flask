@@ -1,15 +1,16 @@
+from typing import NamedTuple
 from os.path import basename, splitext
 
 
-def get_filename(path: str) -> str:
-	return basename(path)
+class Filename(NamedTuple):
+    name: str
+    extension: str
+
+    def filename(self):
+        return self.name + self.extension
 
 
-def get_extension(filename: str) -> str:
-	return splitext(filename)[1]
+def split_filename(filename: str) -> Filename:
+	filename = basename(filename)
 
-
-def get_name(filename: str) -> str:
-	filename = get_filename(filename)
-
-	return filename.split('.')[0]
+	return Filename(*splitext(filename))

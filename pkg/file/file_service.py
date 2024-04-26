@@ -4,7 +4,7 @@ import os
 from glob import glob
 from uuid import uuid4
 
-from pkg.file.filename import get_filename, get_extension
+from pkg.file.filename import split_filename
 
 
 class FileService():
@@ -36,7 +36,7 @@ class FileService():
 		if len(filenames) == 0:
 			return None
 
-		return get_filename(filenames[0])
+		return split_filename(filenames[0]).filename()
 
 
 	def file_size(self, filename: str) -> int:

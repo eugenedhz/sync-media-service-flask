@@ -3,11 +3,11 @@ from src.configs.constants import Static
 from src.api.error.custom_error import ApiError
 from src.api.routes.video.error import VIDEO_API_ERRORS
 
-from pkg.file.filename import get_name
+from pkg.file.filename import split_filename
 
 
 def get_video_url(filename: str) -> str:
-	name = get_name(filename)
+	name = split_filename(filename).name
 
 	if video_service.find_file(name) is None:
 		raise ApiError(VIDEO_API_ERRORS['VIDEO_NOT_FOUND'])
@@ -16,7 +16,7 @@ def get_video_url(filename: str) -> str:
 
 
 def get_videos_with_quality(filename: str) -> list[str]:
-	name = get_name(filename)
+	name = split_filename(filename).name
 	extension = Static.VIDEOS_TRANSCODED_EXTENSION
 	filenames = []
 
