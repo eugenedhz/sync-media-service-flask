@@ -68,7 +68,7 @@ def upload_chunk():
     upload_session.set(session, current_time)
 
     if index == last_index:
-        size = video_service.file_size(filename)
+        size = video_service.get_size(filename)
         upload_session.delete(session)
 
         if total_size != size:
@@ -121,7 +121,7 @@ def abort_upload():
         raise ApiError(VIDEO_API_ERRORS['UPLOAD_SESSION_NOT_FOUND'])
 
     upload_session.delete(session)
-    filename = video_service.find_file(session)
+    filename = video_service.find(session)
 
     if filename != None:
         video_service.delete(filename)

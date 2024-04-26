@@ -29,7 +29,7 @@ class FileService():
 		return filename
 
 
-	def find_file(self, name: str) -> Optional[str]:
+	def find(self, name: str) -> Optional[str]:
 		pattern = f'{ self.destination_path }{ name }*'
 
 		filenames = glob(pattern)
@@ -39,7 +39,7 @@ class FileService():
 		return split_filename(filenames[0]).filename()
 
 
-	def file_size(self, filename: str) -> int:
+	def get_size(self, filename: str) -> int:
 		path = self.destination_path + filename
 
 		return os.path.getsize(path)
