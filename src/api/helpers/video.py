@@ -15,7 +15,7 @@ def get_video_url(filename: str) -> str:
 	return Static.VIDEOS_URL + filename
 
 
-def get_videos_with_quality(filename: str) -> list[str]:
+def concat_quality_to_video(filename: str) -> list[str]:
 	name = split_filename(filename).name
 	extension = Static.VIDEOS_TRANSCODED_EXTENSION
 	filenames = []
@@ -28,7 +28,7 @@ def get_videos_with_quality(filename: str) -> list[str]:
 
 
 def delete_videos_with_quality(filename: str) -> None:
-	filenames = get_videos_with_quality(filename)
+	filenames = concat_quality_to_video(filename)
 
 	for filename in filenames:
 		try:
