@@ -37,7 +37,7 @@ def register():
 	dto = UserCreateDTO(**request_json)
 	user = user_service.create_user(dto)
 
-	claims = Claims(role=Role.USER)
+	claims = Claims(role=Role.USER, type='access')
 	response = create_response_with_jwt(
 		user = user._asdict(),
 		claims = claims
@@ -70,7 +70,7 @@ def login():
 	if not password_match:
 		raise ApiError(AUTH_API_ERRORS['WRONG_PWD'])
 
-	claims = Claims(role=Role.USER)
+	claims = Claims(role=Role.USER, type='access')
 	response = create_response_with_jwt(
 		user = user._asdict(),
 		claims = claims
