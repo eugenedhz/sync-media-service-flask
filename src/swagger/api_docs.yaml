@@ -226,6 +226,12 @@ paths:
           Получить только определённые поля пользователя, например `select=id,username`
         type: string
       - in: query
+        name: expand
+        required: false
+        description: |
+          Получить расширенные поля пользователя, например `friends` или `friends.select=id;username` для конкретных полей.
+        type: string
+      - in: query
         name: filter_by
         required: false
         description: |
@@ -280,6 +286,12 @@ paths:
         required: false
         description: |
           Получить только определённые поля пользователя, например `select=id,username`
+        type: string
+      - in: query
+        name: expand
+        required: false
+        description: |
+          Получить расширенные поля пользователя, например `friends` или `friends.select=id;username` для конкретных полей.
         type: string
       - in: query
         name: id

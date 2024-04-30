@@ -33,6 +33,7 @@ class UserModel(Base):
 	birthday = Column(DateAsTimestamp)
 	description = Column(String)
 	avatar = Column(String)
+	friends = Column(String)
 
 
 class MediaModel(Base):

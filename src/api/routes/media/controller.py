@@ -68,7 +68,7 @@ def get_media_by_id():
     select = request_params.get('select')
     media_fields = MediaDTO.__match_args__
     try:
-        select = parse_select(select=select, valid_fields=media_fields)
+        select = parse_select(select=select, valid_fields=media_fields, splitter=',')
     except:
         raise ApiError(API_ERRORS['INVALID_SELECT'])
 
@@ -92,7 +92,7 @@ def get_all_medias():
 
     media_fields = MediaDTO.__match_args__
     try:
-        select = parse_select(select=select, valid_fields=media_fields)
+        select = parse_select(select=select, valid_fields=media_fields, splitter=',')
     except:
         raise ApiError(API_ERRORS['INVALID_SELECT'])
 
