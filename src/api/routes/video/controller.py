@@ -14,11 +14,12 @@ from src.api.error.shared_error import API_ERRORS
 from src.api.routes.video.error import VIDEO_API_ERRORS
 from src.threads.video.transcoder import transcode_queue
 
-from pkg.file.video.validate import is_valid_video
+from pkg.file.video.validate import is_valid_video_extension
 from pkg.file.filename import split_filename
 
 
 @app.route('/upload/session', methods=['GET'])
+@jwt_required()
 def get_session():
     current_time = int(datetime.now().timestamp())
     uuid = uuid4().hex
@@ -28,6 +29,7 @@ def get_session():
 
 
 @app.route('/upload', methods=['POST'])
+@jwt_required()
 def upload_chunk():
     ChunkSchema().validate(request.files)
     formdata = UploadSchema().load(request.form)
@@ -39,7 +41,7 @@ def upload_chunk():
     chunk = request.files['chunk']
     extension = split_filename(chunk.filename).extension
 
-    if not is_valid_video(extension):
+    if not is_valid_video_extension(extension):
         raise ApiError(API_ERRORS['INVALID_VIDEO'])
 
     filename = session + extension
@@ -51,9 +53,9 @@ def upload_chunk():
 
     try:
         video_service.write_chunk(
-            data=data, 
-            chunk_offset=offset, 
-            filename=filename
+            data = data, 
+            chunk_offset = offset, 
+            filename = filename
         )
     except:
         try:
@@ -67,27 +69,26 @@ def upload_chunk():
     current_time = int(datetime.now().timestamp())
     upload_session.set(session, current_time)
 
-    if index == last_index:
-        size = video_service.get_size(filename)
-        upload_session.delete(session)
+    if index != last_index:
+        return jsonify(chunkUploaded=index)
 
-        if total_size != size:
-            try:
-                video_service.delete(filename)
-            except:
-                pass
+    size = video_service.get_size(filename)
+    upload_session.delete(session)
 
-            raise ApiError(VIDEO_API_ERRORS['SIZE_MISMATCH'])
+    if total_size != size:
+        try:
+            video_service.delete(filename)
+        except:
+            pass  
+        raise ApiError(VIDEO_API_ERRORS['SIZE_MISMATCH'])
 
-        for quality in Static.VIDEOS_QUALITIES:
-            transcode_session.set(session+quality, 3) # значение сессии = 3 эквивалентно статусу [pending]
+    for quality in Static.VIDEOS_QUALITIES:
+        transcode_session.set(session+quality, 3) # значение сессии = 3 эквивалентно статусу [pending]
 
-        transcode_queue.put_nowait((size, filename))
+    transcode_queue.put_nowait((size, filename))
+    filename = session + Static.VIDEOS_TRANSCODED_EXTENSION
 
-        filename = session + Static.VIDEOS_TRANSCODED_EXTENSION
-        return jsonify(video=filename)
-
-    return jsonify(chunkUploaded=index)
+    return jsonify(video=filename)
 
 
 @app.route('/static/videos/<path:filename>', methods=['GET'])
@@ -111,6 +112,7 @@ def get_video(filename):
 
 
 @app.route('/upload/session', methods=['DELETE'])
+@jwt_required()
 def abort_upload():
     session = request.args.get('session')
 

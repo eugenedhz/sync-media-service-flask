@@ -2,7 +2,7 @@ from datetime import datetime
 from threading import Thread
 from time import sleep
 
-from src.configs.constants import Session
+from src.configs.constants import VideoUploadSession
 from src.api.services.video import video_service, upload_session, transcode_session
 
 
@@ -14,7 +14,7 @@ def remove_inactive_sessions() -> None:
             timestamp = upload_session.get(session)
             last_access = datetime.fromtimestamp(timestamp)
 
-            if current_time - last_access > Session.UPLOAD_TIMEOUT:
+            if current_time - last_access > VideoUploadSession.UPLOAD_TIMEOUT:
                 upload_session.delete(session)
                 filename = video_service.find(session)
 
@@ -29,11 +29,11 @@ def remove_inactive_sessions() -> None:
             timestamp = status.split()[1]
             finished = datetime.fromtimestamp(int(timestamp))
 
-            if current_time - finished > Session.TRANSCODE_STATUS_EXPIRES:
+            if current_time - finished > VideoUploadSession.TRANSCODE_STATUS_EXPIRES:
                 transcode_session.delete(session)
 
         sleep(
-            Session.CLEANER_SLEEP
+            VideoUploadSession.CLEANER_SLEEP
         )
 
 
@@ -41,5 +41,3 @@ cleaner = Thread(
     target = remove_inactive_sessions, 
     daemon = True
 )
-
-cleaner.start()

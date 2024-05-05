@@ -6,7 +6,7 @@ Key = Union[str, int, float]
 Value = Union[str, int, float]
 
 
-class SessionRepoInterface(ABC):
+class VideoUploadSessionRepoInterface(ABC):
 	@abstractmethod
 	def set(self, key: Key, value: Value) -> None:
 		raise NotImplementedError
