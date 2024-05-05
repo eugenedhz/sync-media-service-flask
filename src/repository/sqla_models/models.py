@@ -45,3 +45,11 @@ class MediaModel(Base):
 	thumbnail = Column(String, nullable=False)
 	preview = Column(String, nullable=False)
 	trailer = Column(String, nullable=True)
+
+class GenreModel(Base):
+	__tablename__ = Tables.Genre
+
+	id = Column(Integer, primary_key=True)
+	
+	slug = Column(String, unique=True, nullable=False)
+	name = Column(String, nullable=False)
