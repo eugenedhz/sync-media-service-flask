@@ -9,13 +9,14 @@ from src.usecase.dto import QueryParametersDTO
 from src.usecase.media.dto import MediaDTO, MediaUpdateDTO, MediaCreateDTO
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.media.error import MEDIA_API_ERRORS
+from src.api.routes.video.error import VIDEO_API_ERRORS
 from src.api.error.custom_error import ApiError
 from src.api.routes.media.schemas import (
     MediaSchema, UpdateMediaSchema, CreateMediaSchema,
     UpdateMediaFilesSchema, CreateMediaFilesSchema
 )
 from src.configs.constants import Static
-from src.api.helpers.video import get_video_url, delete_videos_with_quality
+from src.api.helpers.video import concat_video_to_url, delete_videos_with_quality
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
@@ -49,12 +50,15 @@ def media_create():
         formdata[key] = image_url
 
     if 'trailer' in formdata:
-        formdata['trailer'] = get_video_url(formdata['trailer'])
+        if video_service.find(formdata['trailer']) is None:
+            raise ApiError(VIDEO_API_ERRORS['VIDEO_NOT_FOUND'])
+
+        formdata['trailer'] = concat_video_to_url(formdata['trailer'])
 
     dto = MediaCreateDTO(**formdata)
     created_media = media_service.create_media(dto)
 
-    return created_media._asdict()
+    return jsonify(created_media._asdict())
 
 
 @app.route('/media', methods=['GET'])
@@ -166,7 +170,10 @@ def update_media():
         formdata[file] = media_file_url
 
     if 'trailer' in formdata:
-        formdata['trailer'] = get_video_url(formdata['trailer'])
+        if video_service.find(formdata['trailer']) is None:
+            raise ApiError(VIDEO_API_ERRORS['VIDEO_NOT_FOUND'])
+
+        formdata['trailer'] = concat_video_to_url(formdata['trailer'])
 
         if media.trailer:
             delete_videos_with_quality(media.trailer)
@@ -207,4 +214,4 @@ def delete_media():
     if deleted_media.trailer:
         delete_videos_with_quality(deleted_media.trailer)
 
-    return deleted_media._asdict()
+    return jsonify(deleted_media._asdict())

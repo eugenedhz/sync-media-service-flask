@@ -1,12 +1,12 @@
 from typing import Optional
 from redis import Redis
 
-from src.interface.repository.session import (
-	SessionRepoInterface, Key, Value
+from src.interface.repository.video_upload_session import (
+	VideoUploadSessionRepoInterface, Key, Value
 )
 
 
-class SessionRepo(SessionRepoInterface):
+class VideoUploadSessionRepo(VideoUploadSessionRepoInterface):
 	def __init__(self, redis: Redis, group: str):
 		self.redis = redis
 		self.group = group

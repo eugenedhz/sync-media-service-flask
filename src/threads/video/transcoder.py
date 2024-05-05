@@ -41,5 +41,3 @@ transcoder = Thread(
     args = (transcode_queue,),
     daemon = True
 )
-
-transcoder.start()

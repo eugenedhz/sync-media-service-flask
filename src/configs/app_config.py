@@ -5,6 +5,7 @@ from pkg.constants.env import get_from_env
 
 class Default(object):
 	TESTING = False
+	PORT = '8302'
 
 	JWT_TOKEN_LOCATION = ['cookies']
 	JWT_COOKIE_SAMESITE = 'None'

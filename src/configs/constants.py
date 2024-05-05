@@ -29,7 +29,7 @@ class Tables(Readonly):
 	MEDIA = 'Media'
 
 
-class Session(Readonly):
+class VideoUploadSession(Readonly):
 	CLEANER_SLEEP = timedelta(days=1).total_seconds()
 	
 	UPLOAD_GROUP = 'upload'

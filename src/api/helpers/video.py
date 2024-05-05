@@ -6,11 +6,8 @@ from src.api.routes.video.error import VIDEO_API_ERRORS
 from pkg.file.filename import split_filename
 
 
-def get_video_url(filename: str) -> str:
+def concat_video_to_url(filename: str) -> str:
 	name = split_filename(filename).name
-
-	if video_service.find(name) is None:
-		raise ApiError(VIDEO_API_ERRORS['VIDEO_NOT_FOUND'])
 
 	return Static.VIDEOS_URL + filename
 
