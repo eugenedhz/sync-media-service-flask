@@ -3,7 +3,6 @@ from uuid import uuid4
 
 from flask import request, jsonify, send_from_directory
 from flask_jwt_extended import jwt_required
-from werkzeug.utils import secure_filename
 
 from src.app import app
 from src.configs.constants import Static, VideoUploadSession
@@ -101,9 +100,8 @@ def get_video(filename):
     if not quality in Static.VIDEOS_QUALITIES:
         raise ApiError(VIDEO_API_ERRORS['QUALITY_NOT_FOUND'])
 
-    filename = secure_filename(filename) # убирает ненужные слеши и пути, санитайзер по сути
     name, extension = split_filename(filename)
-    filename = f'{ name }{ quality }.{ extension }'
+    filename = f'{ name }{ quality }{ extension }'
 
     try:
         return send_from_directory(Static.VIDEOS_URL[1:-1], filename)
