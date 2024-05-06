@@ -2,7 +2,7 @@ from src.app import app
 
 import src.api.routes
 import src.api.error
-import src.api.threads
+import src.threads
 
 
 if __name__ == '__main__':	
