@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required
 from werkzeug.utils import secure_filename
 
 from src.app import app
-from src.configs.constants import Static, Session
+from src.configs.constants import Static, VideoUploadSession
 from src.api.services.video import video_service, upload_session, transcode_session
 from src.api.routes.video.schemas import UploadSchema, ChunkSchema
 from src.api.error.custom_error import ApiError
@@ -145,10 +145,10 @@ def get_transcode_statuses():
         if isinstance(status, str):
             status = int(status.split()[0])
 
-        statuses[quality] = Session.TRANSCODE_STATUSES[status]
+        statuses[quality] = VideoUploadSession.TRANSCODE_STATUSES[status]
 
     for quality in statuses:
-        if statuses[quality] != Session.TRANSCODE_STATUSES[None]:
+        if statuses[quality] != VideoUploadSession.TRANSCODE_STATUSES[None]:
             return jsonify(statuses)
 
     raise ApiError(VIDEO_API_ERRORS['TRANSCODE_SESSION_NOT_FOUND'])
