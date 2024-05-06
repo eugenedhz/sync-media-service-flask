@@ -50,7 +50,8 @@ def media_create():
         formdata[key] = image_url
 
     if 'trailer' in formdata:
-        if video_service.find(formdata['trailer']) is None:
+        name = split_filename(formdata['trailer']).name
+        if video_service.find(name) is None:
             raise ApiError(VIDEO_API_ERRORS['VIDEO_NOT_FOUND'])
 
         formdata['trailer'] = concat_video_to_url(formdata['trailer'])
@@ -170,7 +171,8 @@ def update_media():
         formdata[file] = media_file_url
 
     if 'trailer' in formdata:
-        if video_service.find(formdata['trailer']) is None:
+        name = split_filename(formdata['trailer']).name
+        if video_service.find(name) is None:
             raise ApiError(VIDEO_API_ERRORS['VIDEO_NOT_FOUND'])
 
         formdata['trailer'] = concat_video_to_url(formdata['trailer'])
