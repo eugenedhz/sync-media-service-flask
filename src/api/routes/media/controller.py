@@ -156,12 +156,6 @@ def update_media():
         if not is_valid_jpg(data, extension):
             raise ApiError(API_ERRORS['INVALID_JPG'])
 
-        filename = split_filename(getattr(media, file)).filename()
-        try:
-            image_service.delete(filename)
-        except:
-            pass
-
         try:
             saved_filename = image_service.save(data=data, extension=extension)
         except:
@@ -169,6 +163,12 @@ def update_media():
 
         media_file_url = Static.IMAGES_URL + saved_filename
         formdata[file] = media_file_url
+
+        filename = split_filename(getattr(media, file)).filename()
+        try:
+            image_service.delete(filename)
+        except:
+            pass
 
     if 'trailer' in formdata:
         name = split_filename(formdata['trailer']).name
