@@ -291,7 +291,7 @@ paths:
         name: expand
         required: false
         description: |
-          Получить расширенные поля пользователя, например `friends` или `friends.select=id;username` для конкретных полей.
+          Получить расширенные поля пользователя, например `friends`.
         type: string
       - in: query
         name: id
