@@ -67,6 +67,7 @@ info:
       | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
       | 404 | NOT FOUND | ***USERS_NOT_FOUND*** |
       | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
+      | 400 | BAD REQUEST | ***INVALID_EXPAND*** |
       | ***Media API errors*** |
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
