@@ -74,7 +74,7 @@ def get_user_by_username_or_id():
 	if expand and 'friends' in expand:
 		serialized_user['friends'] = serialize_users(user_service.get_friends(id=user_id))
 
-	return serialized_user
+	return jsonify(serialized_user)
 
 
 @app.route('/user/all', methods=['GET'])
@@ -118,7 +118,7 @@ def get_all_users():
 		for user in serialized_users:
 			user['friends'] = serialize_users(user_service.get_friends(id=user['id']))
 
-	return serialized_users
+	return jsonify(serialized_users)
 
 
 @app.route('/user', methods=['PATCH'])
