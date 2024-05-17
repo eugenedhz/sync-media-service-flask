@@ -90,6 +90,24 @@ class UserUsecase():
 		return UserDTO(**deleted_user_dict)
 
 
+	def get_friends(self, id: int) -> list[UserDTO]:
+		friends = self.repo.get_friends(id=id)
+
+		return friends
+
+
+	def add_friend(self, id: int, friend_id: int) -> str:
+		friend = self.repo.add_friend(id=id, friend_id=friend_id)
+
+		return friend
+
+
+	def delete_friend(self, id: int, friend_id: int):
+		deleted_friend = self.repo.delete_friend(id=id,friend_id=friend_id)
+
+		return deleted_friend
+
+
 	def is_field_exists(self, name: str, value: str) -> bool:
 		is_exists = self.repo.is_field_exists({name: value})
 

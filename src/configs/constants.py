@@ -20,3 +20,4 @@ class Static(Readonly):
 class Tables(Readonly):
 	USER = 'User'
 	MEDIA = 'Media'
+	RELATIONS = 'Relations'

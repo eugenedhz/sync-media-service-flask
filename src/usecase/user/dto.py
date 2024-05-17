@@ -23,7 +23,6 @@ class UserDTO(NamedTuple):
 	birthday: Optional[int] # timestamp
 	description: Optional[str]
 	avatar: Optional[str]
-	friends: Optional[str]
 
 
 class UserUpdateDTO(TypedDict):

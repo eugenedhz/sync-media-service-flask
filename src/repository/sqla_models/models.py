@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date
 from sqlalchemy.orm import DeclarativeBase
 
 from src.repository.sqla_models.types import DateAsTimestamp
@@ -33,7 +33,6 @@ class UserModel(Base):
 	birthday = Column(DateAsTimestamp)
 	description = Column(String)
 	avatar = Column(String)
-	friends = Column(String)
 
 
 class MediaModel(Base):
@@ -46,3 +45,14 @@ class MediaModel(Base):
 	thumbnail = Column(String, nullable=False)
 	preview = Column(String, nullable=False)
 	trailer = Column(String, nullable=True)
+
+
+class RelationsModel(Base):
+	__tablename__ = Tables.RELATIONS
+
+	id = Column(Integer, primary_key=True)
+
+	user_1 = Column(Integer, ForeignKey('User.id'), nullable=False)
+	user_2 = Column(Integer, ForeignKey('User.id'), nullable=False)
+	state = Column(String, nullable=False)
+	created = Column(Date)

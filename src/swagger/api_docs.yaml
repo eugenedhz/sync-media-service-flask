@@ -229,7 +229,7 @@ paths:
         name: expand
         required: false
         description: |
-          Получить расширенные поля пользователя, например `friends` или `friends.select=id;username` для конкретных полей.
+          Получить расширенные поля пользователя, например `friends`.
         type: string
       - in: query
         name: filter_by
@@ -334,6 +334,76 @@ paths:
       responses:
         200:
           description: Пользователь удаляется, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends:
+    get:
+      operationId: get_friends
+
+      summary: Получить друзей пользователя
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: id
+          required: true
+          description: |
+            id пользователя
+          type: integer
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+    post:
+      operationId: add_friend
+
+      summary: Отправить запрос дружбы
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: friend_id
+          required: true
+          description: |
+            id пользователя-друга
+          type: integer
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+    delete:
+      operationId: delete_friend
+
+      summary: Удалить пользователя из друзей
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: friend_id
+          required: true
+          description: |
+            id пользователя-друга
+          type: integer
+
+      responses:
+        200:
           content:
             application/json:
               schema:
@@ -636,6 +706,9 @@ components:
           type: string
           nullable: true
           example: 'ilow-api.eugenv.ru/static/images/avatar_id_1.png'
+        friends:
+          type: string
+          nullable: true
 
     MediaSchema:
       type: object
