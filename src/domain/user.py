@@ -17,7 +17,6 @@ class User:
 	birthday: Optional[int] = None # timestamp
 	description: Optional[str] = None
 	avatar: Optional[str] = None
-	friends: Optional[str] = None
 
 
 	# Методы для преобразований в DTO:

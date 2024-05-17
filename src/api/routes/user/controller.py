@@ -66,27 +66,15 @@ def get_user_by_username_or_id():
 	except:
 		raise ApiError(API_ERRORS['INVALID_EXPAND'])
 
-	if not expand:
-		serialize_user = UserSchema(only=select, exclude=EXPAND_FIELDS).dump
-	else:
-		exclude_fields = []
-		for field in EXPAND_FIELDS:
-			if field not in expand:
-				exclude_fields.append(field)
-
-		serialize_user = UserSchema(only=select, exclude=exclude_fields).dump
+	serialize_user = UserSchema(only=select).dump
+	serialize_users = UserSchema(only=select, many=True).dump
 
 	serialized_user = serialize_user(user)
 
-	try:
-		expand['friends'] = parse_select(select=expand['friends'], valid_fields=user_fields, splitter=';')
-		friends_ids = serialized_user['friends'].split(',')
-		serialize_friend = UserSchema(only=expand['friends']).dump
-		serialized_user['friends'] = [serialize_friend(user_service.get_by_id(id=id)) for id in friends_ids]
-	except:
-		pass
+	if expand and 'friends' in expand:
+		serialized_user['friends'] = serialize_users(user_service.get_friends(id=user_id))
 
-	return jsonify(serialized_user)
+	return serialized_user
 
 
 @app.route('/user/all', methods=['GET'])
@@ -122,28 +110,15 @@ def get_all_users():
 	except:
 		raise ApiError(API_ERRORS['INVALID_EXPAND'])
 
-	if not expand:
-		serialize_users = UserSchema(only=select, exclude=EXPAND_FIELDS, many=True).dump
-	else:
-		exclude_fields = []
-		for field in EXPAND_FIELDS:
-			if field not in expand:
-				exclude_fields.append(field)
-
-		serialize_users = UserSchema(only=select, exclude=exclude_fields, many=True).dump
+	serialize_users = UserSchema(only=select, many=True).dump
 
 	serialized_users = serialize_users(users)
 
-	try:
-		expand['friends'] = parse_select(select=expand['friends'], valid_fields=user_fields, splitter=';')
-		serialize_friend = UserSchema(only=expand['friends']).dump
+	if expand and 'friends' in expand:
 		for user in serialized_users:
-			friends_ids = user['friends'].split(',')
-			user['friends'] = [serialize_friend(user_service.get_by_id(id=id)) for id in friends_ids]
-	except:
-		pass
+			user['friends'] = serialize_users(user_service.get_friends(id=user['id']))
 
-	return jsonify(serialized_users)
+	return serialized_users
 
 
 @app.route('/user', methods=['PATCH'])
