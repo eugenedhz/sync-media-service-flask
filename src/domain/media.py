@@ -1,16 +1,15 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from typing import Optional
+
+from src.domain.base import Base
 
 
 @dataclass
-class Media:
+class Media(Base):
     name: str
     thumbnail: str
     preview: str
     description: str
+    
     trailer: Optional[str] = None
     id: Optional[int] = None
-
-    # Методы для преобразований в DTO:
-    def to_dict(self) -> dict:
-        return asdict(self)
