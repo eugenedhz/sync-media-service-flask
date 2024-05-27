@@ -50,6 +50,7 @@ info:
       | 400 | BAD REQUEST | ***NO_IDENTITY_PROVIDED*** |
       | ***File uploading errors*** |
       | 400 | BAD REQUEST | ***INVALID_JPG*** |
+      | 400 | BAD REQUEST | ***INVALID_VIDEO*** |
       | 500 | INTERNAL SERVER ERROR | ***CANNOT_SAVE_FILE_ON_SERVER*** |
       | ***Authenticaton API errors*** |
       | 401 | UNAUTHORIZED | ***NO_TOKEN_PROVIDED*** |
@@ -70,6 +71,15 @@ info:
       | ***Media API errors*** |
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | ***Video API errors*** |
+      | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***QUALITY_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | 400 | BAD REQUEST | ***NO_UPLOAD_SESSION_PROVIDED*** |
+      | 400 | BAD REQUEST | ***NO_QUALITY_PROVIDED*** |
+      | 409 | CONFLICT | ***SIZE_MISMATCH*** |
 
       -----------------------------------------------
   
@@ -94,6 +104,8 @@ tags:
     description: Do everything with users :)
   - name: Media API
     description: Do everything with media :)
+  - name: Video API
+    description: Do everything with videos :)
   - name: Rooms API
     description: Do everything with rooms :)
 
@@ -478,6 +490,103 @@ paths:
               schema:
                 $ref: '#/components/schemas/MediaSchema'
 
+  /upload/session:
+    get:
+      security:
+        - cookieAuth: []
+
+      operationId: get_session_uuid
+      summary: Получить uuid загрузочной сессии
+      description: получение uuid сессии, если сессия некоторое время не использовалась (24 часа), она удаляется, берётся на каждую загрузку отдельно
+      tags:
+        - Video API
+
+      responses:
+          200:
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SessionSchema'
+
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: abort_session
+      summary: отменить загрузочную сессию по её uuid
+      tags:
+        - Video API
+
+      parameters:
+      - in: query
+        name: session
+        required: true
+        description: |
+          uuid сессии
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbortSchema'
+
+  /upload:
+    post:
+      security:
+        - cookieAuth: []
+      
+      operationId: load_chunk
+      summary: загрузить чанк файла
+      tags:
+        - Video API
+
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChunkSchema'
+
+      responses:
+        200:
+          description: возвращается индекс загруженного чанка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChunkUploadedSchema'
+
+        201:
+          description: при загрузке последнего чанка, возвращается имя загруженного файла (статус код тоже 200, сваггер не дал второй 200-й сделать)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadedSchema'
+
+  /upload/transcode_status:
+    get:
+      operationId: get_transcode_status
+      summary: получить статусы обработки видео
+      tags:
+        - Video API
+
+      parameters:
+      - in: query
+        name: session
+        required: true
+        description: |
+          uuid загрузочной сессии
+
+      responses:
+        200:
+          description: |
+            может также возвращать статус `expired` у некоторых качеств, если они были завершены после 24 часов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusesSchema'
+
+
 ################################################################################
 #                                    Schemas                                   #
 ################################################################################
@@ -566,7 +675,7 @@ components:
           minLength: 1
           example: 'example@example.org'
         birthday:
-          type: int
+          type: integer
           required: false
           min: 86400
           description: 'timestamp'
@@ -607,12 +716,12 @@ components:
           nullable: false
           example: false
         registrationDate:
-          type: int
+          type: integer
           nullable: false
           description: 'timestamp'
           example: 1710230677
         birthday:
-          type: int
+          type: integer
           nullable: true
           description: 'timestamp'
           example: 1710230677
@@ -623,7 +732,7 @@ components:
         avatar:
           type: string
           nullable: true
-          example: 'ilow-api.eugenv.ru/static/images/avatar_id_1.png'
+          example: '/static/images/avatar_id_1.png'
 
     MediaSchema:
       type: object
@@ -643,29 +752,34 @@ components:
         thumbnail:
           type: string
           nullable: false
-          example: 'ilow-api.eugenv.ru/static/images/thumbnail_film.png'
+          example: '/static/images/thumbnail_film.png'
         preview:
           type: string
           nullable: false
-          example: 'ilow-api.eugenv.ru/static/images/preview_film.png'
+          example: '/static/images/preview_film.png'
         trailer:
           type: string
-          nullable: false
-          example: 'abc1.xyz2'
-          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+          nullable: true
+          example: '/static/videos/abc1.mp4'
 
     MediaUpdateSchema:
       type: object
       properties:
         name:
+          minLength: 1
+          maxLength: 50
           type: string
           nullable: false
           example: 'Titanic'
           description: При пустом поле остаётся прежнее значение.
+          required: false
         description:
+          minLength: 1
+          maxLength: 200
           type: string
           nullable: false
           example: 'Описание фильма'
+          required: false
         thumbnail:
           required: false
           type: string
@@ -677,36 +791,147 @@ components:
           format: binary
           description: только .jpg. При пустом поле остаётся прежнее значение.
         trailer:
+          minLength: 3
           required: false
           type: string
-          nullable: true
-          example: 'abc1.xyz2'
-          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+          nullable: false
+          example: 'abc1.mp4'
+          description: |
+            В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
 
     MediaCreateSchema:
       type: object
       properties:
         name:
+          minLength: 1
+          maxLength: 50
           type: string
           nullable: false
           example: 'Titanic'
+          required: true
         description:
+          minLength: 1
+          maxLength: 200
           type: string
           nullable: false
           example: 'Описание фильма'
+          required: true
         thumbnail:
+          nullable: false
           required: true
           type: string
           format: binary
           description: только .jpg
         preview:
+          nullable: false
           required: true
           type: string
           format: binary
           description: только .jpg
         trailer:
+          minLength: 3
           required: false
           type: string
           nullable: false
-          example: 'abc1.xyz2'
-          description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+          example: 'abc1.mp4'
+          description: |
+            В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+
+    ChunkSchema:
+      type: object
+      properties:
+        session:
+          type: string
+          nullable: false
+          required: true
+          description: |
+            Перед загрузкой необходимо получить uuid сессии `(/upload/session [GET])`
+        totalFileSize:
+          type: integer
+          nullable: false
+          required: true
+          min: 1
+        totalChunkCount:
+          type: integer
+          nullable: false
+          required: true
+          min: 1
+        chunkIndex:
+          type: integer
+          nullable: false
+          required: true
+          min: 0
+        chunkByteOffset:
+          type: integer
+          nullable: false
+          required: true
+          min: 0
+        chunk:
+          type: string
+          format: binary
+          required: true
+          nullable: false
+          description: |
+            файл чанка, доступные форматы: `.mp4`, `.mov`, `.avi`, `.m4v`
+
+    SessionSchema:
+      type: object
+      properties:
+        session:
+          type: string
+          nullable: false
+          example: jrj2rij2oriej23i324
+          description: uuid созданной сессии
+
+    ChunkUploadedSchema:
+      type: object
+      properties:
+        chunkUploaded:
+          type: integer
+          nullable: false
+          example: 0
+          description: индекс загруженного чанка
+
+    FileUploadedSchema:
+      type: object
+      properties:
+        video:
+          type: string
+          nullable: false
+          example: video.mp4
+          description: возвращается имя загруженного файла после последнего чанка
+
+    AbortSchema:
+      type: object
+      properties:
+        aborted:
+          type: string
+          nullable: false
+          example: jrj2rij2oriej23i324
+          description: uuid отменённой сессии
+
+    StatusesSchema:
+      type: object
+      description: |
+        может также возвращать статус `expired` у некоторых качеств, если они были завершены определённое время назад и удалены из сессии
+      properties:
+        360p:
+          type: string
+          nullable: false
+          example: success
+          description: статус успешного завершения обработки качества
+        480p:
+          type: string
+          nullable: false
+          example: error
+          description: статус завершения обработки качества с ошибкой
+        720p:
+          type: string
+          nullable: false
+          example: processing
+          description: статус идущей обработки качества
+        1080p:
+          type: string
+          nullable: false
+          example: pending
+          description: статус ожидания обработки качества
