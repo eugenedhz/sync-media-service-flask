@@ -2,5 +2,5 @@ from typing import TypedDict
 
 
 class Claims(TypedDict):
-	type: str = 'access'
+	type: str
 	role: str
