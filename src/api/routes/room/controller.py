@@ -173,9 +173,11 @@ def update_room():
         raise ApiError(API_ERRORS['EMPTY_FORMDATA'])
 
     room = room_service.get_room_by_id(room_id)
-
+    user_id = int(get_jwt_identity())
     if room is None:
         raise ApiError(ROOM_API_ERRORS['ROOM_NOT_FOUND'])
+    if room.creatorId != user_id:
+        raise ApiError(ROOM_API_ERRORS['CREATOR_RIGHTS_REQUIRED'])
 
     for file in files:
         room_file = request.files[file]
