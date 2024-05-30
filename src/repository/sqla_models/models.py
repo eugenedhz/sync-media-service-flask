@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 from src.repository.sqla_models.types import DateAsTimestamp
@@ -18,6 +18,18 @@ class Base(DeclarativeBase):
 		return new_dict
 
 
+class RoomModel(Base):
+	__tablename__ = Tables.ROOM
+
+	id = Column(Integer, primary_key=True)
+	creatorId = Column(Integer, ForeignKey(f'{Tables.USER}.id'), nullable=False)
+
+	name = Column(String, nullable=False, unique=True)
+	title = Column(String, nullable=False)
+	isPrivate = Column(Boolean, nullable=False)
+	cover = Column(String)
+
+
 class UserModel(Base):
 	__tablename__ = Tables.USER
 
@@ -35,8 +47,8 @@ class UserModel(Base):
 	avatar = Column(String)
 
 	createdRooms = relationship(
-		'Room', 
-		cascade = 'all, delete-orphan', 
+		RoomModel, 
+		cascade = 'all, delete-orphan',
 		backref = 'creator'
 	)
 
@@ -51,15 +63,3 @@ class MediaModel(Base):
 	thumbnail = Column(String, nullable=False)
 	preview = Column(String, nullable=False)
 	trailer = Column(String, nullable=True)
-
-
-class RoomModel(Base):
-	__tablename__ = Tables.ROOM
-
-	id = Column(Integer, primary_key=True)
-	creatorId = Column(Integer, ForeignKey('User.id'))
-
-	name = Column(String, nullable=False, unique=True)
-	title = Column(String, nullable=False)
-	isPrivate = Column(Boolean, nullable=False)
-	cover = Column(String)

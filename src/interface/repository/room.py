@@ -3,9 +3,8 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from src.domain.room import Room
-from src.domain.user import User
 from src.usecase.dto import QueryParametersDTO
-from src.usecase.room.dto import RoomUpdateDTO
+from src.usecase.room.dto import RoomUpdateDTO, RoomDTO
 
 
 class RoomRepoInterface(ABC):
@@ -35,12 +34,12 @@ class RoomRepoInterface(ABC):
 
 
     @abstractmethod
-    def delete(self, id: int) -> Room:
+    def get_creator_rooms(self, user_id: int) -> list[RoomDTO]:
         raise NotImplementedError
 
-    
+
     @abstractmethod
-    def get_creator(self, id: int) -> User:
+    def delete(self, id: int) -> Room:
         raise NotImplementedError
 
     
