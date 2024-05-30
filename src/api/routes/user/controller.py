@@ -211,13 +211,20 @@ def delete_user():
 
 	is_user_exists = user_service.is_field_exists(name='id', value=user_id)
 	if not is_user_exists:
-		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
-			
-	user = user_service.delete_user(id=user_id)
-	avatar = user.avatar
+		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])	
 
-	if avatar is not None:
-		filename = split_filename(avatar).filename()
+	images = []
+	created_rooms = room_service.get_creator_rooms(user_id)
+	for room in created_rooms:
+		if room.cover:
+			images.append(room.cover)
+	
+	user = user_service.delete_user(id=user_id)
+	if user.avatar:
+		images.append(user.avatar)
+
+	for image in images:
+		filename = split_filename(image).filename()
 		try:
 			image_service.delete(filename)
 		except:
