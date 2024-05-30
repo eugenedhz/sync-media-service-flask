@@ -15,10 +15,6 @@ class RoomSchema(JsonSchema):
 	cover = fields.String()
 
 
-class RoomFilesSchema(JsonSchema):
-	cover = fields.Field(required=False)
-
-
 class CreateRoomSchema(JsonSchema):
 	name = fields.String(required=True, validate=[Regexp(regex=Regex.ROOM_NAME), Length(min=1, max=30)])
 	title = fields.String(required=True, validate=Length(min=1, max=30))
@@ -29,3 +25,7 @@ class UpdateRoomSchema(JsonSchema):
 	name = fields.String(required=False, validate=[Regexp(regex=Regex.ROOM_NAME), Length(min=1, max=30)])
 	title = fields.String(required=False, validate=Length(min=1, max=30))
 	isPrivate = fields.Boolean(required=False)
+
+
+class RoomFilesSchema(JsonSchema):
+	cover = fields.Field(required=False)

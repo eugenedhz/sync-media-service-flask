@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from typing import Any, Optional
 
 from src.domain.room import Room
-from src.domain.user import User
 from src.interface.repository.room import RoomRepoInterface
 from src.repository.sqla_models.models import RoomModel, UserModel
 from src.usecase.dto import QueryParametersDTO
@@ -80,7 +79,7 @@ class RoomRepo(RoomRepoInterface):
     def get_all(self, query_parameters: QueryParametersDTO) -> list[RoomDTO]:
         with Session(self.engine) as s:
             query = (
-                select(MediaModel)
+                select(RoomModel)
             )
 
             filters = query_parameters.filters
@@ -94,6 +93,21 @@ class RoomRepo(RoomRepoInterface):
         found_rooms_dto = [RoomDTO(**room._asdict(Room)) for room in found_rooms]
 
         return found_rooms_dto
+
+
+    def get_creator_rooms(self, user_id: int) -> list[RoomDTO]:
+        with Session(self.engine) as s:
+            query = (
+                select(UserModel)
+                .where(UserModel.id == user_id)
+            )
+
+            creator = get_first(session=s, query=query)
+            rooms = creator.createdRooms
+
+        rooms_dto = [RoomDTO(**room._asdict(Room)) for room in rooms]
+
+        return rooms_dto
 
 
     def delete(self, id: int) -> Room:
