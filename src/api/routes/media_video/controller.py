@@ -100,7 +100,7 @@ def get_video_by_id():
 
 
 @app.route('/media/video/all', methods=['GET'])
-def get_all_rooms():
+def get_all_videos():
     request_params = request.args
 
     select = request_params.get('select')
@@ -147,7 +147,7 @@ def get_all_rooms():
 
 @app.route('/media/video', methods=['PATCH'])
 @jwt_required()
-def update_room():
+def update_video():
     video_id = request.args.get('id')
 
     if video_id is None:
@@ -182,7 +182,7 @@ def update_room():
 
 @app.route('/media/video', methods=['DELETE'])
 @jwt_required()
-def delete_room():
+def delete_video():
     video_id = request.args.get('id')
 
     if video_id is None:
