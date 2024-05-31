@@ -2,9 +2,11 @@ from dataclasses import dataclass, asdict
 from typing import Optional
 import datetime
 
+from src.domain.base import Base
+
 
 @dataclass
-class User:
+class User(Base):
 	username: str
 	passwordHash: str
 	registrationDate: int # timestamp
@@ -17,8 +19,3 @@ class User:
 	birthday: Optional[int] = None # timestamp
 	description: Optional[str] = None
 	avatar: Optional[str] = None
-
-
-	# Методы для преобразований в DTO:
-	def to_dict(self) -> dict:
-		return asdict(self)
