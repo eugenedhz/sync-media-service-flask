@@ -12,6 +12,7 @@ class Regex(Readonly):
 	USERNAME = r'^[a-zA-Z0-9._-]+$'
 	PASSWORD = r'^[a-zA-Z0-9.@_-]+$'
 	VIDEO = r'^[0-9a-z]+\.[a-z0-9]+$'
+	COUNTRY_CODE = r'^[A-Z]{2}$'
 
 
 class Static(Readonly):
@@ -27,6 +28,7 @@ class Static(Readonly):
 class Tables(Readonly):
 	USER = 'User'
 	MEDIA = 'Media'
+	MEDIA_VIDEO = 'Video'
 
 
 class VideoUploadSession(Readonly):

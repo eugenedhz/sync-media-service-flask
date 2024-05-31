@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required
 
 from src.app import app
 from src.api.services.media import media_service
+from src.api.services.media_video import media_video_service
 from src.api.services.image import image_service
 from src.api.services.video import video_service
 from src.usecase.dto import QueryParametersDTO
@@ -15,17 +16,20 @@ from src.api.routes.media.schemas import (
     MediaSchema, UpdateMediaSchema, CreateMediaSchema,
     UpdateMediaFilesSchema, CreateMediaFilesSchema
 )
+from src.api.routes.media_video.schemas import MediaVideoSchema
 from src.configs.constants import Static
 from src.api.helpers.video import concat_video_to_url, delete_videos_with_quality
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
+from pkg.query_params.expand.parse import parse_expand
 from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import split_filename
 from pkg.dict.keys import find_keys
 
 
 FILES = ('preview', 'thumbnail')
+EXPAND_FIELDS = ('videos',)
 
 
 @app.route('/media', methods=['POST'])
@@ -74,6 +78,12 @@ def get_media_by_id():
     if not media_id.isdigit():
         raise ApiError(API_ERRORS['INVALID_ID'])
 
+    expand = request_params.get('expand')
+    try:
+        expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+    except:
+        raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
     select = request_params.get('select')
     media_fields = MediaDTO.__match_args__
     try:
@@ -88,6 +98,14 @@ def get_media_by_id():
 
     serialize_media = MediaSchema(only=select).dump
     serialized_media = serialize_media(media)
+
+    if not expand:
+        return jsonify(serialized_media)
+
+    if 'videos' in expand:
+        serialize_media_videos = MediaVideoSchema(only=select, many=True).dump
+        videos = media_video_service.get_media_videos(media.id)
+        serialized_media['videos'] = serialize_media_videos(videos)
 
     return jsonify(serialized_media)
 
@@ -112,6 +130,12 @@ def get_all_medias():
     except:
         raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
+    expand = request_params.get('expand')
+    try:
+        expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+    except:
+        raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
     query_parameters_dto = QueryParametersDTO(filters=filter_by)
     medias = media_service.get_medias(query_parameters_dto=query_parameters_dto)
 
@@ -120,6 +144,15 @@ def get_all_medias():
 
     serialize_medias = MediaSchema(only=select, many=True).dump
     serialized_medias = serialize_medias(medias)
+
+    if not expand:
+        return jsonify(serialized_medias)
+
+    if 'videos' in expand:
+        serialize_media_videos = MediaVideoSchema(only=select, many=True).dump
+        for i in range(len(medias)):
+            videos = media_video_service.get_media_videos(medias[i].id)
+            serialized_medias[i]['videos'] = serialize_media_videos(videos)
 
     return jsonify(serialized_medias)
 
@@ -198,13 +231,17 @@ def delete_media():
 
     media_id = int(media_id)
 
-    is_media_exists = media_service.is_field_exists(name='id', value=media_id)
-    if not is_media_exists:
+    media = media_service.get_by_id(media_id)
+    if not media:
         raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
 
-    deleted_media = media_service.delete_media(id=media_id)
+    videos = media_video_service.get_media_videos(media.id)
+    for video in videos:
+        delete_videos_with_quality(video.source)
 
-    files = [deleted_media.thumbnail, deleted_media.preview]
+    media_service.delete_media(id=media_id)
+
+    files = [media.thumbnail, media.preview]
 
     for file in files:
         filename = split_filename(file).filename()
@@ -213,7 +250,8 @@ def delete_media():
         except:
             pass
 
-    if deleted_media.trailer:
-        delete_videos_with_quality(deleted_media.trailer)
+    if media.trailer:
+        delete_videos_with_quality(media.trailer)
 
-    return jsonify(deleted_media._asdict())
+    return jsonify(media._asdict())
+
