@@ -162,6 +162,11 @@ def update_video():
     if media_video is None:
         raise ApiError(MEDIA_VIDEO_API_ERRORS['MEDIA_VIDEO_NOT_FOUND'])
 
+    if 'language' in json:
+        is_language_exists = countries.get(alpha_2=json['language'])
+        if not is_language_exists:
+            raise ApiError(MEDIA_VIDEO_API_ERRORS['LANGUAGE_NOT_FOUND'])
+
     if 'source' in json:
         name = split_filename(json['source']).name
         if video_service.find(name) is None:
