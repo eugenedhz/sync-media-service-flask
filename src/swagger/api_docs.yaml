@@ -80,6 +80,12 @@ info:
       | 400 | BAD REQUEST | ***NO_UPLOAD_SESSION_PROVIDED*** |
       | 400 | BAD REQUEST | ***NO_QUALITY_PROVIDED*** |
       | 409 | CONFLICT | ***SIZE_MISMATCH*** |
+      | ***Media Video API errors*** |
+      | 404 | NOT FOUND | ***MEDIA_VIDEO_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***MEDIA_VIDEOS_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***LANGUAGE_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | 409 | CONFLICT | ***MEDIA_VIDEO_SOURCE_ALREADY_EXISTS*** |
 
       -----------------------------------------------
   
