@@ -4,12 +4,10 @@ flask-jwt-extended
 flask-socketio
 psycopg2
 itsdangerous
-python-dotenv
 Werkzeug
 sqlalchemy
 alembic
 gunicorn
-python-dotenv
 marshmallow
 flasgger
-pyyml
+redis[hiredis]

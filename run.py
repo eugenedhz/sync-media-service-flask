@@ -1,12 +1,9 @@
 from src.app import app
 
-import src.api.error.app_errors
-import src.api.error.jwt_errors
-import src.api.routes.user.controller
-import src.api.routes.auth.controller
-import src.api.routes.media.controller
-import src.api.routes.friends.controller
+import src.api.routes
+import src.api.error
+import src.threads
 
 
-if __name__ == '__main__':
-	app.run(port='8302')
+if __name__ == '__main__':	
+	app.run(port=app.config['PORT'])
