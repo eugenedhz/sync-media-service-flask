@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from src.usecase.dto import QueryParametersDTO
-from src.usecase.genre.dto import GenreUpdateDTO, GenreDTO
+from src.usecase.genre.dto import GenreDTO
 from src.domain.genre import Genre
 
 
@@ -23,7 +23,7 @@ class GenreRepoInterface(ABC):
 
 
 	@abstractmethod
-	def update(self, id: int, update_genre_dto: GenreUpdateDTO) -> Genre:
+	def update(self, id: int, update_genre_dto: GenreDTO) -> Genre:
 		raise NotImplementedError
 
 
