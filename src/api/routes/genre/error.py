@@ -1,5 +1,6 @@
 from src.api.error.custom_error import ApiErrorInfo
 
+
 GENRE_API_ERRORS = {
     'GENRE_NOT_FOUND': ApiErrorInfo(
         error_message = 'GENRE_NOT_FOUND',
@@ -11,3 +12,4 @@ GENRE_API_ERRORS = {
         status_code=404
     ),
 }
+ 
