@@ -40,7 +40,7 @@ def get_user_by_username_or_id():
 	select = request_params.get('select')
 	user_fields = UserDTO.__match_args__
 	try:
-		select = parse_select(select=select, valid_fields=user_fields, splitter=',')
+		select = parse_select(select=select, valid_fields=user_fields)
 	except:
 		raise ApiError(API_ERRORS['INVALID_SELECT'])
 
@@ -72,7 +72,7 @@ def get_user_by_username_or_id():
 	serialized_user = serialize_user(user)
 
 	if expand and 'friends' in expand:
-		serialized_user['friends'] = serialize_users(user_service.get_friends(id=user_id))
+		serialized_user['friends'] = serialize_users(user_service.get_friends(user_id=user_id))
 
 	return jsonify(serialized_user)
 
@@ -86,7 +86,7 @@ def get_all_users():
 
 	user_fields = UserDTO.__match_args__
 	try:
-		select = parse_select(select=select, valid_fields=user_fields, splitter=',')
+		select = parse_select(select=select, valid_fields=user_fields)
 	except:
 		raise ApiError(API_ERRORS['INVALID_SELECT'])
 

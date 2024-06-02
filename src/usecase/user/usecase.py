@@ -90,22 +90,58 @@ class UserUsecase():
 		return UserDTO(**deleted_user_dict)
 
 
-	def get_friends(self, id: int) -> list[UserDTO]:
-		friends = self.repo.get_friends(id=id)
+	def get_friends(self, user_id: int) -> list[UserDTO]:
+		friends = self.repo.get_friends(user_id=user_id)
 
 		return friends
 
 
-	def add_friend(self, id: int, friend_id: int) -> str:
-		friend = self.repo.add_friend(id=id, friend_id=friend_id)
+	def add_friend(self, requesting_user_id: int, receiving_user_id: int) -> UserDTO:
+		friend = self.repo.add_friend(requesting_user_id=requesting_user_id, receiving_user_id=receiving_user_id)
 
-		return friend
+		friend_dict = friend.to_dict()
+		del friend_dict['passwordHash']
+
+		return UserDTO(**friend_dict)
 
 
-	def delete_friend(self, id: int, friend_id: int):
-		deleted_friend = self.repo.delete_friend(id=id,friend_id=friend_id)
+	def delete_friend(self, user_id: int, friend_id: int) -> UserDTO:
+		deleted_friend = self.repo.delete_friend(user_id=user_id, friend_id=friend_id)
 
-		return deleted_friend
+		deleted_friend_dict = deleted_friend.to_dict()
+		del deleted_friend_dict['passwordHash']
+
+		return UserDTO(**deleted_friend_dict)
+
+
+	def get_received_friend_requests(self, user_id: int) -> list[UserDTO]:
+		found_users = self.repo.get_received_friend_requests(user_id=user_id)
+
+		return found_users
+
+
+	def get_sent_friend_requests(self, user_id: int) -> list[UserDTO]:
+		found_users = self.repo.get_sent_friend_requests(user_id=user_id)
+
+		return found_users
+
+
+	def delete_sent_friend_request(self, requesting_user_id: int, receiving_user_id: int) -> UserDTO:
+		found_user = self.repo.delete_sent_friend_request(requesting_user_id=requesting_user_id, receiving_user_id=receiving_user_id)
+
+		found_user_dict = found_user.to_dict()
+		del found_user_dict['passwordHash']
+
+		return UserDTO(**found_user_dict)
+
+
+	def reject_friend_request(self, user_id: int, requesting_user_id: int) -> UserDTO:
+		rejected_user = self.repo.reject_friend_request(user_id=user_id, requesting_user_id=requesting_user_id)
+
+		rejected_user_dict = rejected_user.to_dict()
+		del rejected_user_dict['passwordHash']
+
+		return UserDTO(**rejected_user_dict)
 
 
 	def is_field_exists(self, name: str, value: str) -> bool:

@@ -377,6 +377,9 @@ paths:
                 $ref: '#/components/schemas/UserSchema'
 
     post:
+      security:
+        - cookieAuth: []
+
       operationId: add_friend
 
       summary: Отправить запрос дружбы
@@ -400,9 +403,104 @@ paths:
                 $ref: '#/components/schemas/UserSchema'
 
     delete:
+      security:
+        - cookieAuth: []
+
       operationId: delete_friend
 
       summary: Удалить пользователя из друзей
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: friend_id
+          required: true
+          description: |
+            id пользователя-друга
+          type: integer
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends/received:
+    get:
+      security:
+        - cookieAuth: []
+
+      operationId: get_received_friend_requests
+
+      summary: Получить запросы в друзья
+
+      tags:
+        - Friends API
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends/sent:
+    get:
+      security:
+        - cookieAuth: []
+
+      operationId: get_sent_friend_requests
+
+      summary: Получить отправленные запросы в друзья
+
+      tags:
+        - Friends API
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends/delete:
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_sent_friend_request
+
+      summary: Отменить запрос в друзья
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: friend_id
+          required: true
+          description: |
+            id пользователя-друга
+          type: integer
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends/reject:
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: reject_friend_request
+
+      summary: Отклонить входящий запрос в друзья
 
       tags:
         - Friends API

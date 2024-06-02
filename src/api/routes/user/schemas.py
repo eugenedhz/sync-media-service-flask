@@ -16,7 +16,6 @@ class UserSchema(JsonSchema):
 	birthday = fields.Int(required=False)
 	description = fields.Str(required=False)
 	avatar = fields.Str(required=False)
-	friends = fields.Str(required=False)
 
 
 class UpdateUserSchema(JsonSchema):
