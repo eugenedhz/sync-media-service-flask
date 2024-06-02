@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm import DeclarativeBase, relationship
 
 from src.repository.sqla_models.types import DateAsTimestamp
 from src.configs.constants import Tables
@@ -34,6 +35,19 @@ class UserModel(Base):
 	description = Column(String)
 	avatar = Column(String)
 
+	requested_rels = relationship(
+		'FriendshipRequestModel',
+		foreign_keys='FriendshipRequestModel.requesting_user_id',
+		backref='requesting_user'
+	)
+	received_rels = relationship(
+		'FriendshipRequestModel',
+		foreign_keys='FriendshipRequestModel.receiving_user_id',
+		backref='receiving_user'
+	)
+	aspiring_friends = association_proxy('received_rels', 'requesting_user')
+	desired_friends = association_proxy('requested_rels', 'receiving_user')
+
 
 class MediaModel(Base):
 	__tablename__ = Tables.MEDIA
@@ -47,12 +61,20 @@ class MediaModel(Base):
 	trailer = Column(String, nullable=True)
 
 
-class RelationsModel(Base):
-	__tablename__ = Tables.RELATIONS
+class FriendshipRequestModel(Base):
+	__tablename__ = Tables.FRIENDSHIP_REQUEST
 
 	id = Column(Integer, primary_key=True)
 
-	user_1 = Column(Integer, ForeignKey('User.id'), nullable=False)
-	user_2 = Column(Integer, ForeignKey('User.id'), nullable=False)
-	state = Column(String, nullable=False)
-	created = Column(Date)
+	requesting_user_id = Column(Integer, ForeignKey('User.id', ondelete="CASCADE"), primary_key=True)
+	receiving_user_id = Column(Integer, ForeignKey('User.id', ondelete="CASCADE"), primary_key=True)
+	is_rejected = Column(Boolean, nullable=False, default=False)
+
+
+class FriendshipModel(Base):
+	__tablename__ = Tables.FRIENDSHIP
+
+	id = Column(Integer, primary_key=True)
+
+	user_1 = Column(Integer, ForeignKey('User.id', ondelete="CASCADE"), primary_key=True)
+	user_2 = Column(Integer, ForeignKey('User.id', ondelete="CASCADE"), primary_key=True)
