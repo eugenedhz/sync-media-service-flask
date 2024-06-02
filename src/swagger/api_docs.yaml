@@ -73,6 +73,8 @@ info:
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
       | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | ***Friends API errors*** |
+      | 403 | FORBIDDEN | ***CANNOT_ADD_YOURSELF*** |
       | ***Video API errors*** |
       | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
       | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
