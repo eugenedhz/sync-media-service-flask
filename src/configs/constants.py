@@ -29,6 +29,7 @@ class Tables(Readonly):
 	USER = 'User'
 	MEDIA = 'Media'
 	ROOM = 'Room'
+	PARTICIPANT = 'Participant'
 
 
 class VideoUploadSession(Readonly):
