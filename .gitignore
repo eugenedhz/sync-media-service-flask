@@ -2,4 +2,3 @@
 __pycache__
 src/static/
 src/alembic/versions/
-src/api/sockets/
