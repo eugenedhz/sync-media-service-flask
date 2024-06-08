@@ -1,5 +1,8 @@
+from copy import deepcopy
+
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from src.repository.sqla_models.types import DateAsTimestamp
 from src.configs.constants import Tables
@@ -7,7 +10,7 @@ from src.configs.constants import Tables
 
 class Base(DeclarativeBase):
 	def _asdict(self, domain_class):
-		new_dict = self.__dict__
+		new_dict = deepcopy(self.__dict__)
 		required_fields = domain_class.__match_args__
 		fields_to_check = tuple(new_dict.keys())
 
@@ -16,6 +19,27 @@ class Base(DeclarativeBase):
 				del new_dict[key]
 
 		return new_dict
+
+
+class ParticipantModel(Base):
+	__tablename__ = Tables.PARTICIPANT
+
+	id = Column(Integer, primary_key=True)
+	roomId = Column(Integer, ForeignKey(f'{Tables.ROOM}.id', ondelete='CASCADE'))
+	userId = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete='CASCADE'))
+
+	user = relationship('UserModel', back_populates='participations')
+	room = relationship('RoomModel', back_populates='participants')
+
+
+	@hybrid_property
+	def name(self) -> str:
+		return self.user.displayName
+
+
+	@hybrid_property
+	def avatar(self) -> str:
+		return self.user.avatar
 
 
 class RoomModel(Base):
@@ -28,6 +52,11 @@ class RoomModel(Base):
 	title = Column(String, nullable=False)
 	isPrivate = Column(Boolean, nullable=False)
 	cover = Column(String)
+
+	participants = relationship(
+		ParticipantModel,
+		back_populates = 'room'
+	)
 
 
 class UserModel(Base):
@@ -50,6 +79,10 @@ class UserModel(Base):
 		RoomModel, 
 		cascade = 'all, delete-orphan',
 		backref = 'creator'
+	)
+	participations = relationship(
+		ParticipantModel,
+		back_populates = 'user'
 	)
 
 
