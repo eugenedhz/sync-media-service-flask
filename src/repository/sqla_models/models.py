@@ -25,8 +25,8 @@ class ParticipantModel(Base):
 	__tablename__ = Tables.PARTICIPANT
 
 	id = Column(Integer, primary_key=True)
-	roomId = Column(Integer, ForeignKey(f'{Tables.ROOM}.id', ondelete='CASCADE'))
-	userId = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete='CASCADE'))
+	roomId = Column(Integer, ForeignKey(f'{Tables.ROOM}.id', ondelete='CASCADE'), nullable=False)
+	userId = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete='CASCADE'), nullable=False)
 
 	user = relationship('UserModel', back_populates='participations')
 	room = relationship('RoomModel', back_populates='participants')
