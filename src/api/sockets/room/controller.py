@@ -2,8 +2,6 @@ from flask_socketio import send, emit, join_room, leave_room
 from flask import request
 
 from src.api.extensions import socketio
-from src.api.sockets.connection.controller import connected_users
-from src.api.services.user import user_service
 from src.api.services.room import room_service
 from src.api.services.participant import participant_service
 from src.api.services.user import user_socket_session
