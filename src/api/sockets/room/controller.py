@@ -10,7 +10,7 @@ from src.api.error.custom_error import ApiError
 from src.api.sockets.room.error import ROOM_SOCKET_ERRORS
 
 
-@socketio.on('joinRoom')
+@socketio.on('join')
 def join_room_event(data):
 	user_id = user_socket_session.get(request.sid)
 	room_id = int(data['roomId'])
@@ -30,7 +30,7 @@ def join_room_event(data):
 	join_room(room_id)
 
 
-@socketio.on('leaveRoom')
+@socketio.on('leave')
 def leave_room_event(data):
 	user_id = user_socket_session.get(request.sid)
 	room_id = int(data['roomId'])
