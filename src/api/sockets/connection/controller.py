@@ -24,7 +24,7 @@ def connect_event():
 
 @socketio.on('disconnect')
 def disconnect_event():
-	user_id = connected_users.get(request.sid)
+	user_id = user_socket_session.get(request.sid)
 	if user_id is None:
 		return
 
