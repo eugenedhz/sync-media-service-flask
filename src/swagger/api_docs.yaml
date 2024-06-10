@@ -80,9 +80,19 @@ info:
       | 400 | BAD REQUEST | ***NO_UPLOAD_SESSION_PROVIDED*** |
       | 400 | BAD REQUEST | ***NO_QUALITY_PROVIDED*** |
       | 409 | CONFLICT | ***SIZE_MISMATCH*** |
+      | ***Room API errors*** |
+      | 404 | NOT FOUND | ***ROOM_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***ROOMS_NOT_FOUND*** |
+      | 409 | CONFLICT | ***ROOM_NAME_ALREADY_EXISTS*** |
+      | 403 | FORBIDDEN | ***CREATOR_RIGHTS_REQUIRED*** |
       | ***Participant API errors*** |
       | 404 | NOT FOUND | ***PARTICIPANT_NOT_FOUND*** |
       | 404 | NOT FOUND | ***PARTICIPANTS_NOT_FOUND*** |
+      | ***Room Sockets API errors*** |
+      | null | error packet | ***ACCESS_TOKEN_REQUIRED*** |
+      | null | event: 'error' | ***ROOM_NOT_FOUND*** |
+      | null | event: 'error' | ***ALREADY_PARTICIPANTING*** |
+      | null | event: 'error' | ***PARTICIPANT_NOT_IN_ROOM*** |
 
       -----------------------------------------------
   
@@ -113,6 +123,10 @@ tags:
     description: Do everything with rooms :)
   - name: Participants API
     description: Do everything with participants :)
+  - name: Sockets API
+    description: Do everything with sockets :)
+  - name: Room Sockets API
+    description: Do everything with room sockets :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -823,6 +837,96 @@ paths:
               schema:
                 $ref: '#/components/schemas/ParticipantSchema'
 
+  /connect:
+    post:
+      operationId: socket_connect
+
+      summary: Подключение к сокетам
+
+      tags:
+        - Sockets API
+
+      description: |
+        обязателен параметр `withCredentials: true` при инициализации объекта `io`, чтобы передать access token
+        Иначе отправляется error packet с json `{'message': 'ACCESS_TOKEN_REQUIRED'}`
+
+      responses:
+        200:
+          description: |
+            при успешном подключении происходит emit события `connected` с json 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                    example: 1
+
+  /disconnect:
+    post:
+      operationId: socket_disconnect
+
+      summary: Отключение от сокетов
+
+      tags:
+        - Sockets API
+
+      description: |
+        Происходит при событии `dicsonnect`, либо когда пользователь закрывает страницу
+        пользователь автоматически удаляется из всех комнат,
+        при удалении пользователя из всех комнат происходит emit события `left` в соотв. комнату
+        с json сущностью участника.
+
+  /join:
+    post:
+      operationId: join_room
+
+      summary: Подключение к комнате
+
+      tags:
+        - Room Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinAndLeaveRoomSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном подключении происходит emit события `joined` в соотв. комнату с json сущностью участника
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantSchema'
+
+  /leave:
+    post:
+      operationId: leave_room
+
+      summary: Отключение от комнаты
+
+      tags:
+        - Room Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinAndLeaveRoomSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном отключении происходит emit события `left` в соотв. комнату с json сущностью участника
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantSchema'
 
 ################################################################################
 #                                    Schemas                                   #
@@ -1317,3 +1421,11 @@ components:
           type: string
           nullable: true
           example: '/static/images/j23jro23uo4i2rt4kjfr.jpg'
+
+    JoinAndLeaveRoomSchema:
+      type: object
+      properties:
+        roomId:
+          type: integer
+          nullable: false
+          example: 1
