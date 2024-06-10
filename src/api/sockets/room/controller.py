@@ -7,11 +7,13 @@ from src.api.services.participant import participant_service
 from src.api.services.user import user_socket_session
 from src.usecase.participant.dto import ParticipantCreateDTO
 from src.api.error.custom_error import ApiError
+from src.api.sockets.room.schemas import JoinAndLeaveRoomSchema
 from src.api.sockets.room.error import ROOM_SOCKET_ERRORS
 
 
 @socketio.on('join')
 def join_room_event(data):
+	JoinAndLeaveRoomSchema().validate(data)
 	user_id = user_socket_session.get(request.sid)
 	room_id = int(data['roomId'])
 
@@ -32,6 +34,7 @@ def join_room_event(data):
 
 @socketio.on('leave')
 def leave_room_event(data):
+	JoinAndLeaveRoomSchema().validate(data)
 	user_id = user_socket_session.get(request.sid)
 	room_id = int(data['roomId'])
 
