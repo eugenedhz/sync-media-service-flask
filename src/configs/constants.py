@@ -32,13 +32,17 @@ class Tables(Readonly):
 	PARTICIPANT = 'Participant'
 
 
+class RedisGroups(Readonly):
+	UPLOAD = 'upload'
+	TRANSCODE = 'transcode'
+	SOCKET_CONNECTION = 'socket_connection'
+
+
 class VideoUploadSession(Readonly):
 	CLEANER_SLEEP = timedelta(days=1).total_seconds()
 	
-	UPLOAD_GROUP = 'upload'
 	UPLOAD_TIMEOUT = timedelta(days=1)
 
-	TRANSCODE_GROUP = 'transcode'
 	TRANSCODE_STATUS_EXPIRES = timedelta(days=1)
 	TRANSCODE_STATUSES = {
 		3: 'pending',

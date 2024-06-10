@@ -40,10 +40,29 @@ class ParticipantRepo():
             )
 
             found_participant = get_first(session=s, query=query)
+            if found_participant is None:
+                return None
+
             s.refresh(found_participant.user)
 
-        if found_participant is None:
-            return None
+        name = found_participant.name
+        avatar = found_participant.avatar
+        return ParticipantDTO(**found_participant._asdict(Participant), name=name, avatar=avatar)
+
+
+    def get_by_user_and_room_id(self, user_id: int, room_id: int) -> Optional[ParticipantDTO]:
+        with Session(self.engine) as s:
+            query = (
+                select(ParticipantModel)
+                .where(ParticipantModel.userId == user_id)
+                .where(ParticipantModel.roomId == room_id)
+            )
+
+            found_participant = get_first(session=s, query=query)
+            if found_participant is None:
+                return None
+
+            s.refresh(found_participant.user)
 
         name = found_participant.name
         avatar = found_participant.avatar
