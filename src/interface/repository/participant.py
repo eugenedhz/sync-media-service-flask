@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from typing import Any
+from typing import Optional, Any
 
 from src.domain.participant import Participant
 from src.usecase.dto import QueryParametersDTO
@@ -14,9 +14,13 @@ class ParticipantRepoInterface(ABC):
 
 
 	@abstractmethod
-	def get_by_id(self, id: int) -> ParticipantDTO:
+	def get_by_id(self, id: int) -> Optional[ParticipantDTO]:
 		raise NotImplementedError
 
+
+	def get_by_user_and_room_id(self, user_id: int, room_id: int) -> Optional[ParticipantDTO]:
+		raise NotImplementedError
+		
 
 	@abstractmethod
 	def delete(self, id: int) -> ParticipantDTO:
