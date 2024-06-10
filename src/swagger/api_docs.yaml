@@ -88,8 +88,9 @@ info:
       | ***Participant API errors*** |
       | 404 | NOT FOUND | ***PARTICIPANT_NOT_FOUND*** |
       | 404 | NOT FOUND | ***PARTICIPANTS_NOT_FOUND*** |
-      | ***Room Sockets API errors*** |
+      | ***Sockets API errors*** |
       | null | error packet | ***ACCESS_TOKEN_REQUIRED*** |
+      | ***Room Sockets API errors*** |
       | null | event: 'error' | ***ROOM_NOT_FOUND*** |
       | null | event: 'error' | ***ALREADY_PARTICIPANTING*** |
       | null | event: 'error' | ***PARTICIPANT_NOT_IN_ROOM*** |
