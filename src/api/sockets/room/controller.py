@@ -15,7 +15,7 @@ from src.api.sockets.room.error import ROOM_SOCKET_ERRORS
 def join_room_event(data):
 	JoinAndLeaveRoomSchema().validate(data)
 	user_id = user_socket_session.get(request.sid)
-	room_id = int(data['roomId'])
+	room_id = data['roomId']
 
 	is_room_exists = room_service.is_field_exists('id', room_id)
 	if not is_room_exists:
@@ -36,7 +36,7 @@ def join_room_event(data):
 def leave_room_event(data):
 	JoinAndLeaveRoomSchema().validate(data)
 	user_id = user_socket_session.get(request.sid)
-	room_id = int(data['roomId'])
+	room_id = data['roomId']
 
 	is_room_exists = room_service.is_field_exists('id', room_id)
 	if not is_room_exists:
