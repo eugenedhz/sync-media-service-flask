@@ -77,7 +77,7 @@ def delete_friend():
     user_friends_ids = [user.id for user in user_service.get_friends(user_id=user_id)]
 
     if int(friend_id) not in user_friends_ids:
-        raise ApiError(FRIENDS_API_ERRORS['FRIEND_DOES_NOT_EXIST'])
+        raise ApiError(FRIENDS_API_ERRORS['FRIEND_NOT_FOUND'])
 
     deleted_friend = user_service.delete_friend(user_id=user_id, friend_id=friend_id)
 
@@ -126,7 +126,7 @@ def delete_sent_friend_request():
     sent_request_ids = [user.id for user in user_service.get_sent_friend_requests(user_id=user_id)]
 
     if int(friend_id) not in sent_request_ids:
-        raise ApiError(FRIENDS_API_ERRORS['REQUEST_DOES_NOT_EXIST'])
+        raise ApiError(FRIENDS_API_ERRORS['REQUEST_NOT_FOUND'])
 
     deleted_request_friend = user_service.delete_sent_friend_request(requesting_user_id=user_id, receiving_user_id=friend_id)
 
@@ -149,7 +149,7 @@ def delete_received_friend_request():
     received_requests_ids = [user.id for user in user_service.get_received_friend_requests(user_id=user_id)]
 
     if int(friend_id) not in received_requests_ids:
-        raise ApiError(FRIENDS_API_ERRORS['REQUEST_DOES_NOT_EXIST'])
+        raise ApiError(FRIENDS_API_ERRORS['REQUEST_NOT_FOUND'])
 
     deleted_request_friend = user_service.delete_received_friend_request(user_id=user_id, requesting_user_id=friend_id)
 
