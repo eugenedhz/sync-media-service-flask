@@ -76,8 +76,8 @@ info:
       | ***Friends API errors*** |
       | 403 | FORBIDDEN | ***CANNOT_ADD_YOURSELF*** |
       | 403 | FORBIDDEN | ***ALREADY_REQUESTED*** |
-      | 404 | NOT FOUND | ***FRIEND_DOES_NOT_EXIST*** |
-      | 404 | NOT FOUND | ***REQUEST_DOES_NOT_EXIST*** |
+      | 404 | NOT FOUND | ***FRIEND_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***REQUEST_NOT_FOUND*** |
       | ***Video API errors*** |
       | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
       | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
