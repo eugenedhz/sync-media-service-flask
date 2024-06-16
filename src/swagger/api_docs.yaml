@@ -505,7 +505,7 @@ paths:
       security:
         - cookieAuth: []
 
-      operationId: reject_friend_request
+      operationId: delete_received_friend_request
 
       summary: Отклонить входящий запрос в друзья
 
