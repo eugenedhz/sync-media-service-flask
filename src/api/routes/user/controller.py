@@ -68,11 +68,14 @@ def get_user_by_username_or_id():
 
 	serialize_user = UserSchema(only=select).dump
 	serialize_users = UserSchema(only=select, many=True).dump
-
 	serialized_user = serialize_user(user)
 
-	if expand and 'friends' in expand:
-		serialized_user['friends'] = serialize_users(user_service.get_friends(user_id=user_id))
+	if not expand:
+		return jsonify(serialized_user)
+
+	if 'friends' in expand:
+		friends = user_service.get_friends(user_id=user_id)
+		serialized_user['friends'] = serialize_users(friends)
 
 	return jsonify(serialized_user)
 

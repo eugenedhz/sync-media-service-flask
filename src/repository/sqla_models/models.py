@@ -35,19 +35,6 @@ class UserModel(Base):
 	description = Column(String)
 	avatar = Column(String)
 
-	requested_rels = relationship(
-		'FriendshipRequestModel',
-		foreign_keys='FriendshipRequestModel.requesting_user_id',
-		backref='requesting_user'
-	)
-	received_rels = relationship(
-		'FriendshipRequestModel',
-		foreign_keys='FriendshipRequestModel.receiving_user_id',
-		backref='receiving_user'
-	)
-	aspiring_friends = association_proxy('received_rels', 'requesting_user')
-	desired_friends = association_proxy('requested_rels', 'receiving_user')
-
 
 class MediaModel(Base):
 	__tablename__ = Tables.MEDIA
@@ -64,17 +51,16 @@ class MediaModel(Base):
 class FriendshipRequestModel(Base):
 	__tablename__ = Tables.FRIENDSHIP_REQUEST
 
-	id = Column(Integer, primary_key=True)
+	id = Column(Integer, primary_key=True, autoincrement=True)
 
-	requesting_user_id = Column(Integer, ForeignKey('User.id', ondelete="CASCADE"), primary_key=True)
-	receiving_user_id = Column(Integer, ForeignKey('User.id', ondelete="CASCADE"), primary_key=True)
-	is_rejected = Column(Boolean, nullable=False, default=False)
+	requesting_user_id = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+	receiving_user_id = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
 
 
 class FriendshipModel(Base):
 	__tablename__ = Tables.FRIENDSHIP
 
-	id = Column(Integer, primary_key=True)
+	id = Column(Integer, primary_key=True, autoincrement=True)
 
-	user_1 = Column(Integer, ForeignKey('User.id', ondelete="CASCADE"), primary_key=True)
-	user_2 = Column(Integer, ForeignKey('User.id', ondelete="CASCADE"), primary_key=True)
+	user_1 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+	user_2 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)

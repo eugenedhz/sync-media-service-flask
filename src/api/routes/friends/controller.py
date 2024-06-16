@@ -49,6 +49,13 @@ def add_friend():
     if not is_user_exists:
         raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
+    requested_users_ids = [user.id for user in user_service.get_sent_friend_requests(user_id=user_id)]
+    already_friends_ids = [user.id for user in user_service.get_friends(user_id=user_id)]
+    already_requested_ids = requested_users_ids + already_friends_ids
+
+    if int(friend_id) in already_requested_ids:
+        raise ApiError(FRIENDS_API_ERRORS['ALREADY_REQUESTED'])
+
     added_friend = user_service.add_friend(requesting_user_id=user_id, receiving_user_id=friend_id)
 
     return jsonify(added_friend._asdict())
@@ -66,6 +73,11 @@ def delete_friend():
 
     if not is_friend_exists:
         raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
+
+    user_friends_ids = [user.id for user in user_service.get_friends(user_id=user_id)]
+
+    if int(friend_id) not in user_friends_ids:
+        raise ApiError(FRIENDS_API_ERRORS['FRIEND_DOES_NOT_EXIST'])
 
     deleted_friend = user_service.delete_friend(user_id=user_id, friend_id=friend_id)
 
@@ -111,6 +123,11 @@ def delete_sent_friend_request():
     if not is_friend_exists:
         raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
+    sent_request_ids = [user.id for user in user_service.get_sent_friend_requests(user_id=user_id)]
+
+    if int(friend_id) not in sent_request_ids:
+        raise ApiError(FRIENDS_API_ERRORS['REQUEST_DOES_NOT_EXIST'])
+
     deleted_request_friend = user_service.delete_sent_friend_request(requesting_user_id=user_id, receiving_user_id=friend_id)
 
     return jsonify(deleted_request_friend._asdict())
@@ -118,7 +135,7 @@ def delete_sent_friend_request():
 
 @app.route('/friends/reject', methods=['DELETE'])
 @jwt_required()
-def reject_friend_request():
+def delete_received_friend_request():
     request_params = request.args
 
     user_id = get_jwt_identity()
@@ -129,6 +146,11 @@ def reject_friend_request():
     if not is_friend_exists:
         raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
-    rejected_friend = user_service.reject_friend_request(user_id=user_id, requesting_user_id=friend_id)
+    received_requests_ids = [user.id for user in user_service.get_received_friend_requests(user_id=user_id)]
 
-    return jsonify(rejected_friend._asdict())
+    if int(friend_id) not in received_requests_ids:
+        raise ApiError(FRIENDS_API_ERRORS['REQUEST_DOES_NOT_EXIST'])
+
+    deleted_request_friend = user_service.delete_received_friend_request(user_id=user_id, requesting_user_id=friend_id)
+
+    return jsonify(deleted_request_friend._asdict())

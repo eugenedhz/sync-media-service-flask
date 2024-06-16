@@ -135,13 +135,13 @@ class UserUsecase():
 		return UserDTO(**found_user_dict)
 
 
-	def reject_friend_request(self, user_id: int, requesting_user_id: int) -> UserDTO:
-		rejected_user = self.repo.reject_friend_request(user_id=user_id, requesting_user_id=requesting_user_id)
+	def delete_received_friend_request(self, user_id: int, requesting_user_id: int) -> UserDTO:
+		found_user = self.repo.delete_received_friend_request(user_id=user_id, requesting_user_id=requesting_user_id)
 
-		rejected_user_dict = rejected_user.to_dict()
-		del rejected_user_dict['passwordHash']
+		found_user_dict = found_user.to_dict()
+		del found_user_dict['passwordHash']
 
-		return UserDTO(**rejected_user_dict)
+		return UserDTO(**found_user_dict)
 
 
 	def is_field_exists(self, name: str, value: str) -> bool:

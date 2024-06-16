@@ -111,7 +111,6 @@ class UserRepo(UserRepoInterface):
 
 	def _send_friend_request(self, requesting_user_id: int, receiving_user_id: int):
 		with Session(self.engine) as s:
-			# Создаем новый запрос на дружбу
 			new_request = FriendshipRequestModel(
 				requesting_user_id=requesting_user_id,
 				receiving_user_id=receiving_user_id
@@ -122,120 +121,133 @@ class UserRepo(UserRepoInterface):
 
 	def add_friend(self, requesting_user_id: int, receiving_user_id: int) -> User:
 		with Session(self.engine) as s:
-			# Проверяем, существует ли обратный запрос на дружбу
-			friendship_request = s.query(FriendshipRequestModel).filter_by(
-				requesting_user_id=receiving_user_id,
-				receiving_user_id=requesting_user_id
-			).first()
+			query = (
+				select(FriendshipRequestModel)
+				.filter_by(
+					requesting_user_id=receiving_user_id,
+					receiving_user_id=requesting_user_id
+				)
+			)
+			friendship_request = get_first(s, query)
 
 			if not friendship_request:
 				self._send_friend_request(
 					requesting_user_id=requesting_user_id,
 					receiving_user_id=receiving_user_id
 				)
-
 			else:
-
-				# Создаем запись в таблице дружбы
 				friendship = FriendshipModel(
 					user_1=requesting_user_id,
 					user_2=receiving_user_id
 				)
 				s.add(friendship)
-
-				# Удаляем запрос на дружбу
 				s.delete(friendship_request)
 				s.commit()
 
-		friend = s.get(UserModel, receiving_user_id)
-
-		return User(**friend._asdict(User))
+			friend = s.get(UserModel, receiving_user_id)
+			return User(**friend._asdict(User))
 
 
 	def delete_friend(self, user_id: int, friend_id: int) -> User:
 		with Session(self.engine) as s:
-			friendship = s.query(FriendshipModel).filter(
-				((FriendshipModel.user_1 == user_id) & (FriendshipModel.user_2 == friend_id)) |
-				((FriendshipModel.user_1 == friend_id) & (FriendshipModel.user_2 == user_id))
-			).one()
-
+			query = (
+				select(FriendshipModel)
+				.filter(
+					((FriendshipModel.user_1 == user_id) & (FriendshipModel.user_2 == friend_id)) |
+					((FriendshipModel.user_1 == friend_id) & (FriendshipModel.user_2 == user_id))
+				)
+			)
+			friendship = get_first(s, query)
 			s.delete(friendship)
 			s.commit()
 
 			deleted_friend = s.get(UserModel, friend_id)
-
 			return User(**deleted_friend._asdict(User))
 
 
 	def get_friends(self, user_id: int) -> list[UserDTO]:
 		with Session(self.engine) as s:
-			friendships_as_user_1 = s.query(FriendshipModel).filter_by(user_1=user_id).all()
-			friendships_as_user_2 = s.query(FriendshipModel).filter_by(user_2=user_id).all()
+			query_as_user_1 = select(FriendshipModel).filter_by(user_1=user_id)
+			query_as_user_2 = select(FriendshipModel).filter_by(user_2=user_id)
+
+			friendships_as_user_1 = get_all(s, query_as_user_1)
+			friendships_as_user_2 = get_all(s, query_as_user_2)
 
 			friend_ids = set([friendship.user_2 for friendship in friendships_as_user_1] +
 							 [friendship.user_1 for friendship in friendships_as_user_2])
 
-			friends = s.query(UserModel).filter(UserModel.id.in_(friend_ids)).options(defer(UserModel.passwordHash)).all()
+			query_friends = (
+				select(UserModel)
+				.filter(UserModel.id.in_(friend_ids))
+				.options(defer(UserModel.passwordHash))
+			)
+			friends = get_all(s, query_friends)
 
 			friends_dto = [UserDTO(**friend._asdict(User)) for friend in friends]
-
 			return friends_dto
 
 
 	def get_received_friend_requests(self, user_id: int) -> list[UserDTO]:
 		with Session(self.engine) as s:
-			requests_received = s.query(FriendshipRequestModel).filter_by(receiving_user_id=user_id, is_rejected=False).all()
+			query = select(FriendshipRequestModel).filter_by(receiving_user_id=user_id)
+			requests_received = get_all(s, query)
 
 			requesting_user_ids = [request.requesting_user_id for request in requests_received]
 
-			requesting_users = s.query(UserModel).filter(UserModel.id.in_(requesting_user_ids)).options(defer(UserModel.passwordHash)).all()
+			query_requesting_users = (
+				select(UserModel)
+				.filter(UserModel.id.in_(requesting_user_ids))
+				.options(defer(UserModel.passwordHash))
+			)
+			requesting_users = get_all(s, query_requesting_users)
 
 			found_users_dto = [UserDTO(**user._asdict(User)) for user in requesting_users]
-
 			return found_users_dto
 
 
 	def get_sent_friend_requests(self, user_id: int) -> list[UserDTO]:
 		with Session(self.engine) as s:
-			requests_sent = s.query(FriendshipRequestModel).filter_by(requesting_user_id=user_id).all()
+			query = select(FriendshipRequestModel).filter_by(requesting_user_id=user_id)
+			requests_sent = get_all(s, query)
 
 			receiving_user_ids = [request.receiving_user_id for request in requests_sent]
 
-			receiving_users = s.query(UserModel).filter(UserModel.id.in_(
-				receiving_user_ids)).options(defer(UserModel.passwordHash)).all()
+			query_receiving_users = (
+				select(UserModel)
+				.filter(UserModel.id.in_(receiving_user_ids))
+				.options(defer(UserModel.passwordHash))
+			)
+			receiving_users = get_all(s, query_receiving_users)
 
 			found_users_dto = [UserDTO(**user._asdict(User)) for user in receiving_users]
-
 			return found_users_dto
 
 
 	def delete_sent_friend_request(self, requesting_user_id: int, receiving_user_id: int) -> User:
 		with Session(self.engine) as s:
-			sent_request = s.query(FriendshipRequestModel).filter_by(
-				requesting_user_id=requesting_user_id, receiving_user_id=receiving_user_id).first()
-
+			query = select(FriendshipRequestModel).filter_by(
+				requesting_user_id=requesting_user_id, receiving_user_id=receiving_user_id
+			)
+			sent_request = get_first(s, query)
 			s.delete(sent_request)
 			s.commit()
 
-		canceled_friend = s.get(UserModel, receiving_user_id)
+			canceled_friend = s.get(UserModel, receiving_user_id)
+			return User(**canceled_friend._asdict(User))
 
-		return User(**canceled_friend._asdict(User))
 
-
-	def reject_friend_request(self, user_id: int, requesting_user_id: int) -> User:
+	def delete_received_friend_request(self, user_id: int, requesting_user_id: int) -> User:
 		with Session(self.engine) as s:
-			request = s.query(FriendshipRequestModel).filter_by(
+			query = select(FriendshipRequestModel).filter_by(
 				receiving_user_id=user_id,
-				requesting_user_id=requesting_user_id,
-				is_rejected=False
-			).one()
-
-			request.is_rejected = True
+				requesting_user_id=requesting_user_id
+			)
+			request = get_first(s, query)
+			s.delete(request)
 			s.commit()
 
-		rejected_user = s.get(UserModel, requesting_user_id)
-
-		return User(**rejected_user._asdict(User))
+			rejected_user = s.get(UserModel, requesting_user_id)
+			return User(**rejected_user._asdict(User))
 
 
 	def is_field_exists(self, field: dict[str: Any]) -> bool:

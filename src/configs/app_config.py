@@ -1,6 +1,10 @@
 from datetime import timedelta
 
 from pkg.constants.env import get_from_env
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 
 class Default(object):

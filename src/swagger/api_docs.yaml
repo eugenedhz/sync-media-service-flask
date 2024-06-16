@@ -75,6 +75,9 @@ info:
       | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
       | ***Friends API errors*** |
       | 403 | FORBIDDEN | ***CANNOT_ADD_YOURSELF*** |
+      | 403 | FORBIDDEN | ***ALREADY_REQUESTED*** |
+      | 404 | NOT FOUND | ***FRIEND_DOES_NOT_EXIST*** |
+      | 404 | NOT FOUND | ***REQUEST_DOES_NOT_EXIST*** |
       | ***Video API errors*** |
       | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
       | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
@@ -107,6 +110,8 @@ tags:
     description: Do everything with users :)
   - name: Media API
     description: Do everything with media :)
+  - name: Friends API
+    description: Do everything with friends :)
   - name: Video API
     description: Do everything with videos :)
   - name: Rooms API
