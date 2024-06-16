@@ -117,9 +117,13 @@ def get_all_users():
 
 	serialized_users = serialize_users(users)
 
-	if expand and 'friends' in expand:
+	if not expand:
+		return jsonify(serialized_users)
+
+	if 'friends' in expand:
 		for user in serialized_users:
-			user['friends'] = serialize_users(user_service.get_friends(id=user['id']))
+			friends = user_service.get_friends(user_id=user['id'])
+			user['friends'] = serialize_users(friends)
 
 	return jsonify(serialized_users)
 
