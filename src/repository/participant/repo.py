@@ -11,7 +11,7 @@ from src.usecase.participant.dto import ParticipantDTO
 from pkg.sqlalchemy.utils import get_first, get_all, formalize_filters
 
 
-class ParticipantRepo():
+class ParticipantRepo(ParticipantRepoInterface):
     def __init__(self, engine: Engine):
         self.engine = engine
 
