@@ -42,6 +42,28 @@ class ParticipantModel(Base):
 		return self.user.avatar
 
 
+class PlaylistMediaModel(Base):
+	__tablename__ = Tables.PLAYLIST_MEDIA
+
+	id = Column(Integer, primary_key=True)
+	roomId = Column(Integer, ForeignKey(f'{Tables.ROOM}.id', ondelete='CASCADE'), nullable=False)
+	mediaId = Column(Integer, ForeignKey(f'{Tables.MEDIA}.id', ondelete='CASCADE'), nullable=False)
+	order = Column(Integer, nullable=False)
+
+	media = relationship('MediaModel', back_populates='rooms')
+	room = relationship('RoomModel', back_populates='playlist')
+
+
+	@hybrid_property
+	def name(self) -> str:
+		return self.media.name
+
+
+	@hybrid_property
+	def thumbnail(self) -> str:
+		return self.media.thumbnail
+
+
 class RoomModel(Base):
 	__tablename__ = Tables.ROOM
 
@@ -55,6 +77,10 @@ class RoomModel(Base):
 
 	participants = relationship(
 		ParticipantModel,
+		back_populates = 'room'
+	)
+	playlist_media = relationship(
+		PlaylistMediaModel,
 		back_populates = 'room'
 	)
 
@@ -96,3 +122,8 @@ class MediaModel(Base):
 	thumbnail = Column(String, nullable=False)
 	preview = Column(String, nullable=False)
 	trailer = Column(String, nullable=True)
+
+	rooms = relationship(
+		PlaylistMediaModel,
+		back_populates = 'media'
+	)
