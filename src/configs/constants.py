@@ -30,6 +30,7 @@ class Tables(Readonly):
 	MEDIA = 'Media'
 	ROOM = 'Room'
 	PARTICIPANT = 'Participant'
+	PLAYLIST_MEDIA = 'PlaylistMedia'
 
 
 class VideoUploadSession(Readonly):
