@@ -5,11 +5,13 @@ from src.app import app
 from src.api.services.room import room_service
 from src.api.services.user import user_service
 from src.api.services.participant import participant_service
+from src.api.services.playlist_media import playlist_media_service
 from src.api.services.image import image_service
 from src.api.routes.room.schemas import (
     RoomSchema, CreateRoomSchema, UpdateRoomSchema, RoomFilesSchema
 )
 from src.api.routes.participant.schemas import ParticipantSchema
+from src.api.routes.playlist_media.schemas import PlaylistMediaSchema
 from src.usecase.room.dto import RoomDTO, RoomCreateDTO, RoomUpdateDTO
 from src.usecase.dto import QueryParametersDTO
 from src.api.error.shared_error import API_ERRORS
@@ -27,7 +29,7 @@ from pkg.dict.keys import find_keys
 
 
 FILES = ('cover',)
-EXPAND_FIELDS = ('creator', 'participants')
+EXPAND_FIELDS = ('creator', 'participants', 'playlist_media')
 
 
 @app.route('/room', methods=['POST'])
@@ -111,6 +113,11 @@ def get_room_by_id_or_name():
         participants = participant_service.get_room_participants(room.id)
         serialized_room['participants'] = serialize_participants(participants)
 
+    if 'playlist_media' in expand:
+        serialize_playlist_medias = PlaylistMediaSchema(many=True).dump
+        playlist_medias = playlist_media_service.get_room_playlist_medias(room.id)
+        serialized_room['playlist_media'] = serialize_playlist_medias(playlist_medias)
+
     return jsonify(serialized_room)
 
 
@@ -163,6 +170,13 @@ def get_all_rooms():
             room_id = rooms[i].id
             participants = participant_service.get_room_participants(room_id)
             serialized_rooms[i]['participants'] = serialize_participants(participants)
+
+    if 'playlist_media' in expand:
+        serialize_playlist_medias = PlaylistMediaSchema(many=True).dump
+        for i in range(len(rooms)):
+            room_id = rooms[i].id
+            playlist_medias = playlist_media_service.get_room_playlist_medias(room_id)
+            serialized_rooms[i]['playlist_media'] = serialize_playlist_medias(playlist_medias)
 
     return jsonify(serialized_rooms)
 
