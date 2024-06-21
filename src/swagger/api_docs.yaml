@@ -70,6 +70,13 @@ info:
       | ***Media API errors*** |
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
+      | ***Genres API errors*** |
+      | 404 | NOT FOUND | ***GENRE_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***GENRES_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***MEDIA_GENRE_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***MEDIA_GENRES_NOT_FOUND*** |
+      | 409 | CONFLICT | ***SLUG_EXISTS*** |
+      | 409 | CONFLICT | ***MEDIA_GENRE_EXISTS*** |
 
       -----------------------------------------------
   
@@ -96,6 +103,8 @@ tags:
     description: Do everything with media :)
   - name: Rooms API
     description: Do everything with rooms :)
+  - name: Genres API
+    description: Do everything with genres :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -375,6 +384,12 @@ paths:
           required: false
           description: Получить медиа по id, принимается только id=число, иначе выведет ошибку.
           type: int
+        - in: query
+          name: expand
+          required: false
+          description: |
+            Добавить связанные сущности, доступно: `genres`
+          type: string
 
       responses:
         200:
@@ -470,6 +485,12 @@ paths:
         description: |
           Отфильтровать медиа по значениям полей, например `filter_by=name=Барби,description=Почему всё розовое`.
         type: string
+      - in: query
+        name: expand
+        required: false
+        description: |
+          Добавить связанные сущности, доступно: `genres`
+        type: string
 
       responses:
         200:
@@ -477,6 +498,230 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MediaSchema'
+
+  /genre/all:
+    get:
+      operationId: get_genres
+
+      summary: Получить все жанры
+
+      tags:
+        - Genres API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля, например `select=id,name`
+        type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: |
+          Отфильтровать по значениям полей
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+  /media/genre:
+    get:
+      operationId: get_media_genres
+
+      summary: Получить все жанры конректного медиа
+
+      tags:
+        - Genres API
+        - Media API
+
+      parameters:
+      - in: query
+        name: mediaId
+        required: false
+        description: |
+          получить по id медиа
+        type: string
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля, например `select=id,name`
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    post:
+      security:
+        - cookieAuth: []
+
+      operationId: add_media_genre
+
+      summary: Добавить жанр к медиа
+
+      tags:
+        - Genres API
+        - Media API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaGenreAddOrDeleteSchema'
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_media_genre
+
+      summary: Удалить жанр из медиа
+
+      tags:
+        - Genres API
+        - Media API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaGenreAddOrDeleteSchema'
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+  /genre:
+    post:
+      security:
+        - cookieAuth: []
+
+      summary: Создание жанра
+
+      tags:
+        - Genres API
+
+      operationId: create_genre
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenreCreateSchema'
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    get:
+      summary: Получение жанра
+
+      tags:
+        - Genres API
+
+      operationId: get_genre
+
+      parameters:
+        - in: query
+          name: select
+          required: false
+          description: |
+            Получить только определённые поля например `select=id,name`
+          type: string
+        - in: query
+          name: id
+          required: false
+          description: Получить по id
+          type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    patch:
+      security:
+        - cookieAuth: []
+
+      operationId: update_genre
+
+      summary: Обновление жанра
+
+      tags:
+        - Genres API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenreUpdateSchema'
+
+      parameters:
+        - in: query
+          name: id
+          required: false
+          description: Обновить по id
+          type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_genre
+
+      summary: Удаление жанра
+
+      tags:
+        - Genres API
+
+      parameters:
+      - in: query
+        name: id
+        required: false
+        description: Удалить по id
+        type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
 
 ################################################################################
 #                                    Schemas                                   #
@@ -710,3 +955,73 @@ components:
           nullable: false
           example: 'abc1.xyz2'
           description: В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+
+    GenreSchema:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: false
+          example: 1
+        name:
+          type: string
+          nullable: false
+          example: 'Ужасы'
+        slug:
+          type: string
+          nullable: false
+          example: 'horror'
+
+    GenreCreateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          required: true
+          example: 'Ужасы'
+          minLength: 2
+          description: |
+            имеет regexp `^[А-Я]{1}[а-я]+$`
+        slug:
+          type: string
+          required: true
+          nullable: false
+          example: 'horror'
+          minLength: 2
+          description: |
+            имеет regexp `^[a-z]+$`
+
+    GenreUpdateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          required: false
+          example: 'Ужасы'
+          minLength: 2
+          description: |
+            имеет regexp `^[А-Я]{1}[а-я]+$`
+        slug:
+          type: string
+          required: false
+          nullable: false
+          example: 'horror'
+          minLength: 2
+          description: |
+            имеет regexp `^[a-z]+$`
+
+    MediaGenreAddOrDeleteSchema:
+      type: object
+      properties:
+        mediaId:
+          type: integer
+          nullable: false
+          required: true
+          example: 1
+        genreId:
+          type: integer
+          nullable: false
+          required: true
+          example: 1

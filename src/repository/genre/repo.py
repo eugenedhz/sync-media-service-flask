@@ -4,9 +4,9 @@ from typing import Any
  
 from src.domain.genre import Genre
 from src.interface.repository.genre import GenreRepoInterface
-from src.repository.sqla_models.models import GenreModel
+from src.repository.sqla_models.models import GenreModel, MediaModel, MediaGenreModel
 from src.usecase.dto import QueryParametersDTO
-from src.usecase.genre.dto import GenreDTO
+from src.usecase.genre.dto import GenreDTO, GenreUpdateDTO
 
 from pkg.sqlalchemy.utils import get_first, get_all, formalize_filters
 
@@ -18,7 +18,7 @@ class GenreRepo(GenreRepoInterface):
 
     def store(self, genre: Genre) -> Genre:
         with Session(self.engine) as s:
-            new_genre = GenreModel(**(genre.to_dict()))
+            new_genre = GenreModel(**genre.to_dict())
 
             s.add(new_genre)
 
@@ -59,7 +59,7 @@ class GenreRepo(GenreRepoInterface):
         return Genre(**found_genre._asdict(Genre))
     
 
-    def update(self, id: int, update_genre_dto: GenreDTO) -> Genre:
+    def update(self, id: int, update_genre_dto: GenreUpdateDTO) -> Genre:
         with Session(self.engine) as s:
             query = (
                 update(GenreModel)
@@ -93,6 +93,66 @@ class GenreRepo(GenreRepoInterface):
         found_genres_dto = [GenreDTO(**genre._asdict(Genre)) for genre in found_genres]
 
         return found_genres_dto
+
+
+    def get_media_genres(self, media_id: int) -> list[GenreDTO]:
+        with Session(self.engine) as s:
+            query = (
+                select(MediaModel)
+                .where(MediaModel.id == media_id)
+            )
+
+            media = get_first(session=s, query=query)
+            genres = media.genres
+
+        found_genres_dto = [GenreDTO(**genre._asdict(Genre)) for genre in genres]
+
+        return found_genres_dto
+
+
+    def is_media_genre_exist(self, media_id: int, genre_id: int) -> bool:
+        with Session(self.engine) as s:
+            query = (
+                select(MediaGenreModel.id)
+                .where(MediaGenreModel.genreId == genre_id)
+                .where(MediaGenreModel.mediaId == media_id)
+            )
+
+            media_genre = get_first(session=s, query=query)
+
+        return media_genre is not None
+
+
+    def add_genre_to_media(self, media_id: int, genre_id: int) -> Genre:
+        with Session(self.engine) as s:
+            media_genre = MediaGenreModel(mediaId=media_id, genreId=genre_id)
+
+            s.add(media_genre)
+
+            s.commit()
+
+            genre = s.get(GenreModel, genre_id)
+
+        return Genre(**genre._asdict(Genre))
+
+
+    def delete_genre_from_media(self, media_id: int, genre_id: int) -> Genre:
+        with Session(self.engine) as s:
+            query = (
+                select(MediaGenreModel)
+                .where(MediaGenreModel.genreId == genre_id)
+                .where(MediaGenreModel.mediaId == media_id)
+            )
+
+            media_genre = get_first(session=s, query=query)
+
+            s.delete(media_genre)
+
+            s.commit()
+
+            genre = s.get(GenreModel, genre_id)
+
+        return Genre(**genre._asdict(Genre))
 
 
     def delete(self, id: int) -> Genre:
