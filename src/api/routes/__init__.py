@@ -4,3 +4,4 @@ import src.api.routes.media.controller
 import src.api.routes.video.controller
 import src.api.routes.room.controller
 import src.api.routes.participant.controller
+import src.api.routes.playlist_media.controller
