@@ -144,6 +144,28 @@ class UserUsecase():
 		return UserDTO(**found_user_dict)
 
 
+	def get_already_requested_users_ids(self, user_id: int) -> list[int]:
+		ids = self.repo.get_already_requested_users_ids(user_id=user_id)
+
+		return ids
+
+
+	def get_friends_ids(self, user_id) -> list[int]:
+		ids = self.repo.get_friends_ids(user_id=user_id)
+
+		return ids
+
+	def get_sent_requests_friends_ids(self, user_id) -> list[int]:
+		ids = self.repo.get_sent_requests_friends_ids(user_id=user_id)
+
+		return ids
+
+
+	def get_received_requests_friends_ids(self, user_id: int) -> list[int]:
+		ids = self.repo.get_received_requests_friends_ids(user_id=user_id)
+
+		return ids
+
 	def is_field_exists(self, name: str, value: str) -> bool:
 		is_exists = self.repo.is_field_exists({name: value})
 
