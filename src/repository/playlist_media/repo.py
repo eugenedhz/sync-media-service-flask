@@ -31,7 +31,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
     def store(self, playlist_media: PlaylistMedia) -> PlaylistMediaDTO:
         with Session(self.engine) as s:
             max_order = self.get_max_playlist_order()
-            new_order = 1
+            new_order = 0
 
             if max_order:
                 new_order = max_order + 1

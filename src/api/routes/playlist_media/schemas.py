@@ -20,4 +20,4 @@ class CreatePlaylistMediaSchema(JsonSchema):
 
 
 class UpdatePlaylistMediaSchema(JsonSchema):
-	order = fields.Integer(required=True, validate=Range(min=1))
+	order = fields.Integer(required=True, validate=Range(min=0))
