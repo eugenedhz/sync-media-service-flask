@@ -102,7 +102,7 @@ def get_all_playlist_media():
 	playlist_medias = playlist_media_service.get_playlist_medias(query_parameters_dto=query_parameters_dto)
 
 	if len(playlist_medias) == 0:
-		aise ApiError(PLAYLIST_MEDIA_API_ERRORS['PLAYLIST_MEDIAS_NOT_FOUND'])
+		raise ApiError(PLAYLIST_MEDIA_API_ERRORS['PLAYLIST_MEDIAS_NOT_FOUND'])
 
 	serialize_playlist_medias = PlaylistMediaSchema(only=select, many=True).dump
 

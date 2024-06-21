@@ -15,5 +15,10 @@ PLAYLIST_MEDIA_API_ERRORS = {
     'PLAYLIST_MEDIA_ALREADY_IN_ROOM': ApiErrorInfo(
         error_message = 'PLAYLIST_MEDIA_ALREADY_IN_ROOM',
         status_code = 409
+    ),
+
+    'PLAYLIST_ORDER_OUT_OF_RANGE': ApiErrorInfo(
+        error_message = 'PLAYLIST_ORDER_OUT_OF_RANGE',
+        status_code = 400
     )
 }

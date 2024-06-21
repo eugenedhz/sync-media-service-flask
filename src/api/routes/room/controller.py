@@ -29,7 +29,7 @@ from pkg.dict.keys import find_keys
 
 
 FILES = ('cover',)
-EXPAND_FIELDS = ('creator', 'participants', 'playlist_media')
+EXPAND_FIELDS = ('creator', 'participants', 'playlistMedia')
 
 
 @app.route('/room', methods=['POST'])
@@ -113,10 +113,10 @@ def get_room_by_id_or_name():
         participants = participant_service.get_room_participants(room.id)
         serialized_room['participants'] = serialize_participants(participants)
 
-    if 'playlist_media' in expand:
+    if 'playlistMedia' in expand:
         serialize_playlist_medias = PlaylistMediaSchema(many=True).dump
         playlist_medias = playlist_media_service.get_room_playlist_medias(room.id)
-        serialized_room['playlist_media'] = serialize_playlist_medias(playlist_medias)
+        serialized_room['playlistMedia'] = serialize_playlist_medias(playlist_medias)
 
     return jsonify(serialized_room)
 
@@ -171,12 +171,12 @@ def get_all_rooms():
             participants = participant_service.get_room_participants(room_id)
             serialized_rooms[i]['participants'] = serialize_participants(participants)
 
-    if 'playlist_media' in expand:
+    if 'playlistMedia' in expand:
         serialize_playlist_medias = PlaylistMediaSchema(many=True).dump
         for i in range(len(rooms)):
             room_id = rooms[i].id
             playlist_medias = playlist_media_service.get_room_playlist_medias(room_id)
-            serialized_rooms[i]['playlist_media'] = serialize_playlist_medias(playlist_medias)
+            serialized_rooms[i]['playlistMedia'] = serialize_playlist_medias(playlist_medias)
 
     return jsonify(serialized_rooms)
 

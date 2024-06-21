@@ -1,6 +1,7 @@
 from typing import Any, Optional
 
 from src.domain.playlist_media import PlaylistMedia
+from src.interface.repository.playlist_media import PlaylistMediaRepoInterface
 from src.usecase.playlist_media.dto import PlaylistMediaUpdateDTO, PlaylistMediaCreateDTO, PlaylistMediaDTO
 from src.usecase.dto import QueryParametersDTO
 
