@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Any, Optional
 
 from src.domain.playlist_media import PlaylistMedia
+from src.interface.repository.playlist_media import PlaylistMediaRepoInterface
 from src.repository.sqla_models.models import PlaylistMediaModel
 from src.usecase.playlist_media.dto import PlaylistMediaUpdateDTO, PlaylistMediaDTO
 from src.usecase.dto import QueryParametersDTO
@@ -18,14 +19,11 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
     def get_max_playlist_order(self) -> Optional[int]:
         with Session(self.engine) as s:
             query = (
-                select(PlaylistMediaModel, func.max(PlaylistMediaModel.order))
+                select(func.max(PlaylistMediaModel.order))
             )
+            max_playlist_order = get_first(session=s, query=query)
 
-            last_playlist_media = get_first(session=s, query=query)
-            if last_playlist_media:
-                return last_playlist_media.order
-
-            return None
+        return max_playlist_order
 
 
     def store(self, playlist_media: PlaylistMedia) -> PlaylistMediaDTO:
@@ -33,10 +31,10 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
             max_order = self.get_max_playlist_order()
             new_order = 0
 
-            if max_order:
+            if not(max_order is None):
                 new_order = max_order + 1
 
-            new_playlist_media = ParticipantModel(**playlist_media.to_dict())
+            new_playlist_media = PlaylistMediaModel(**playlist_media.to_dict())
             new_playlist_media.order = new_order
 
             s.add(new_playlist_media)
@@ -59,10 +57,10 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
             )
 
             playlist_media = get_first(session=s, query=query)
-            s.refresh(playlist_media.media)
+            if playlist_media is None:
+                return None
 
-        if playlist_media is None:
-            return None
+            s.refresh(playlist_media.media)
 
         name = playlist_media.name
         thumbnail = playlist_media.thumbnail
@@ -78,10 +76,10 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
             )
 
             playlist_media = get_first(session=s, query=query)
-            s.refresh(playlist_media.media)
+            if playlist_media is None:
+                return None
 
-        if playlist_media is None:
-            return None
+            s.refresh(playlist_media.media)
 
         name = playlist_media.name
         thumbnail = playlist_media.thumbnail
@@ -100,7 +98,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
                 .values(order=PlaylistMediaModel.order - 1)
             )
 
-            s.execute(query)
+            session.execute(query)
             return
 
         if current_order < new_order:
@@ -116,7 +114,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
                 .values(order=PlaylistMediaModel.order + 1)
             )
 
-        s.execute(query)
+        session.execute(query)
 
 
     def update(self, id: int, update_playlist_media_dto: PlaylistMediaUpdateDTO) -> PlaylistMediaDTO:
@@ -145,7 +143,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
         return PlaylistMediaDTO(**playlist_media._asdict(PlaylistMedia), name=name, thumbnail=thumbnail)           
 
 
-    def get_all(self, query_parameters_dto: QueryParametersDTO) -> list[PlaylistMediaDTO]:
+    def get_all(self, query_parameters: QueryParametersDTO) -> list[PlaylistMediaDTO]:
         with Session(self.engine) as s:
             query = (
                 select(PlaylistMediaModel)
@@ -192,7 +190,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
             playlist_media = s.get(PlaylistMediaModel, id)
             current_order = playlist_media.order
 
-            self._update_orders(session=s, current_order)
+            self._update_orders(s, current_order)
 
             name = playlist_media.name
             thumbnail = playlist_media.thumbnail
