@@ -1,6 +1,7 @@
 from dataclasses import dataclass, asdict
 from typing import Optional
 
+
 @dataclass
 class Genre:
     name: str
