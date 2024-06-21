@@ -54,7 +54,7 @@ def get_playlist_media():
 	if not(playlist_media_id) and not(media_id and room_id):
 		raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
 
-	select = request_params.get('select')
+	select = request.args.get('select')
 	playlist_media_fields = PlaylistMediaDTO.__match_args__
 	try:
 		select = parse_select(select=select, valid_fields=playlist_media_fields)

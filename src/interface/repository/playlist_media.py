@@ -14,6 +14,11 @@ class PlaylistMediaRepoInterface(ABC):
 
 
     @abstractmethod
+    def get_max_playlist_order(self) -> Optional[int]:
+        raise NotImplementedError
+
+
+    @abstractmethod
     def get_by_id(self, id: int) -> PlaylistMediaDTO:
         raise NotImplementedError
 
