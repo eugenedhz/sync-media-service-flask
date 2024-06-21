@@ -3,10 +3,10 @@ from typing import Optional
 from src.domain.genre import Genre
 from src.interface.repository.genre import GenreRepoInterface
 from src.usecase.dto import QueryParametersDTO
-from src.usecase.genre.dto import GenreDTO, GenreCreateDTO
+from src.usecase.genre.dto import GenreDTO, GenreCreateDTO, GenreUpdateDTO
 
 
-class GenreUseCase():
+class GenreUsecase():
     def __init__(self, repo: GenreRepoInterface):
         self.repo = repo
     
@@ -19,7 +19,7 @@ class GenreUseCase():
         return GenreDTO(**stored_genre.to_dict())
 
 
-    def get_by_slug(self, slug: str) -> Optional[GenreDTO]:
+    def get_genre_by_slug(self, slug: str) -> Optional[GenreDTO]:
         found_genre = self.repo.get_by_slug(slug=slug)
  
         if found_genre is None:
@@ -28,7 +28,7 @@ class GenreUseCase():
         return GenreDTO(**found_genre.to_dict())
     
 
-    def get_by_id(self, id: int) -> Optional[GenreDTO]:
+    def get_genre_by_id(self, id: int) -> Optional[GenreDTO]:
         found_genre = self.repo.get_by_id(id=id)
 
         if found_genre is None:
@@ -43,7 +43,29 @@ class GenreUseCase():
         return genres
 
 
-    def update_genre(self, id: int, update_genre_dto: GenreDTO) -> GenreDTO:
+    def get_media_genres(self, media_id: int) -> list[GenreDTO]:
+        genres = self.repo.get_media_genres(media_id)
+
+        return genres
+
+
+    def is_media_genre_exist(self, media_id: int, genre_id: int) -> bool:
+        return self.repo.is_media_genre_exist(media_id=media_id, genre_id=genre_id)
+
+
+    def add_genre_to_media(self, media_id: int, genre_id: int) -> GenreDTO:
+        genre = self.repo.add_genre_to_media(media_id=media_id, genre_id=genre_id)
+
+        return GenreDTO(**genre.to_dict())
+
+
+    def delete_genre_from_media(self, media_id: int, genre_id: int) -> GenreDTO:
+        genre = self.repo.delete_genre_from_media(media_id=media_id, genre_id=genre_id)
+
+        return GenreDTO(**genre.to_dict())
+
+
+    def update_genre(self, id: int, update_genre_dto: GenreUpdateDTO) -> GenreDTO:
         updated_genre = self.repo.update(id, update_genre_dto)
 
         return GenreDTO(**updated_genre.to_dict())

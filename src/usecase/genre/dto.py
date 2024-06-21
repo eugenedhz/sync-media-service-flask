@@ -6,6 +6,12 @@ class GenreDTO(NamedTuple):
     name: str
     slug: str
 
+
 class GenreCreateDTO(NamedTuple):
+    name: str
+    slug: str
+
+
+class GenreUpdateDTO(TypedDict):
     name: str
     slug: str
