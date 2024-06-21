@@ -37,6 +37,14 @@ def create_playlist_media():
 	if not is_media_exist:
 		raise ApiError(MEDIA_API_ERRORS['MEDIA_NOT_FOUND'])
 
+	found_playlist_media = playlist_media_service.get_playlist_media_by_room_and_media_id(
+		room_id = json['roomId'],
+		media_id = json['mediaId']
+	)
+
+	if found_playlist_media != None:
+		raise ApiError(PLAYLIST_MEDIA_API_ERRORS['PLAYLIST_MEDIA_ALREADY_IN_ROOM'])
+
 	dto = PlaylistMediaCreateDTO(**json)
 	playlist_media = playlist_media_service.create_playlist_media(dto)
 
