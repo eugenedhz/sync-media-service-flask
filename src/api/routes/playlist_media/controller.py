@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_socketio import emit
 
 from src.app import app
+from src.domain.playlist_media import PlaylistMedia
 from src.api.services.room import room_service
 from src.api.services.media import media_service
 from src.api.services.participant import participant_service
@@ -100,7 +101,7 @@ def get_all_playlist_media():
 	except:
 		raise ApiError(API_ERRORS['INVALID_SELECT'])
 
-	playlist_media_fields = PlaylistMediaDTO.__annotations__
+	playlist_media_fields = PlaylistMedia.__annotations__
 	try:
 		filter_by = parse_filter_by(filter_query=filter_by, valid_fields=playlist_media_fields)
 	except:
