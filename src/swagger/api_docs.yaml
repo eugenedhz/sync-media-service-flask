@@ -396,6 +396,12 @@ paths:
           required: false
           description: Получить медиа по id, принимается только id=число, иначе выведет ошибку.
           type: int
+        - in: query
+          name: expand
+          required: false
+          description: |
+            получить связанные сущности, доступно: `genres`
+          type: string
 
       responses:
         200:
@@ -490,6 +496,12 @@ paths:
         required: false
         description: |
           Отфильтровать медиа по значениям полей, например `filter_by=name=Барби,description=Почему всё розовое`.
+        type: string
+      - in: query
+        name: expand
+        required: false
+        description: |
+          получить связанные сущности, доступно: `genres`
         type: string
 
       responses:
