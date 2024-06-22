@@ -21,6 +21,11 @@ API_ERRORS = {
 		error_message = 'INVALID_JPG',
 		description = 'Image must be valid .jpg format.'
 	),
+	
+	'INVALID_VIDEO': ApiErrorInfo(
+		error_message = 'INVALID_VIDEO',
+		description = 'Video must be .mp4, .mov, .avi or .m4v format.'
+	),
 
 	'CANT_SAVE_FILE': ApiErrorInfo(
 		error_message = 'CANNOT_SAVE_FILE_ON_SERVER',
