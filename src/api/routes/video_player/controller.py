@@ -51,6 +51,9 @@ def get_player_current_state():
 @jwt_required()
 def get_player_current_state():
 	user_sid = request.args.get('userSID')
+	if user_sid is None:
+		raise ApiError(API_ERRORS['NO_IDENTITY_PROVIDED'])
+	
 	VideoPlayerStateSchema().validate(request.json)
 
 	emit('getVideoPlayerCurrentState', request.json, to=user_sid, namespace='/')
