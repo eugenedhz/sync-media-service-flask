@@ -18,6 +18,7 @@ def connect_event():
 
 	user_id = int(payload['sub'])
 	user_socket_session.set(request.sid, user_id)
+	user_socket_session.set(user_id, request.sid)
 
 	emit('connected', {'userId': user_id})
 
@@ -40,3 +41,4 @@ def disconnect_event():
 				participant_service.delete_participant(participant.id)
 
 	user_socket_session.delete(request.sid)
+	user_socket_session.delete(user_id)
