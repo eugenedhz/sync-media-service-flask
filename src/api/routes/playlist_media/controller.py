@@ -131,11 +131,16 @@ def update_playlist_media():
 	if not is_playlist_media_exist:
 		raise ApiError(PLAYLIST_MEDIA_API_ERRORS['PLAYLIST_MEDIA_NOT_FOUND'])
 
+	is_order_equals_zero = False
+
 	if 'order' in request.json:
 		max_playlist_order = playlist_media_service.get_max_playlist_order()
 
 		if request.json['order'] > max_playlist_order:
 			raise ApiError(PLAYLIST_MEDIA_API_ERRORS['PLAYLIST_ORDER_OUT_OF_RANGE'])
+
+		if request.json['order'] == 0:
+			is_order_equals_zero = True
 
 	dto = PlaylistMediaUpdateDTO(**request.json)
 	playlist_media = playlist_media_service.update_playlist_media(
@@ -143,7 +148,10 @@ def update_playlist_media():
 		update_playlist_media_dto = dto
 	)
 
-	emit('mediaUpdated', playlist_media._asdict(), to=playlist_media.roomId, namespace='/')
+	if is_order_equals_zero:
+		emit('mediaSetToPlayer', playlist_media._asdict(), to=playlist_media.roomId, namespace='/')
+	else:
+		emit('mediaUpdated', playlist_media._asdict(), to=playlist_media.roomId, namespace='/')
 
 	return jsonify(playlist_media._asdict())
 
