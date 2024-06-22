@@ -29,6 +29,11 @@ class PlaylistMediaRepoInterface(ABC):
 
 
     @abstractmethod
+    def get_by_order(self, order) -> PlaylistMediaDTO:
+        raise NotImplementedError
+
+
+    @abstractmethod
     def update(self, id: int, update_playlist_media_dto: PlaylistMediaUpdateDTO) -> PlaylistMediaDTO:
         raise NotImplementedError
 
