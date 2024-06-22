@@ -127,13 +127,16 @@ def update_playlist_media():
 
 	UpdatePlaylistMediaSchema().validate(request.json)
 
-	is_playlist_media_exist = playlist_media_service.is_field_exists('id', playlist_media_id)
-	if not is_playlist_media_exist:
+	playlist_media = playlist_media_service.get_playlist_media_by_id(playlist_media_id)
+	if playlist_media is None:
 		raise ApiError(PLAYLIST_MEDIA_API_ERRORS['PLAYLIST_MEDIA_NOT_FOUND'])
 
 	is_order_equals_zero = False
 
 	if 'order' in request.json:
+		if playlist_media.order == request.json['order']:
+			raise ApiError(PLAYLIST_MEDIA_API_ERRORS['SAME_PLAYLIST_MEDIA_ORDER'])
+
 		max_playlist_order = playlist_media_service.get_max_playlist_order()
 
 		if request.json['order'] > max_playlist_order:
@@ -144,6 +147,7 @@ def update_playlist_media():
 
 	if is_order_equals_zero:
 		playlist_media_in_player = playlist_media_service.get_playlist_media_by_order(0)
+
 		playlist_media_service.delete_playlist_media(
 			playlist_media_in_player.id
 		)

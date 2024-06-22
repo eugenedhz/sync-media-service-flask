@@ -90,6 +90,7 @@ info:
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
       | 400 | BAD REQUEST | ***PLAYLIST_ORDER_OUT_OF_RANGE*** |
       | 409 | CONFLICT | ***PLAYLIST_MEDIA_ALREADY_IN_ROOM*** |
+      | 409 | CONFLICT | ***SAME_PLAYLIST_MEDIA_ORDER*** |
 
       -----------------------------------------------
   
