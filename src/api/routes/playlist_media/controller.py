@@ -142,6 +142,12 @@ def update_playlist_media():
 		if request.json['order'] == 0:
 			is_order_equals_zero = True
 
+	if is_order_equals_zero:
+		playlist_media_in_player = playlist_media_service.get_playlist_media_by_order(0)
+		playlist_media_service.delete_playlist_media(
+			playlist_media_in_player.id
+		)
+
 	dto = PlaylistMediaUpdateDTO(**request.json)
 	playlist_media = playlist_media_service.update_playlist_media(
 		id = playlist_media_id,

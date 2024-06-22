@@ -47,6 +47,12 @@ class PlaylistMediaUsecase():
 		return playlist_medias
 
 
+	def get_playlist_media_by_order(self, order: int) -> PlaylistMediaDTO:
+		playlist_media = self.repo.get_by_order(order)
+
+		return playlist_media
+
+
 	def update_playlist_media(self, id: int, update_playlist_media_dto: PlaylistMediaUpdateDTO) -> PlaylistMediaDTO:
 		playlist_media = self.repo.update(id, update_playlist_media_dto)
 

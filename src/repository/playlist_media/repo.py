@@ -86,6 +86,21 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
         return PlaylistMediaDTO(**playlist_media._asdict(PlaylistMedia), name=name, thumbnail=thumbnail)
 
 
+    def get_by_order(self, order) -> PlaylistMediaDTO:
+        with Session(self.engine) as s:
+            query = (
+                select(PlaylistMediaModel)
+                .where(PlaylistMediaModel.order == order)
+            )
+
+            playlist_media = get_first(session=s, query=query)
+            s.refresh(playlist_media.media)
+
+        name = playlist_media.name
+        thumbnail = playlist_media.thumbnail
+        return PlaylistMediaDTO(**playlist_media._asdict(PlaylistMedia), name=name, thumbnail=thumbnail)
+
+
     # обновление порядка остальных медиа, при кейсе обновления или удаления медиа в плейлисте
     def _update_orders(self, session: Session, current_order: int, new_order: Optional[int] = None) -> None:
         query = update(PlaylistMediaModel)
