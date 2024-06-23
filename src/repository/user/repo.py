@@ -133,8 +133,8 @@ class UserRepo(UserRepoInterface):
             s.delete(request)
             s.commit()
 
-            canceled_friend = s.get(UserModel, friend_id)
-            return User(**canceled_friend._asdict(User))
+            friend = s.get(UserModel, friend_id)
+            return User(**friend._asdict(User))
 
 
     def add_friend(self, requesting_user_id: int, receiving_user_id: int, received_request: Row) -> User:
@@ -151,8 +151,6 @@ class UserRepo(UserRepoInterface):
             )
 
             s.add_all(friendships)
-
-            s.delete(received_request)
             s.commit()
 
             friend = s.get(UserModel, receiving_user_id)
