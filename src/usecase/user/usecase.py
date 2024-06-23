@@ -1,3 +1,4 @@
+from sqlalchemy import Row
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from typing import Union, Optional, Any
@@ -90,14 +91,36 @@ class UserUsecase():
 		return UserDTO(**deleted_user_dict)
 
 
-	def get_friends(self, user_id: int) -> list[UserDTO]:
-		friends = self.repo.get_friends(user_id=user_id)
+	def send_friend_request(self, requesting_user_id: int, receiving_user_id: int) -> UserDTO:
+		friend = self.repo.send_friend_request(
+			requesting_user_id=requesting_user_id,
+			receiving_user_id=receiving_user_id
+		)
 
-		return friends
+		friend_dict = friend.to_dict()
+		del friend_dict['passwordHash']
+
+		return UserDTO(**friend_dict)
 
 
-	def add_friend(self, requesting_user_id: int, receiving_user_id: int) -> UserDTO:
-		friend = self.repo.add_friend(requesting_user_id=requesting_user_id, receiving_user_id=receiving_user_id)
+	def delete_friend_request(self, friend_id: int, request: Row) -> UserDTO:
+		found_user = self.repo.delete_friend_request(
+			friend_id=friend_id,
+			request=request
+		)
+
+		found_user_dict = found_user.to_dict()
+		del found_user_dict['passwordHash']
+
+		return UserDTO(**found_user_dict)
+
+
+	def add_friend(self, requesting_user_id: int, receiving_user_id: int, received_request: Row) -> UserDTO:
+		friend = self.repo.add_friend(
+			requesting_user_id=requesting_user_id,
+			receiving_user_id=receiving_user_id,
+			received_request=received_request
+		)
 
 		friend_dict = friend.to_dict()
 		del friend_dict['passwordHash']
@@ -114,6 +137,12 @@ class UserUsecase():
 		return UserDTO(**deleted_friend_dict)
 
 
+	def get_friends(self, user_id: int) -> list[UserDTO]:
+		friends = self.repo.get_friends(user_id=user_id)
+
+		return friends
+
+
 	def get_received_friend_requests(self, user_id: int) -> list[UserDTO]:
 		found_users = self.repo.get_received_friend_requests(user_id=user_id)
 
@@ -126,45 +155,20 @@ class UserUsecase():
 		return found_users
 
 
-	def delete_sent_friend_request(self, requesting_user_id: int, receiving_user_id: int) -> UserDTO:
-		found_user = self.repo.delete_sent_friend_request(requesting_user_id=requesting_user_id, receiving_user_id=receiving_user_id)
+	def is_already_friends(self, user_id: int, friend_id: int) -> bool:
+		is_already_friends = self.repo.is_already_friends(user_id=user_id, friend_id=friend_id)
 
-		found_user_dict = found_user.to_dict()
-		del found_user_dict['passwordHash']
-
-		return UserDTO(**found_user_dict)
+		return is_already_friends
 
 
-	def delete_received_friend_request(self, user_id: int, requesting_user_id: int) -> UserDTO:
-		found_user = self.repo.delete_received_friend_request(user_id=user_id, requesting_user_id=requesting_user_id)
+	def has_request(self, requesting_user_id: int, receiving_user_id: int) -> bool | Row:
+		has_request = self.repo.has_request(
+			requesting_user_id=requesting_user_id,
+			receiving_user_id=receiving_user_id
+		)
 
-		found_user_dict = found_user.to_dict()
-		del found_user_dict['passwordHash']
+		return has_request
 
-		return UserDTO(**found_user_dict)
-
-
-	def get_already_requested_users_ids(self, user_id: int) -> list[int]:
-		ids = self.repo.get_already_requested_users_ids(user_id=user_id)
-
-		return ids
-
-
-	def get_friends_ids(self, user_id) -> list[int]:
-		ids = self.repo.get_friends_ids(user_id=user_id)
-
-		return ids
-
-	def get_sent_requests_friends_ids(self, user_id) -> list[int]:
-		ids = self.repo.get_sent_requests_friends_ids(user_id=user_id)
-
-		return ids
-
-
-	def get_received_requests_friends_ids(self, user_id: int) -> list[int]:
-		ids = self.repo.get_received_requests_friends_ids(user_id=user_id)
-
-		return ids
 
 	def is_field_exists(self, name: str, value: str) -> bool:
 		is_exists = self.repo.is_field_exists({name: value})
