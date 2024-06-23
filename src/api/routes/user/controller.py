@@ -18,9 +18,13 @@ from src.configs.constants import Role, Static
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
+from pkg.query_params.expand.parse import parse_expand
 from pkg.query_params.ids.validate import is_valid_ids
 from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import split_filename
+
+
+EXPAND_FIELDS = ['friends']
 
 
 @app.route('/user', methods=['GET'])
@@ -55,8 +59,23 @@ def get_user_by_username_or_id():
 		if user is None:
 			raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
+	expand = request_params.get('expand')
+
+	try:
+		expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+	except:
+		raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
 	serialize_user = UserSchema(only=select).dump
+	serialize_users = UserSchema(only=select, many=True).dump
 	serialized_user = serialize_user(user)
+
+	if not expand:
+		return jsonify(serialized_user)
+
+	if 'friends' in expand:
+		friends = user_service.get_friends(user_id=user_id)
+		serialized_user['friends'] = serialize_users(friends)
 
 	return jsonify(serialized_user)
 
@@ -87,8 +106,24 @@ def get_all_users():
 	if len(users) == 0:
 		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
 
+	expand = request_params.get('expand')
+
+	try:
+		expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+	except:
+		raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
 	serialize_users = UserSchema(only=select, many=True).dump
+
 	serialized_users = serialize_users(users)
+
+	if not expand:
+		return jsonify(serialized_users)
+
+	if 'friends' in expand:
+		for user in serialized_users:
+			friends = user_service.get_friends(user_id=user['id'])
+			user['friends'] = serialize_users(friends)
 
 	return jsonify(serialized_users)
 
