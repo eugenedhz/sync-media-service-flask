@@ -104,15 +104,15 @@ class UserUsecase():
 
 
 	def delete_friend_request(self, friend_id: int, request: Row) -> UserDTO:
-		found_user = self.repo.delete_friend_request(
+		friend = self.repo.delete_friend_request(
 			friend_id=friend_id,
 			request=request
 		)
 
-		found_user_dict = found_user.to_dict()
-		del found_user_dict['passwordHash']
+		friend_dict = friend.to_dict()
+		del friend_dict['passwordHash']
 
-		return UserDTO(**found_user_dict)
+		return UserDTO(**friend_dict)
 
 
 	def add_friend(self, requesting_user_id: int, receiving_user_id: int, received_request: Row) -> UserDTO:
@@ -129,12 +129,12 @@ class UserUsecase():
 
 
 	def delete_friend(self, user_id: int, friend_id: int) -> UserDTO:
-		deleted_friend = self.repo.delete_friend(user_id=user_id, friend_id=friend_id)
+		friend = self.repo.delete_friend(user_id=user_id, friend_id=friend_id)
 
-		deleted_friend_dict = deleted_friend.to_dict()
-		del deleted_friend_dict['passwordHash']
+		friend_dict = friend.to_dict()
+		del friend_dict['passwordHash']
 
-		return UserDTO(**deleted_friend_dict)
+		return UserDTO(**friend_dict)
 
 
 	def get_friends(self, user_id: int) -> list[UserDTO]:
@@ -144,15 +144,15 @@ class UserUsecase():
 
 
 	def get_received_friend_requests(self, user_id: int) -> list[UserDTO]:
-		found_users = self.repo.get_received_friend_requests(user_id=user_id)
+		friends = self.repo.get_received_friend_requests(user_id=user_id)
 
-		return found_users
+		return friends
 
 
 	def get_sent_friend_requests(self, user_id: int) -> list[UserDTO]:
-		found_users = self.repo.get_sent_friend_requests(user_id=user_id)
+		friends = self.repo.get_sent_friend_requests(user_id=user_id)
 
-		return found_users
+		return friends
 
 
 	def is_already_friends(self, user_id: int, friend_id: int) -> bool:

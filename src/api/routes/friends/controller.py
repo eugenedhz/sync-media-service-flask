@@ -49,6 +49,11 @@ def add_friend():
             receiving_user_id=friend_id,
             received_request=received_request
         )
+        deleted_received_request = user_service.delete_friend_request(
+            friend_id=friend_id,
+            request=received_request
+
+        )
 
     else:
         added_friend = user_service.send_friend_request(
