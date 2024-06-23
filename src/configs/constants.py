@@ -27,6 +27,8 @@ class Static(Readonly):
 class Tables(Readonly):
 	USER = 'User'
 	MEDIA = 'Media'
+	FRIENDSHIP_REQUEST = 'FriendshipRequest'
+	FRIENDSHIP = 'Friendship'
 
 
 class VideoUploadSession(Readonly):

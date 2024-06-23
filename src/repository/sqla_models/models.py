@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm import DeclarativeBase, relationship
 
 from src.repository.sqla_models.types import DateAsTimestamp
 from src.configs.constants import Tables
@@ -45,3 +46,21 @@ class MediaModel(Base):
 	thumbnail = Column(String, nullable=False)
 	preview = Column(String, nullable=False)
 	trailer = Column(String, nullable=True)
+
+
+class FriendshipRequestModel(Base):
+	__tablename__ = Tables.FRIENDSHIP_REQUEST
+
+	id = Column(Integer, primary_key=True, autoincrement=True)
+
+	requesting_user_id = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+	receiving_user_id = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+
+
+class FriendshipModel(Base):
+	__tablename__ = Tables.FRIENDSHIP
+
+	id = Column(Integer, primary_key=True, autoincrement=True)
+
+	user_1 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+	user_2 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
