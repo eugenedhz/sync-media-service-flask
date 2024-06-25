@@ -18,6 +18,18 @@ class Base(DeclarativeBase):
 		return new_dict
 
 
+class RoomModel(Base):
+	__tablename__ = Tables.ROOM
+
+	id = Column(Integer, primary_key=True)
+	creatorId = Column(Integer, ForeignKey(f'{Tables.USER}.id'), nullable=False)
+
+	name = Column(String, nullable=False, unique=True)
+	title = Column(String, nullable=False)
+	isPrivate = Column(Boolean, nullable=False)
+	cover = Column(String)
+
+
 class UserModel(Base):
 	__tablename__ = Tables.USER
 
@@ -33,6 +45,12 @@ class UserModel(Base):
 	birthday = Column(DateAsTimestamp)
 	description = Column(String)
 	avatar = Column(String)
+
+	createdRooms = relationship(
+		RoomModel, 
+		cascade = 'all, delete-orphan',
+		backref = 'creator'
+	)
 
 
 class MediaGenreModel(Base):
