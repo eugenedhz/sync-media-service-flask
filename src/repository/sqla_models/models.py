@@ -18,6 +18,18 @@ class Base(DeclarativeBase):
 		return new_dict
 
 
+class RoomModel(Base):
+	__tablename__ = Tables.ROOM
+
+	id = Column(Integer, primary_key=True)
+	creatorId = Column(Integer, ForeignKey(f'{Tables.USER}.id'), nullable=False)
+
+	name = Column(String, nullable=False, unique=True)
+	title = Column(String, nullable=False)
+	isPrivate = Column(Boolean, nullable=False)
+	cover = Column(String)
+
+
 class UserModel(Base):
 	__tablename__ = Tables.USER
 
@@ -33,6 +45,21 @@ class UserModel(Base):
 	birthday = Column(DateAsTimestamp)
 	description = Column(String)
 	avatar = Column(String)
+
+	createdRooms = relationship(
+		RoomModel, 
+		cascade = 'all, delete-orphan',
+		backref = 'creator'
+	)
+
+
+class MediaGenreModel(Base):
+	__tablename__ = Tables.MEDIA_GENRE
+
+	id = Column(Integer, primary_key=True)
+
+	genreId = Column(Integer, ForeignKey(f'{Tables.GENRE}.id', ondelete='CASCADE'), nullable=False)
+	mediaId = Column(Integer, ForeignKey(f'{Tables.MEDIA}.id', ondelete='CASCADE'), nullable=False)
 
 
 class VideoModel(Base):
@@ -56,8 +83,46 @@ class MediaModel(Base):
 	preview = Column(String, nullable=False)
 	trailer = Column(String, nullable=True)
 
+	genres = relationship(
+		'GenreModel',
+		secondary = MediaGenreModel.__table__,
+		back_populates = 'medias'
+	)
 	videos = relationship(
 		VideoModel,
 		cascade = 'all, delete-orphan',
 		backref = 'media'
 	)
+
+
+class GenreModel(Base):
+	__tablename__ = Tables.GENRE
+
+	id = Column(Integer, primary_key=True)
+	
+	slug = Column(String, unique=True, nullable=False)
+	name = Column(String, nullable=False)
+
+	medias = relationship(
+		'MediaModel',
+		secondary = MediaGenreModel.__table__,
+		back_populates = 'genres'
+	)
+
+
+class FriendshipRequestModel(Base):
+	__tablename__ = Tables.FRIENDSHIP_REQUEST
+
+	id = Column(Integer, primary_key=True, autoincrement=True)
+
+	requesting_user_id = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+	receiving_user_id = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+
+
+class FriendshipModel(Base):
+	__tablename__ = Tables.FRIENDSHIP
+
+	id = Column(Integer, primary_key=True, autoincrement=True)
+
+	user_1 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+	user_2 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)

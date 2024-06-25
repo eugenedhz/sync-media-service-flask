@@ -7,6 +7,7 @@ from flask_jwt_extended import (
 
 from src.app import app
 from src.api.services.user import user_service
+from src.api.services.room import room_service
 from src.api.services.image import image_service
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import UserDTO, UserUpdateDTO
@@ -14,13 +15,18 @@ from src.api.error.shared_error import API_ERRORS
 from src.api.routes.user.error import USER_API_ERRORS
 from src.api.error.custom_error import ApiError
 from src.api.routes.user.schemas import UserSchema, UpdateUserSchema
+from src.api.routes.room.schemas import RoomSchema
 from src.configs.constants import Role, Static
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
+from pkg.query_params.expand.parse import parse_expand
 from pkg.query_params.ids.validate import is_valid_ids
 from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import split_filename
+
+
+EXPAND_FIELDS = ('createdRooms', 'friends')
 
 
 @app.route('/user', methods=['GET'])
@@ -40,6 +46,12 @@ def get_user_by_username_or_id():
 	except:
 		raise ApiError(API_ERRORS['INVALID_SELECT'])
 
+	expand = request_params.get('expand')
+	try:
+		expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+	except:
+		raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
 	if user_id is not None:
 		if not user_id.isdigit():
 			raise ApiError(API_ERRORS['INVALID_ID'])
@@ -55,8 +67,28 @@ def get_user_by_username_or_id():
 		if user is None:
 			raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
+	expand = request_params.get('expand')
+
+	try:
+		expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+	except:
+		raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
 	serialize_user = UserSchema(only=select).dump
+	serialize_users = UserSchema(only=select, many=True).dump
 	serialized_user = serialize_user(user)
+
+	if not expand:
+		return jsonify(serialized_user)
+
+	if 'createdRooms' in expand:
+		created_rooms = room_service.get_creator_rooms(user.id)
+		serialize_rooms = RoomSchema(many=True).dump
+		serialized_user['createdRooms'] = serialize_rooms(created_rooms)
+
+	if 'friends' in expand:
+		friends = user_service.get_friends(user_id=user_id)
+		serialized_user['friends'] = serialize_users(friends)
 
 	return jsonify(serialized_user)
 
@@ -81,14 +113,43 @@ def get_all_users():
 	except:
 		raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
+	expand = request_params.get('expand')
+	try:
+		expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+	except:
+		raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
 	query_parameters = QueryParametersDTO(filters=filter_by)
 	users = user_service.get_users(query_parameters_dto=query_parameters)
 
 	if len(users) == 0:
 		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
 
+	expand = request_params.get('expand')
+
+	try:
+		expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+	except:
+		raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
 	serialize_users = UserSchema(only=select, many=True).dump
+
 	serialized_users = serialize_users(users)
+
+	if not expand:
+		return jsonify(serialized_users)
+
+	if 'createdRooms' in expand:
+		serialize_rooms = RoomSchema(many=True).dump
+		for i in range(len(users)):
+			user_id = users[i].id
+			created_rooms = room_service.get_creator_rooms(user_id)
+			serialized_users[i]['createdRooms'] = serialize_rooms(created_rooms)
+
+	if 'friends' in expand:
+		for user in serialized_users:
+			friends = user_service.get_friends(user_id=user['id'])
+			user['friends'] = serialize_users(friends)
 
 	return jsonify(serialized_users)
 
@@ -175,13 +236,20 @@ def delete_user():
 
 	is_user_exists = user_service.is_field_exists(name='id', value=user_id)
 	if not is_user_exists:
-		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
-			
-	user = user_service.delete_user(id=user_id)
-	avatar = user.avatar
+		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])	
 
-	if avatar is not None:
-		filename = split_filename(avatar).filename()
+	images = []
+	created_rooms = room_service.get_creator_rooms(user_id)
+	for room in created_rooms:
+		if room.cover:
+			images.append(room.cover)
+	
+	user = user_service.delete_user(id=user_id)
+	if user.avatar:
+		images.append(user.avatar)
+
+	for image in images:
+		filename = split_filename(image).filename()
 		try:
 			image_service.delete(filename)
 		except:
