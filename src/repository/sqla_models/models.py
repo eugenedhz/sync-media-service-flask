@@ -62,6 +62,16 @@ class MediaGenreModel(Base):
 	mediaId = Column(Integer, ForeignKey(f'{Tables.MEDIA}.id', ondelete='CASCADE'), nullable=False)
 
 
+class VideoModel(Base):
+	__tablename__ = Tables.MEDIA_VIDEO
+
+	id = Column(Integer, primary_key=True)
+	mediaId = Column(Integer, ForeignKey(f'{Tables.MEDIA}.id'), nullable=False)
+	name = Column(String, nullable=False)
+	source = Column(String, unique=True, nullable=False)
+	language = Column(String, nullable=False)
+
+
 class MediaModel(Base):
 	__tablename__ = Tables.MEDIA
 
@@ -77,6 +87,11 @@ class MediaModel(Base):
 		'GenreModel',
 		secondary = MediaGenreModel.__table__,
 		back_populates = 'medias'
+	)
+	videos = relationship(
+		VideoModel,
+		cascade = 'all, delete-orphan',
+		backref = 'media'
 	)
 
 
