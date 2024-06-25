@@ -45,6 +45,12 @@ API_ERRORS = {
 		status_code = 400
 	),
 
+	'INVALID_EXPAND': ApiErrorInfo(
+		error_message='INVALID_EXPAND',
+		description='Check if fields match requesting entity.',
+		status_code=400
+	),
+
 	'ADMIN_RIGHTS_REQUIRED': ApiErrorInfo(
 		error_message = 'ADMIN_RIGHTS_REQUIRED',
 		description = 'You must log in as admin to do this.',
