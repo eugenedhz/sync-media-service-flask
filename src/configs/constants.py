@@ -33,6 +33,7 @@ class Tables(Readonly):
 	MEDIA = 'Media'
 	MEDIA_VIDEO = 'Video'
 	ROOM = 'Room'
+	PARTICIPANT = 'Participant'
 	GENRE = 'Genre'
 	MEDIA_GENRE = 'MediaGenre'
 	FRIENDSHIP_REQUEST = 'FriendshipRequest'

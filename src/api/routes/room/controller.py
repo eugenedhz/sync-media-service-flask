@@ -4,10 +4,12 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.app import app
 from src.api.services.room import room_service
 from src.api.services.user import user_service
+from src.api.services.participant import participant_service
 from src.api.services.image import image_service
 from src.api.routes.room.schemas import (
     RoomSchema, CreateRoomSchema, UpdateRoomSchema, RoomFilesSchema
 )
+from src.api.routes.participant.schemas import ParticipantSchema
 from src.usecase.room.dto import RoomDTO, RoomCreateDTO, RoomUpdateDTO
 from src.usecase.dto import QueryParametersDTO
 from src.api.error.shared_error import API_ERRORS
@@ -25,7 +27,7 @@ from pkg.dict.keys import find_keys
 
 
 FILES = ('cover',)
-EXPAND_FIELDS = ('creator',)
+EXPAND_FIELDS = ('creator', 'participants')
 
 
 @app.route('/room', methods=['POST'])
@@ -103,7 +105,12 @@ def get_room_by_id_or_name():
     if 'creator' in expand:
         creator = user_service.get_by_id(room.creatorId)
         serialized_room['creator'] = creator._asdict()
-    
+
+    if 'participants' in expand:
+        serialize_participants = ParticipantSchema(many=True).dump
+        participants = participant_service.get_room_participants(room.id)
+        serialized_room['participants'] = serialize_participants(participants)
+
     return jsonify(serialized_room)
 
 
@@ -149,6 +156,13 @@ def get_all_rooms():
             creator_id = rooms[i].creatorId
             creator = user_service.get_by_id(creator_id)
             serialized_rooms[i]['creator'] = creator._asdict()
+
+    if 'participants' in expand:
+        serialize_participants = ParticipantSchema(many=True).dump
+        for i in range(len(rooms)):
+            room_id = rooms[i].id
+            participants = participant_service.get_room_participants(room_id)
+            serialized_rooms[i]['participants'] = serialize_participants(participants)
 
     return jsonify(serialized_rooms)
 

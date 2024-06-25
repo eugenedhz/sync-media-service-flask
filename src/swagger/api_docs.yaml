@@ -105,6 +105,9 @@ info:
       | 404 | NOT FOUND | ***LANGUAGE_NOT_FOUND*** |
       | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
       | 409 | CONFLICT | ***MEDIA_VIDEO_SOURCE_ALREADY_EXISTS*** |
+      | ***Participant API errors*** |
+      | 404 | NOT FOUND | ***PARTICIPANT_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***PARTICIPANTS_NOT_FOUND*** |
 
       -----------------------------------------------
   
@@ -135,6 +138,8 @@ tags:
     description: Do everything with videos :)
   - name: Rooms API
     description: Do everything with rooms :)
+  - name: Participants API
+    description: Do everything with participants :)
   - name: Genres API
     description: Do everything with genres :)
   - name: Media Video API
@@ -865,7 +870,7 @@ paths:
           name: expand
           required: false
           description: |
-            Добавить связанные сущности, пока доступно `expand=creator`
+            Добавить связанные сущности, пока доступно `creator`, `participants`
           type: string
 
       responses:
@@ -963,7 +968,7 @@ paths:
         name: expand
         required: false
         description: |
-          Добавить связанные сущности, пока доступно `expand=creator`
+          Добавить связанные сущности, пока доступно `creator`, `participants`
         type: string
 
       responses:
@@ -1349,6 +1354,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MediaVideoSchema'
+  
+  /participants:
+    get:
+      summary: Получение участника
+
+      tags:
+        - Participants API
+
+      operationId: get_participant
+
+      parameters:
+        - in: query
+          name: id
+          required: false
+          description: Получить участника по id
+          type: int
+        - in: query
+          name: select
+          required: false
+          description: |
+            Получить только определённые поля участника, например `select=id,name`
+          type: string
+
+      responses:
+        200:
+          description: Возвращается сущность участника.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantSchema'
+
+  /participants/all:
+    get:
+      operationId: get_participants
+
+      summary: Получить всех участников
+
+      tags:
+        - Participants API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля участников, например `select=id,name`
+        type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: |
+          Отфильтровать участников по значениям полей, например `filter_by=id{>=}2,roomId{==}1`
+          ДОСТУПНО: id, userId, roomId.
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantSchema'
 
 
 ################################################################################
@@ -1976,3 +2042,27 @@ components:
           example: 'RU'
           description: |
             двухзначный код страны для языка, валидируется на существование, также `regexp = ^[A-Z]{2}$`
+    
+    ParticipantSchema:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: false
+          example: 1
+        roomId:
+          type: integer
+          nullable: false
+          example: 1
+        userId:
+          type: integer
+          nullable: false
+          example: 1
+        name:
+          type: string
+          nullable: false
+          example: "User's displayName"
+        avatar:
+          type: string
+          nullable: true
+          example: '/static/images/j23jro23uo4i2rt4kjfr.jpg'
