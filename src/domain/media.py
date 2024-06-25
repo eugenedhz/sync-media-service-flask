@@ -10,5 +10,6 @@ class Media(Base):
     thumbnail: str
     preview: str
     description: str
+    
     trailer: Optional[str] = None
     id: Optional[int] = None

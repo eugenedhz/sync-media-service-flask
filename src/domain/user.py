@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Optional
-import datetime
 
 from src.domain.base import Base
 
