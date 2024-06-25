@@ -75,3 +75,21 @@ class GenreModel(Base):
 		secondary = MediaGenreModel.__table__,
 		back_populates = 'genres'
 	)
+
+
+class FriendshipRequestModel(Base):
+	__tablename__ = Tables.FRIENDSHIP_REQUEST
+
+	id = Column(Integer, primary_key=True, autoincrement=True)
+
+	requesting_user_id = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+	receiving_user_id = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+
+
+class FriendshipModel(Base):
+	__tablename__ = Tables.FRIENDSHIP
+
+	id = Column(Integer, primary_key=True, autoincrement=True)
+
+	user_1 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
+	user_2 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)

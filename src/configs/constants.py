@@ -31,6 +31,8 @@ class Tables(Readonly):
 	MEDIA = 'Media'
 	GENRE = 'Genre'
 	MEDIA_GENRE = 'MediaGenre'
+	FRIENDSHIP_REQUEST = 'FriendshipRequest'
+	FRIENDSHIP = 'Friendship'
 
 
 class VideoUploadSession(Readonly):
