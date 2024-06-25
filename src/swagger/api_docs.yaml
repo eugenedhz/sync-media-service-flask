@@ -68,10 +68,16 @@ info:
       | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
       | 404 | NOT FOUND | ***USERS_NOT_FOUND*** |
       | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
+      | 400 | BAD REQUEST | ***INVALID_EXPAND*** |
       | ***Media API errors*** |
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
       | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | ***Friends API errors*** |
+      | 403 | FORBIDDEN | ***CANNOT_ADD_YOURSELF*** |
+      | 403 | FORBIDDEN | ***ALREADY_REQUESTED*** |
+      | 404 | NOT FOUND | ***FRIEND_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***REQUEST_NOT_FOUND*** |
       | ***Video API errors*** |
       | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
       | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
@@ -80,6 +86,19 @@ info:
       | 400 | BAD REQUEST | ***NO_UPLOAD_SESSION_PROVIDED*** |
       | 400 | BAD REQUEST | ***NO_QUALITY_PROVIDED*** |
       | 409 | CONFLICT | ***SIZE_MISMATCH*** |
+      | ***Genres API errors*** |
+      | 404 | NOT FOUND | ***GENRE_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***GENRES_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***MEDIA_GENRE_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***MEDIA_GENRES_NOT_FOUND*** |
+      | 409 | CONFLICT | ***SLUG_EXISTS*** |
+      | 409 | CONFLICT | ***MEDIA_GENRE_EXISTS*** |
+      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | ***Rooms API errors*** |
+      | 404 | NOT FOUND | ***ROOM_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***ROOMS_NOT_FOUND*** |
+      | 409 | CONFLICT | ***ROOM_NAME_ALREADY_EXISTS*** |
+      | 403 | FORBIDDEN | ***CREATOR_RIGHTS_REQUIRED*** |
 
       -----------------------------------------------
   
@@ -104,10 +123,14 @@ tags:
     description: Do everything with users :)
   - name: Media API
     description: Do everything with media :)
+  - name: Friends API
+    description: Do everything with friends :)
   - name: Video API
     description: Do everything with videos :)
   - name: Rooms API
     description: Do everything with rooms :)
+  - name: Genres API
+    description: Do everything with genres :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -225,6 +248,8 @@ paths:
 
       summary: Получить пользователей
 
+      description: Если пользователи не найдены, возвращает пустой список.
+
       tags:
         - User API
 
@@ -236,17 +261,18 @@ paths:
           Получить только определённые поля пользователя, например `select=id,username`
         type: string
       - in: query
-        name: filter_by
-        required: false
-        description: |
-          Отфильтровать пользователей по значениям полей, например `filter_by=id{<=}2,name{in}[name1;name2;name3]`.
-        type: string
-      - in: query
         name: expand
         required: false
         description: |
-          Добавить связанные сущности, пока доступно `expand=createdRooms`
+          Получить расширенные поля пользователя, `friends`, `createdRooms`.
         type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: |
+          Отфильтровать пользователей по значениям полей, например `filter_by=displayName=Sasha,isBanned=false,avatar=null`.
+        type: string
+
       responses:
         200:
           content:
@@ -300,7 +326,7 @@ paths:
         name: expand
         required: false
         description: |
-          Добавить связанные сущности, пока доступно `expand=createdRooms`
+          Получить расширенные поля пользователя, `friends`, `createdRooms`.
         type: string
       - in: query
         name: id
@@ -343,6 +369,174 @@ paths:
       responses:
         200:
           description: Пользователь удаляется, возвращается его сущность.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends:
+    get:
+      operationId: get_friends
+
+      summary: Получить друзей пользователя
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: id
+          required: true
+          description: |
+            id пользователя
+          type: integer
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+    post:
+      security:
+        - cookieAuth: []
+
+      operationId: add_friend
+
+      summary: Отправить запрос дружбы
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: friend_id
+          required: true
+          description: |
+            id пользователя-друга
+          type: integer
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_friend
+
+      summary: Удалить пользователя из друзей
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: friend_id
+          required: true
+          description: |
+            id пользователя-друга
+          type: integer
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends/received:
+    get:
+      security:
+        - cookieAuth: []
+
+      operationId: get_received_friend_requests
+
+      summary: Получить запросы в друзья
+
+      tags:
+        - Friends API
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends/sent:
+    get:
+      security:
+        - cookieAuth: []
+
+      operationId: get_sent_friend_requests
+
+      summary: Получить отправленные запросы в друзья
+
+      tags:
+        - Friends API
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends/delete:
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_sent_friend_request
+
+      summary: Отменить запрос в друзья
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: friend_id
+          required: true
+          description: |
+            id пользователя-друга
+          type: integer
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+
+  /friends/reject:
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_received_friend_request
+
+      summary: Отклонить входящий запрос в друзья
+
+      tags:
+        - Friends API
+
+      parameters:
+        - in: query
+          name: friend_id
+          required: true
+          description: |
+            id пользователя-друга
+          type: integer
+
+      responses:
+        200:
           content:
             application/json:
               schema:
@@ -396,6 +590,12 @@ paths:
           required: false
           description: Получить медиа по id, принимается только id=число, иначе выведет ошибку.
           type: int
+        - in: query
+          name: expand
+          required: false
+          description: |
+            получить связанные сущности, доступно: `genres`
+          type: string
 
       responses:
         200:
@@ -473,6 +673,8 @@ paths:
 
       summary: Получить все медиа
 
+      description: Если медиа не найдены, возвращает пустой список.
+
       tags:
         - Media API
 
@@ -487,7 +689,13 @@ paths:
         name: filter_by
         required: false
         description: |
-          Отфильтровать медиа по значениям полей, например `filter_by=id{<=}2,name{in}[name1;name2;name3]``.
+          Отфильтровать медиа по значениям полей, например `filter_by=name=Барби,description=Почему всё розовое`.
+        type: string
+      - in: query
+        name: expand
+        required: false
+        description: |
+          получить связанные сущности, доступно: `genres`
         type: string
 
       responses:
@@ -592,7 +800,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StatusesSchema'
-
+  
   /room:
     post:
       security:
@@ -757,6 +965,230 @@ paths:
               schema:
                 $ref: '#/components/schemas/RoomSchemaExpanded'
 
+  /genre/all:
+    get:
+      operationId: get_genres
+
+      summary: Получить все жанры
+
+      tags:
+        - Genres API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля, например `select=id,name`
+        type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: |
+          Отфильтровать по значениям полей
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+  /media/genre:
+    get:
+      operationId: get_media_genres
+
+      summary: Получить все жанры конректного медиа
+
+      tags:
+        - Genres API
+        - Media API
+
+      parameters:
+      - in: query
+        name: mediaId
+        required: false
+        description: |
+          получить по id медиа
+        type: string
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля, например `select=id,name`
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    post:
+      security:
+        - cookieAuth: []
+
+      operationId: add_media_genre
+
+      summary: Добавить жанр к медиа
+
+      tags:
+        - Genres API
+        - Media API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaGenreAddOrDeleteSchema'
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_media_genre
+
+      summary: Удалить жанр из медиа
+
+      tags:
+        - Genres API
+        - Media API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaGenreAddOrDeleteSchema'
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+  /genre:
+    post:
+      security:
+        - cookieAuth: []
+
+      summary: Создание жанра
+
+      tags:
+        - Genres API
+
+      operationId: create_genre
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenreCreateSchema'
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    get:
+      summary: Получение жанра
+
+      tags:
+        - Genres API
+
+      operationId: get_genre
+
+      parameters:
+        - in: query
+          name: select
+          required: false
+          description: |
+            Получить только определённые поля например `select=id,name`
+          type: string
+        - in: query
+          name: id
+          required: false
+          description: Получить по id
+          type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    patch:
+      security:
+        - cookieAuth: []
+
+      operationId: update_genre
+
+      summary: Обновление жанра
+
+      tags:
+        - Genres API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenreUpdateSchema'
+
+      parameters:
+        - in: query
+          name: id
+          required: false
+          description: Обновить по id
+          type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_genre
+
+      summary: Удаление жанра
+
+      tags:
+        - Genres API
+
+      parameters:
+      - in: query
+        name: id
+        required: false
+        description: Удалить по id
+        type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreSchema'
+
 
 ################################################################################
 #                                    Schemas                                   #
@@ -904,6 +1336,9 @@ components:
           type: string
           nullable: true
           example: '/static/images/avatar_id_1.png'
+        friends:
+          type: string
+          nullable: true
 
     MediaSchema:
       type: object
@@ -1107,6 +1542,76 @@ components:
           example: pending
           description: статус ожидания обработки качества
 
+    GenreSchema:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: false
+          example: 1
+        name:
+          type: string
+          nullable: false
+          example: 'Ужасы'
+        slug:
+          type: string
+          nullable: false
+          example: 'horror'
+
+    GenreCreateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          required: true
+          example: 'Ужасы'
+          minLength: 2
+          description: |
+            имеет regexp `^[А-Я]{1}[а-я]+$`
+        slug:
+          type: string
+          required: true
+          nullable: false
+          example: 'horror'
+          minLength: 2
+          description: |
+            имеет regexp `^[a-z]+$`
+
+    GenreUpdateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          required: false
+          example: 'Ужасы'
+          minLength: 2
+          description: |
+            имеет regexp `^[А-Я]{1}[а-я]+$`
+        slug:
+          type: string
+          required: false
+          nullable: false
+          example: 'horror'
+          minLength: 2
+          description: |
+            имеет regexp `^[a-z]+$`
+
+    MediaGenreAddOrDeleteSchema:
+      type: object
+      properties:
+        mediaId:
+          type: integer
+          nullable: false
+          required: true
+          example: 1
+        genreId:
+          type: integer
+          nullable: false
+          required: true
+          example: 1
+    
     RoomSchema:
       type: object
       properties:

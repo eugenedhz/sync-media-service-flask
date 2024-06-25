@@ -13,6 +13,8 @@ class Regex(Readonly):
 	PASSWORD = r'^[a-zA-Z0-9.@_-]+$'
 	VIDEO = r'^[0-9a-z]+\.[a-z0-9]+$'
 	ROOM_NAME = r'^[a-zA-Z0-9_]+$'
+	GENRE_NAME = r'^[А-Я]{1}[а-я]+$'
+	GENRE_SLUG = r'^[a-z]+$'
 
 
 class Static(Readonly):
@@ -29,6 +31,10 @@ class Tables(Readonly):
 	USER = 'User'
 	MEDIA = 'Media'
 	ROOM = 'Room'
+	GENRE = 'Genre'
+	MEDIA_GENRE = 'MediaGenre'
+	FRIENDSHIP_REQUEST = 'FriendshipRequest'
+	FRIENDSHIP = 'Friendship'
 
 
 class VideoUploadSession(Readonly):

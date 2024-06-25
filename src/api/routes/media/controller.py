@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required
 
 from src.app import app
 from src.api.services.media import media_service
+from src.api.services.genre import genre_service
 from src.api.services.image import image_service
 from src.api.services.video import video_service
 from src.usecase.dto import QueryParametersDTO
@@ -11,6 +12,7 @@ from src.api.error.shared_error import API_ERRORS
 from src.api.routes.media.error import MEDIA_API_ERRORS
 from src.api.routes.video.error import VIDEO_API_ERRORS
 from src.api.error.custom_error import ApiError
+from src.api.routes.genre.schemas import GenreSchema
 from src.api.routes.media.schemas import (
     MediaSchema, UpdateMediaSchema, CreateMediaSchema,
     UpdateMediaFilesSchema, CreateMediaFilesSchema
@@ -20,12 +22,14 @@ from src.api.helpers.video import concat_video_to_url, delete_videos_with_qualit
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
+from pkg.query_params.expand.parse import parse_expand
 from pkg.file.image.jpg_validate import is_valid_jpg
 from pkg.file.filename import split_filename
 from pkg.dict.keys import find_keys
 
 
 FILES = ('preview', 'thumbnail')
+EXPAND_FIELDS = ('genres',)
 
 
 @app.route('/media', methods=['POST'])
@@ -74,6 +78,12 @@ def get_media_by_id():
     if not media_id.isdigit():
         raise ApiError(API_ERRORS['INVALID_ID'])
 
+    expand = request_params.get('expand')
+    try:
+        expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+    except:
+        raise ApiError(API_ERRORS['INVALID_EXPAND'])
+
     select = request_params.get('select')
     media_fields = MediaDTO.__match_args__
     try:
@@ -89,6 +99,14 @@ def get_media_by_id():
     serialize_media = MediaSchema(only=select).dump
     serialized_media = serialize_media(media)
 
+    if not expand:
+        return jsonify(serialized_media)
+
+    if 'genres' in expand:
+        serialize_genres = GenreSchema(many=True).dump
+        genres = genre_service.get_media_genres(media.id)
+        serialized_media['genres'] = serialize_genres(genres)
+
     return jsonify(serialized_media)
 
 
@@ -98,6 +116,12 @@ def get_all_medias():
 
     select = request_params.get('select')
     filter_by = request_params.get('filter_by')
+    expand = request_params.get('expand')
+
+    try:
+        expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
+    except:
+        raise ApiError(API_ERRORS['INVALID_EXPAND'])
 
     media_fields = MediaDTO.__match_args__
     try:
@@ -105,7 +129,6 @@ def get_all_medias():
     except:
         raise ApiError(API_ERRORS['INVALID_SELECT'])
 
-    # .__annotations__ возвращает словарь {поле: тип поля}
     media_fields = MediaDTO.__annotations__
     try:
         filter_by = parse_filter_by(filter_query=filter_by, valid_fields=media_fields)
@@ -120,6 +143,16 @@ def get_all_medias():
 
     serialize_medias = MediaSchema(only=select, many=True).dump
     serialized_medias = serialize_medias(medias)
+
+    if not expand:
+        return jsonify(serialized_medias)
+
+    if 'genres' in expand:
+        serialize_genres = GenreSchema(many=True).dump
+        for i in range(len(medias)):
+            media_id = medias[i].id
+            genres = genre_service.get_media_genres(media_id)
+            serialized_medias[i]['genres'] = serialize_genres(genres)
 
     return jsonify(serialized_medias)
 
