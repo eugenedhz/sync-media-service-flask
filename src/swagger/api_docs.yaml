@@ -99,6 +99,12 @@ info:
       | 404 | NOT FOUND | ***ROOMS_NOT_FOUND*** |
       | 409 | CONFLICT | ***ROOM_NAME_ALREADY_EXISTS*** |
       | 403 | FORBIDDEN | ***CREATOR_RIGHTS_REQUIRED*** |
+      | ***Media Video API errors*** |
+      | 404 | NOT FOUND | ***MEDIA_VIDEO_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***MEDIA_VIDEOS_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***LANGUAGE_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+      | 409 | CONFLICT | ***MEDIA_VIDEO_SOURCE_ALREADY_EXISTS*** |
 
       -----------------------------------------------
   
@@ -131,6 +137,8 @@ tags:
     description: Do everything with rooms :)
   - name: Genres API
     description: Do everything with genres :)
+  - name: Media Video API
+    description: Do everything with media videos :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -594,7 +602,7 @@ paths:
           name: expand
           required: false
           description: |
-            получить связанные сущности, доступно: `genres`
+            получить связанные сущности, доступно: `genres`, `videos`
           type: string
 
       responses:
@@ -695,7 +703,7 @@ paths:
         name: expand
         required: false
         description: |
-          получить связанные сущности, доступно: `genres`
+          получить связанные сущности, доступно: `genres`, `videos`
         type: string
 
       responses:
@@ -1188,6 +1196,159 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenreSchema'
+  
+  /media/video:
+    post:
+      security:
+        - cookieAuth: []
+
+      summary: Создание видео медиа
+
+      tags:
+        - Media Video API
+
+      operationId: create_media_video
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaVideoCreateSchema'
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaVideoSchema'
+
+    get:
+      summary: Получение видео медиа
+
+      tags:
+        - Media Video API
+
+      operationId: get_video_media
+
+      parameters:
+        - in: query
+          name: select
+          required: false
+          description: |
+            Получить только определённые поля медиа, например `select=id,name`
+          type: string
+        - in: query
+          name: expand
+          required: false
+          description: |
+            Добавить связанные сущности, пока доступно `expand=media`
+          type: string
+        - in: query
+          name: id
+          required: false
+          description: Получить видео по id
+          type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaVideoSchema'
+
+    patch:
+      security:
+        - cookieAuth: []
+
+      operationId: update_video_media
+
+      summary: Обновление видео медиа
+
+      tags:
+        - Media Video API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaVideoUpdateSchema'
+
+      parameters:
+        - in: query
+          name: id
+          required: false
+          description: Обновить видео по id
+          type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaVideoSchema'
+
+    delete:
+      security:
+        - cookieAuth: []
+
+      operationId: delete_video_media
+
+      summary: Удаление видео медиа
+
+      tags:
+        - Media Video API
+
+      parameters:
+      - in: query
+        name: id
+        required: false
+        description: Удалить видео по id
+        type: int
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaVideoSchema'
+
+  /media/video/all:
+    get:
+      operationId: get_video_medias
+
+      summary: Получить все видео медиа
+
+      tags:
+        - Media Video API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля, например `select=id,name`
+        type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: |
+          Отфильтровать по значениям полей, например `filter_by=id{in}[1;2],name{==}Titanic`
+        type: string
+      - in: query
+        name: expand
+        required: false
+        description: |
+          Добавить связанные сущности, пока доступно `expand=media`
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaVideoSchema'
 
 
 ################################################################################
@@ -1732,3 +1893,86 @@ components:
           required: false
           nullable: false
           description: формат .jpg
+
+    MediaVideoSchema:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: false
+          example: 1
+        mediaId:
+          type: integer
+          nullable: false
+          example: 1
+        name:
+          type: string
+          nullable: false
+          example: 'Titanic (Lostfim)'
+        source:
+          type: string
+          nullable: false
+          example: 'source.mp4'
+        language:
+          type: string
+          nullable: false
+          example: 'RU'
+
+    MediaVideoCreateSchema:
+      type: object
+      properties:
+        mediaId:
+          type: integer
+          nullable: false
+          required: true
+          example: 1
+        name:
+          minLength: 1
+          type: string
+          nullable: false
+          required: true
+          example: 'Titanic (Lostfim)'
+        source:
+          minLength: 3
+          required: true
+          type: string
+          nullable: false
+          example: 'source.mp4'
+          description: |
+            В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+        language:
+          type: string
+          minLength: 2
+          maxLength: 2
+          required: true
+          nullable: false
+          example: 'RU'
+          description: |
+            двухзначный код страны для языка, валидируется на существование, также `regexp = ^[A-Z]{2}$`
+
+    MediaVideoUpdateSchema:
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          nullable: false
+          required: false
+          example: 'Titanic (Lostfim)'
+        source:
+          minLength: 3
+          required: false
+          type: string
+          nullable: false
+          example: 'source.mp4'
+          description: |
+            В поле вставляется имя файла с расширением. `regexp = ^[0-9a-z]+\.[a-z0-9]+$`
+        language:
+          type: string
+          minLength: 2
+          maxLength: 2
+          required: false
+          nullable: false
+          example: 'RU'
+          description: |
+            двухзначный код страны для языка, валидируется на существование, также `regexp = ^[A-Z]{2}$`
