@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date
-from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 from src.repository.sqla_models.types import DateAsTimestamp
@@ -36,6 +35,15 @@ class UserModel(Base):
 	avatar = Column(String)
 
 
+class MediaGenreModel(Base):
+	__tablename__ = Tables.MEDIA_GENRE
+
+	id = Column(Integer, primary_key=True)
+
+	genreId = Column(Integer, ForeignKey(f'{Tables.GENRE}.id', ondelete='CASCADE'), nullable=False)
+	mediaId = Column(Integer, ForeignKey(f'{Tables.MEDIA}.id', ondelete='CASCADE'), nullable=False)
+
+
 class MediaModel(Base):
 	__tablename__ = Tables.MEDIA
 
@@ -46,6 +54,27 @@ class MediaModel(Base):
 	thumbnail = Column(String, nullable=False)
 	preview = Column(String, nullable=False)
 	trailer = Column(String, nullable=True)
+
+	genres = relationship(
+		'GenreModel',
+		secondary = MediaGenreModel.__table__,
+		back_populates = 'medias'
+	)
+
+
+class GenreModel(Base):
+	__tablename__ = Tables.GENRE
+
+	id = Column(Integer, primary_key=True)
+	
+	slug = Column(String, unique=True, nullable=False)
+	name = Column(String, nullable=False)
+
+	medias = relationship(
+		'MediaModel',
+		secondary = MediaGenreModel.__table__,
+		back_populates = 'genres'
+	)
 
 
 class FriendshipRequestModel(Base):
