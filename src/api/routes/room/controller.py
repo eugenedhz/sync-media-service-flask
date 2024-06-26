@@ -1,6 +1,8 @@
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from flask_socketio import close_room, emit
+
 from src.app import app
 from src.api.services.room import room_service
 from src.api.services.user import user_service
@@ -220,6 +222,8 @@ def update_room():
     dto = RoomUpdateDTO(**formdata)
     updated_room = room_service.update_room(id=room_id, update_room_dto=dto)
 
+    emit('roomUpdated', updated_room._asdict(), to=updated_room.id, namespace='/')
+
     return jsonify(updated_room._asdict())
 
 
@@ -240,6 +244,9 @@ def delete_room():
         raise ApiError(ROOM_API_ERRORS['ROOM_NOT_FOUND'])
     if room.creatorId != user_id:
         raise ApiError(ROOM_API_ERRORS['CREATOR_RIGHTS_REQUIRED'])
+    
+    emit('roomDeleted', room._asdict(), to=room.id, namespace='/')
+    close_room(room=room.id, namespace='/')
 
     room_service.delete_room(room_id)
 

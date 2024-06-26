@@ -108,6 +108,12 @@ info:
       | ***Participant API errors*** |
       | 404 | NOT FOUND | ***PARTICIPANT_NOT_FOUND*** |
       | 404 | NOT FOUND | ***PARTICIPANTS_NOT_FOUND*** |
+      | ***Sockets API errors*** |
+      | null | error packet | ***ACCESS_TOKEN_REQUIRED*** |
+      | ***Room Sockets API errors*** |
+      | null | event: 'error' | ***ROOM_NOT_FOUND*** |
+      | null | event: 'error' | ***ALREADY_PARTICIPANTING*** |
+      | null | event: 'error' | ***PARTICIPANT_NOT_IN_ROOM*** |
 
       -----------------------------------------------
   
@@ -144,6 +150,10 @@ tags:
     description: Do everything with genres :)
   - name: Media Video API
     description: Do everything with media videos :)
+  - name: Sockets API
+    description: Do everything with sockets :)
+  - name: Room Sockets API
+    description: Do everything with room sockets :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -1415,6 +1425,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParticipantSchema'
+  
+  /connect:
+    post:
+      operationId: socket_connect
+
+      summary: Подключение к сокетам
+
+      tags:
+        - Sockets API
+
+      description: |
+        обязателен параметр `withCredentials: true` при инициализации объекта `io`, чтобы передать access token.
+
+        Иначе отправляется error packet с json `{'message': 'ACCESS_TOKEN_REQUIRED'}`
+
+      responses:
+        200:
+          description: |
+            при успешном подключении происходит emit события `connected` с json 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                    example: 1
+
+  /disconnect:
+    post:
+      operationId: socket_disconnect
+
+      summary: Отключение от сокетов
+
+      tags:
+        - Sockets API
+
+      description: |
+        Происходит при событии `dicsonnect`, либо когда пользователь закрывает страницу.
+
+        Пользователь автоматически удаляется из всех комнат.
+
+        При удалении пользователя комнаты происходит emit события `left` в соотв. комнату
+        с json сущностью участника.
+
+  /join:
+    post:
+      operationId: join_room
+
+      summary: Подключение к комнате
+
+      tags:
+        - Room Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomIdSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном подключении происходит emit события `joined` в соотв. комнату с json сущностью участника
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantSchema'
+
+  /leave:
+    post:
+      operationId: leave_room
+
+      summary: Отключение от комнаты
+
+      tags:
+        - Room Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomIdSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном отключении происходит emit события `left` в соотв. комнату с json сущностью участника
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantSchema'
 
 
 ################################################################################
@@ -2066,3 +2170,11 @@ components:
           type: string
           nullable: true
           example: '/static/images/j23jro23uo4i2rt4kjfr.jpg'
+    
+    RoomIdSchema:
+      type: object
+      properties:
+        roomId:
+          type: integer
+          nullable: false
+          example: 1
