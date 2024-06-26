@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Optional
-import datetime
 
 from src.domain.base import Base
 
@@ -14,6 +13,7 @@ class User(Base):
 	displayName: str
 	isBanned: bool = False
 
+	# Примечание по Optional[]: по PEP Optional используется только в случае допущения None, кроме значения объявленного типа
 	id: Optional[int] = None
 	birthday: Optional[int] = None # timestamp
 	description: Optional[str] = None
