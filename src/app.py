@@ -9,7 +9,7 @@ def create_app() -> Flask:
     
     app.config.from_object(Development())
 
-    socketio.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*")
     jwt.init_app(app)
     cors.init_app(app)
     swagger.init_app(app)

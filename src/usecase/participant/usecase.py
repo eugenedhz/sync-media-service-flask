@@ -26,6 +26,15 @@ class ParticipantUsecase():
 		return found_participant
 
 
+	def get_participant_by_user_and_room_id(self, user_id: int, room_id: int) -> Optional[ParticipantDTO]:
+		found_participant = self.repo.get_by_user_and_room_id(user_id, room_id)
+
+		if found_participant is None:
+			return None
+
+		return found_participant
+
+
 	def get_participants(self, query_parameters_dto: QueryParametersDTO) -> list[ParticipantDTO]:
 		participants = self.repo.get_all(query_parameters_dto)
 
