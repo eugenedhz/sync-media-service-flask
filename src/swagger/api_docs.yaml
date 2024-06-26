@@ -84,13 +84,15 @@ info:
       | 404 | NOT FOUND | ***PARTICIPANT_NOT_FOUND*** |
       | 404 | NOT FOUND | ***PARTICIPANTS_NOT_FOUND*** |
       | ***Playlist Media API errors*** |
-      | 404 | NOT FOUND | ***PLAYLIST_MEDIA_NOT_FOUND*** |
       | 404 | NOT FOUND | ***PLAYLIST_MEDIAS_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***ROOM_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
-      | 400 | BAD REQUEST | ***PLAYLIST_ORDER_OUT_OF_RANGE*** |
-      | 409 | CONFLICT | ***PLAYLIST_MEDIA_ALREADY_IN_ROOM*** |
-      | 409 | CONFLICT | ***SAME_PLAYLIST_MEDIA_ORDER*** |
+      | ***Playlist Media Sockets errors*** |
+      | null | event: 'error' | ***PLAYLIST_MEDIA_NOT_FOUND*** |
+      | null | event: 'error' | ***ROOM_NOT_FOUND*** |
+      | null | event: 'error' | ***MEDIA_NOT_FOUND*** |
+      | null | event: 'error' | ***PLAYLIST_ORDER_OUT_OF_RANGE*** |
+      | null | event: 'error' | ***SAME_PLAYLIST_MEDIA_ORDER*** |
+      | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_ROOM*** |
+      | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_PLAYER*** |
 
       -----------------------------------------------
   
