@@ -77,9 +77,10 @@ class RoomModel(Base):
 
 	participants = relationship(
 		ParticipantModel,
-		back_populates = 'room'
+		back_populates = 'room',
+		cascade = 'all, delete'
 	)
-	playlist_media = relationship(
+	playlist = relationship(
 		PlaylistMediaModel,
 		back_populates = 'room',
 		cascade = 'all, delete'
@@ -109,7 +110,8 @@ class UserModel(Base):
 	)
 	participations = relationship(
 		ParticipantModel,
-		back_populates = 'user'
+		back_populates = 'user',
+		cascade = 'all, delete'
 	)
 
 
