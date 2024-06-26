@@ -23,7 +23,7 @@ def join_room_event(data):
 
 	is_participating = participant_service.is_field_exists('userId', user_id)
 	if is_participating:
-		raise ApiError(ROOM_SOCKET_ERRORS['ALREADY_PARTICIPANTING'])
+		raise ApiError(ROOM_SOCKET_ERRORS['USER_ALREADY_IN_SOME_ROOM'])
 
 	participant_dto = ParticipantCreateDTO(userId=user_id, roomId=room_id)
 	participant = participant_service.create_participant(participant_dto)
@@ -46,9 +46,8 @@ def leave_room_event(data):
 		user_id = user_id,
 		room_id = room_id
 	)
-
 	if participant is None:
-		raise ApiError(ROOM_SOCKET_ERRORS['PARTICIPANT_NOT_IN_ROOM'])
+		raise ApiError(ROOM_SOCKET_ERRORS['USER_NOT_IN_ROOM'])
 
 	participant_service.delete_participant(participant.id)
 	leave_room(room_id)

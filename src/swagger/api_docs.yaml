@@ -124,6 +124,9 @@ info:
       | null | event: 'error' | ***SAME_PLAYLIST_MEDIA_ORDER*** |
       | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_ROOM*** |
       | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_PLAYER*** |
+      | ***Video Player Sockets API errors*** |
+      | null | event: 'error' | ***ROOM_NOT_FOUND*** |
+      | null | event: 'error' | ***USER_NOT_IN_ROOM*** |
 
       -----------------------------------------------
   
@@ -168,6 +171,8 @@ tags:
     description: Do everything with room playlist :)
   - name: Playlist Media Sockets API
     description: Do everything with room playlist :)
+  - name: Video Player Sockets API
+    description: Do everything with video-player sockets :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -1670,6 +1675,85 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlaylistMediaSchema'
+  
+  /requestPlayerState:
+    post:
+      operationId: request_player_state
+
+      summary: Запросить состояние плеера
+
+      tags:
+        - Video Player Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestPlayerStateSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном запросе происходит emit события `syncPlayerState` только юзеру с json состоянием плеера
+
+            если участников в комнате нет, кроме нашего юзера, то отправляется по этому же событию дефолтное состояние плеера: `{'currentTime': 0, 'isPaused': true}`
+
+            если есть другие участники, то случайному участнику отправляется событие `sendPlayerStateFromClient` с полем в json `userSID`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerStateSchema'
+
+  /sendPlayerStateToUser:
+    post:
+      operationId: send_player_state_to_user
+
+      summary: Отправление состояния плеера участнику
+
+      tags:
+        - Video Player Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPlayerStateToUserSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном отправлении происходит emit события `syncPlayerState` юзеру по userSID с json состоянием плеера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerStateSchema'
+
+  /sendPlayerStateToEveryone:
+    post:
+      operationId: send_player_state_to_everyone
+
+      summary: Отправление состояния плеера всем в комнату
+
+      tags:
+        - Video Player Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPlayerStateToEveryoneSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном отправлении происходит emit события `syncPlayerState` в соотв. комнату с json состоянием плеера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerStateSchema'
 
 
 ################################################################################
@@ -2393,3 +2477,68 @@ components:
           example: 1
           required: true
           min: 1
+
+    PlayerStateSchema:
+      type: object
+      properties:
+        currentTime:
+          type: integer
+          nullable: false
+          example: 0
+          min: 0
+        isPaused:
+          type: boolean
+          nullable: false
+          example: true
+
+    SendPlayerStateToUserSchema:
+      type: object
+      properties:
+        userSID:
+          type: string
+          nullable: false
+          example: 'wefFedkDLl'
+          minLength: 1
+          required: true
+        currentTime:
+          type: integer
+          nullable: false
+          example: 0
+          min: 0
+          required: true
+        isPaused:
+          type: boolean
+          nullable: false
+          example: true
+          required: true
+
+    SendPlayerStateToEveryoneSchema:
+      type: object
+      properties:
+        roomId:
+          type: integer
+          nullable: false
+          example: 1
+          min: 1
+          required: true
+        currentTime:
+          type: integer
+          nullable: false
+          example: 0
+          min: 0
+          required: true
+        isPaused:
+          type: boolean
+          nullable: false
+          example: true
+          required: true
+
+    RequestPlayerStateSchema:
+      type: object
+      properties:
+        roomId:
+          type: integer
+          nullable: false
+          example: 1
+          min: 1
+          required: true
