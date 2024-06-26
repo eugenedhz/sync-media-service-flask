@@ -11,3 +11,4 @@ gunicorn
 marshmallow
 flasgger
 redis[hiredis]
+pycountry
