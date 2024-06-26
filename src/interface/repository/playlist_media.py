@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from typing import Any
+from typing import Any, Optional
 
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.playlist_media.dto import PlaylistMediaUpdateDTO, PlaylistMediaDTO
@@ -19,17 +19,17 @@ class PlaylistMediaRepoInterface(ABC):
 
 
     @abstractmethod
-    def get_by_id(self, id: int) -> PlaylistMediaDTO:
+    def get_by_id(self, id: int) -> Optional[PlaylistMediaDTO]:
         raise NotImplementedError
 
 
     @abstractmethod
-    def get_by_room_and_media_id(self, room_id: int, media_id: int) -> PlaylistMediaDTO:
+    def get_by_room_and_media_id(self, room_id: int, media_id: int) -> Optional[PlaylistMediaDTO]:
         raise NotImplementedError
 
 
     @abstractmethod
-    def get_by_order(self, order) -> PlaylistMediaDTO:
+    def get_by_order(self, order) -> Optional[PlaylistMediaDTO]:
         raise NotImplementedError
 
 
