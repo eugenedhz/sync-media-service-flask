@@ -112,8 +112,8 @@ info:
       | null | error packet | ***ACCESS_TOKEN_REQUIRED*** |
       | ***Room Sockets API errors*** |
       | null | event: 'error' | ***ROOM_NOT_FOUND*** |
-      | null | event: 'error' | ***ALREADY_PARTICIPANTING*** |
-      | null | event: 'error' | ***PARTICIPANT_NOT_IN_ROOM*** |
+      | null | event: 'error' | ***USER_ALREADY_IN_SOME_ROOM*** |
+      | null | event: 'error' | ***USER_NOT_IN_ROOM*** |
       | ***Playlist Media API errors*** |
       | 404 | NOT FOUND | ***PLAYLIST_MEDIAS_NOT_FOUND*** |
       | ***Playlist Media Sockets API errors*** |
