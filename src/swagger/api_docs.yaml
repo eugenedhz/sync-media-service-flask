@@ -114,6 +114,16 @@ info:
       | null | event: 'error' | ***ROOM_NOT_FOUND*** |
       | null | event: 'error' | ***ALREADY_PARTICIPANTING*** |
       | null | event: 'error' | ***PARTICIPANT_NOT_IN_ROOM*** |
+      | ***Playlist Media API errors*** |
+      | 404 | NOT FOUND | ***PLAYLIST_MEDIAS_NOT_FOUND*** |
+      | ***Playlist Media Sockets API errors*** |
+      | null | event: 'error' | ***PLAYLIST_MEDIA_NOT_FOUND*** |
+      | null | event: 'error' | ***ROOM_NOT_FOUND*** |
+      | null | event: 'error' | ***MEDIA_NOT_FOUND*** |
+      | null | event: 'error' | ***PLAYLIST_ORDER_OUT_OF_RANGE*** |
+      | null | event: 'error' | ***SAME_PLAYLIST_MEDIA_ORDER*** |
+      | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_ROOM*** |
+      | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_PLAYER*** |
 
       -----------------------------------------------
   
@@ -154,6 +164,10 @@ tags:
     description: Do everything with sockets :)
   - name: Room Sockets API
     description: Do everything with room sockets :)
+  - name: Playlist Media API
+    description: Do everything with room playlist :)
+  - name: Playlist Media Sockets API
+    description: Do everything with room playlist :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -880,7 +894,7 @@ paths:
           name: expand
           required: false
           description: |
-            Добавить связанные сущности, пока доступно `creator`, `participants`
+            Добавить связанные сущности, доступно `creator`, `participants`, `playlistMedia`
           type: string
 
       responses:
@@ -978,7 +992,7 @@ paths:
         name: expand
         required: false
         description: |
-          Добавить связанные сущности, пока доступно `creator`, `participants`
+          Добавить связанные сущности, доступно `creator`, `participants`, `playlistMedia`
         type: string
 
       responses:
@@ -1519,6 +1533,143 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParticipantSchema'
+  
+  /playlist_media/all:
+    get:
+      operationId: get_all_playlist_media
+
+      summary: Получить все плейлист-медиа
+
+      tags:
+        - Playlist Media API
+
+      parameters:
+      - in: query
+        name: select
+        required: false
+        description: |
+          Получить только определённые поля, например `select=id,name`
+        type: string
+      - in: query
+        name: filter_by
+        required: false
+        description: |
+          Отфильтровать по значениям полей, например `filter_by=order{>=}2,roomId{==}1`
+          ДОСТУПНО: id, mediaId, roomId, order
+        type: string
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistMediaSchema'
+
+  /addPlaylistMedia:
+    post:
+      operationId: add_playlist_media
+
+      summary: Добавление медиа в комнату
+
+      tags:
+        - Playlist Media Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistMediaCreateSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном создании происходит emit события `playlistMediaAdded` в соотв. комнату с json сущностью плейлист-медиа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistMediaSchema'
+
+  /updatePlaylistMedia:
+    post:
+      operationId: update_playlist_media
+
+      summary: Обновить плейлист-медиа
+
+      tags:
+        - Playlist Media Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistMediaUpdateSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном обновлении происходит emit события `playlistMediaUpdated` в соотв. комнату с json сущностью плейлист-медиа
+
+            order можно cтавить только больше нуля, т.к. нулевой плелист-медиа является тем, который ставится в плеер, для этого отдельное событие `setPlaylistMediaToPlayer`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistMediaSchema'
+
+  /setPlaylistMediaToPlayer:
+    post:
+      operationId: set_to_player_playlist_media
+
+      summary: Поставить плейлист-медиа в плеер
+
+      tags:
+        - Playlist Media Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistMediaIdSchema'
+
+      responses:
+        200:
+          description: |
+            при успешной обработке происходит emit события `playlistMediaSettedToPlayer` в соотв. комнату с json сущностью плейлист-медиа
+
+            из списка плейлиста удаляется предыдущий плейлист-медиа с `order=0`
+
+            текущий плейлист-медиа, который ставим в плеер, теперь будет `order=0`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistMediaSchema'
+
+  /deletePlaylistMedia:
+    post:
+      operationId: delete_playlist_media
+
+      summary: Удалить плейлист-медиа
+
+      tags:
+        - Playlist Media Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistMediaIdSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном удалении происходит emit события `playlistMediaDeleted` в соотв. комнату с json сущностью плейлист-медиа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistMediaSchema'
 
 
 ################################################################################
@@ -2178,3 +2329,67 @@ components:
           type: integer
           nullable: false
           example: 1
+    
+    PlaylistMediaSchema:
+      type: object
+      properties:
+        roomId:
+          type: integer
+          nullable: false
+          example: 1
+        mediaId:
+          type: integer
+          nullable: false
+          example: 1
+        order:
+          type: integer
+          nullable: false
+          example: 0
+        name:
+          type: string
+          nullable: false
+          example: 'media name'
+        thumbnail:
+          type: string
+          nullable: false
+          example: '/static/images/j23jro23uo4i2rt4kjfr.jpg'
+
+    PlaylistMediaCreateSchema:
+      type: object
+      properties:
+        roomId:
+          type: integer
+          nullable: false
+          example: 1
+          required: true
+        mediaId:
+          type: integer
+          nullable: false
+          example: 1
+          required: true
+
+    PlaylistMediaUpdateSchema:
+      type: object
+      properties:
+        playlistMediaId:
+          type: integer
+          nullable: false
+          example: 1
+          required: true
+          min: 1
+        order:
+          type: integer
+          nullable: false
+          example: 1
+          required: true
+          min: 1
+
+    PlaylistMediaIdSchema:
+      type: object
+      properties:
+        playlistMediaId:
+          type: integer
+          nullable: false
+          example: 1
+          required: true
+          min: 1
