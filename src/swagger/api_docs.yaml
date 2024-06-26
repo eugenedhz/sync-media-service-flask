@@ -1947,7 +1947,7 @@ components:
           required: false
         description:
           minLength: 1
-          maxLength: 200
+          maxLength: 500
           type: string
           nullable: false
           example: 'Описание фильма'
@@ -1983,7 +1983,7 @@ components:
           required: true
         description:
           minLength: 1
-          maxLength: 200
+          maxLength: 500
           type: string
           nullable: false
           example: 'Описание фильма'
