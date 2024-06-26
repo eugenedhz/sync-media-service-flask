@@ -159,4 +159,3 @@ class FriendshipModel(Base):
 
 	user_1 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
 	user_2 = Column(Integer, ForeignKey(f'{Tables.USER}.id', ondelete="CASCADE"), nullable=False)
->>>>>>> src/repository/sqla_models/models.py
