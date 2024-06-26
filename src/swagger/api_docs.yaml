@@ -2044,7 +2044,7 @@ components:
           required: true
           nullable: false
           description: |
-            файл чанка, доступные форматы: `.mp4`, `.mov`, `.avi`, `.m4v`
+            файл чанка, доступные форматы: `.mp4`, `.mov`, `.avi`, `.m4v`, `.mkv`
 
     SessionSchema:
       type: object

@@ -24,7 +24,7 @@ API_ERRORS = {
 	
 	'INVALID_VIDEO': ApiErrorInfo(
 		error_message = 'INVALID_VIDEO',
-		description = 'Video must be .mp4, .mov, .avi or .m4v format.'
+		description = 'Video must be .mp4, .mov, .avi, .m4v or .mkv format.'
 	),
 
 	'CANT_SAVE_FILE': ApiErrorInfo(
