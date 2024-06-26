@@ -56,4 +56,10 @@ API_ERRORS = {
 		description = 'You must log in as admin to do this.',
 		status_code = 403
 	),
+
+	'USER_SOCKET_SESSION_NOT_FOUND': ApiErrorInfo(
+		error_message = 'USER_SOCKET_SESSION_NOT_FOUND',
+		description = 'You must connect to sockets to do this.',
+		status_code = 404
+	),
 }
