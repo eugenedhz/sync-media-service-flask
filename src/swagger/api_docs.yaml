@@ -123,6 +123,8 @@ tags:
     description: Do everything with participants :)
   - name: Playlist Media API
     description: Do everything with room playlist :)
+  - name: Playlist Media Sockets API
+    description: Do everything with room playlist :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -853,7 +855,7 @@ paths:
         name: filter_by
         required: false
         description: |
-          Отфильтровать по значениям полей, например `filter_by=id{>=}2,roomId{==}1`
+          Отфильтровать по значениям полей, например `filter_by=order{>=}2,roomId{==}1`
           ДОСТУПНО: id, mediaId, roomId, order
         type: string
 
@@ -864,14 +866,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlaylistMediaSchema'
 
-  /playlist_media:
+  /addPlaylistMedia:
     post:
       operationId: add_playlist_media
 
       summary: Добавление медиа в комнату
 
       tags:
-        - Playlist Media API
+        - Playlist Media Sockets API
 
       requestBody:
         required: true
@@ -883,66 +885,20 @@ paths:
       responses:
         200:
           description: |
-            при успешном создании происходит emit события `mediaAdded` в соотв. комнату с json сущностью плейлист-медиа
-
-            плюс в ответе возвращается сущность плейлист-медиа
+            при успешном создании происходит emit события `playlistMediaAdded` в соотв. комнату с json сущностью плейлист-медиа
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlaylistMediaSchema'
 
-    get:
-      operationId: get_playlist_media
-
-      summary: Получить плейлист-медиа
-
-      tags:
-        - Playlist Media API
-
-      parameters:
-        - in: query
-          name: id
-          required: false
-          description: Получить по id
-          type: int
-        - in: query
-          name: roomId
-          required: false
-          description: Получить по id комнаты (только вместе с mediaId)
-          type: int
-        - in: query
-          name: mediaId
-          required: false
-          description: Получить по id медиа (вместе с roomId также)
-          type: int
-        - in: query
-          name: select
-          required: false
-          description: |
-            Получить только определённые поля, например `select=id,name`
-          type: string
-
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlaylistMediaSchema'
-
-    patch:
+  /updatePlaylistMedia:
+    post:
       operationId: update_playlist_media
 
       summary: Обновить плейлист-медиа
 
       tags:
-        - Playlist Media API
-
-      parameters:
-        - in: query
-          name: id
-          required: false
-          description: id плейлист-медиа
-          type: int
+        - Playlist Media Sockets API
 
       requestBody:
         required: true
@@ -954,39 +910,63 @@ paths:
       responses:
         200:
           description: |
-            при успешном обновлении происходит emit события `mediaUpdated` в соотв. комнату с json сущностью плейлист-медиа
+            при успешном обновлении происходит emit события `playlistMediaUpdated` в соотв. комнату с json сущностью плейлист-медиа
 
-            Если order=0, то вместо `mediaUpdated` будет `mediaSetToPlayer`, так как нулевое медиа считается тем, которое сейчас смотрят
-
-            предыдущее медиа на нулевом месте удаляется из плейлиста
-
-            плюс в ответе возвращается сущность плейлист-медиа
+            order можно cтавить только больше нуля, т.к. нулевой плелист-медиа является тем, который ставится в плеер, для этого отдельное событие `setPlaylistMediaToPlayer`
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlaylistMediaSchema'
 
-    delete:
+  /setPlaylistMediaToPlayer:
+    post:
+      operationId: set_to_player_playlist_media
+
+      summary: Поставить плейлист-медиа в плеер
+
+      tags:
+        - Playlist Media Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistMediaIdSchema'
+
+      responses:
+        200:
+          description: |
+            при успешной обработке происходит emit события `playlistMediaSettedToPlayer` в соотв. комнату с json сущностью плейлист-медиа
+
+            из списка плейлиста удаляется предыдущий плейлист-медиа с `order=0`
+
+            текущий плейлист-медиа, который ставим в плеер, теперь будет `order=0`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistMediaSchema'
+
+  /deletePlaylistMedia:
+    post:
       operationId: delete_playlist_media
 
       summary: Удалить плейлист-медиа
 
       tags:
-        - Playlist Media API
+        - Playlist Media Sockets API
 
-      parameters:
-        - in: query
-          name: id
-          required: false
-          description: id плейлист-медиа
-          type: int
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistMediaIdSchema'
 
       responses:
         200:
           description: |
-            при успешном удалении происходит emit события `mediaDeleted` в соотв. комнату с json сущностью плейлист-медиа
-
-            плюс в ответе возвращается сущность плейлист-медиа
+            при успешном удалении происходит emit события `playlistMediaDeleted` в соотв. комнату с json сущностью плейлист-медиа
           content:
             application/json:
               schema:
@@ -1528,8 +1508,25 @@ components:
     PlaylistMediaUpdateSchema:
       type: object
       properties:
+        playlistMediaId:
+          type: integer
+          nullable: false
+          example: 1
+          required: true
+          min: 1
         order:
           type: integer
           nullable: false
-          example: 0
+          example: 1
           required: true
+          min: 1
+
+    PlaylistMediaIdSchema:
+      type: object
+      properties:
+        playlistMediaId:
+          type: integer
+          nullable: false
+          example: 1
+          required: true
+          min: 1
