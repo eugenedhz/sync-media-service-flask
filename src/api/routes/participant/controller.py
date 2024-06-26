@@ -1,6 +1,7 @@
 from flask import request, jsonify
 
 from src.app import app
+from src.domain.participant import Participant
 from src.api.services.participant import participant_service
 from src.api.routes.participant.schemas import ParticipantSchema
 from src.usecase.participant.dto import ParticipantDTO
@@ -53,7 +54,7 @@ def get_all_participants():
     except:
         raise ApiError(API_ERRORS['INVALID_SELECT'])
 
-    participant_fields = ParticipantDTO.__annotations__
+    participant_fields = Participant.__annotations__
     try:
         filter_by = parse_filter_by(filter_query=filter_by, valid_fields=participant_fields)
     except:
