@@ -9,9 +9,9 @@ CONVERSIONS = {
 
 
 def convert_string(value: str, t: type) -> Optional[int | str | bool]:
-	if isinstance(t, str):
+	if t == str:
 		return value
-	if isinstance(t, Optional[str]):
+	if t == Optional[str]:
 		if value == 'null':
 			return None
 		return value
@@ -20,7 +20,7 @@ def convert_string(value: str, t: type) -> Optional[int | str | bool]:
 			return int(value)
 		except:
 			return float(value)
-	if value in conversions:
-		return conversions[value]
+	if value in CONVERSIONS:
+		return CONVERSIONS[value]
 
 	return value
