@@ -54,7 +54,7 @@ def formalize_filters(filters: list[Filter], Model: DeclarativeBase) -> list[Bin
 				# стопроцентно ничего не найдёт, т.к. не должно быть пустых строк
 				filter = operators['=='](attribute, '')
 			else:
-				filter = or_(*[attribute.ilike(f'%{word}%') for word in value])
+				filter = and_(*[attribute.ilike(f'%{word}%') for word in value])
 
 		else:
 			filter = operators[operator](attribute, value)
