@@ -18,8 +18,9 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 	filters = filter_query.split(',')
 
 	# регулярка для отдельных фильтров, например, id{>}14 или name{in}[name;name2]...
-	filter_pattern = r'^.+({(==|!=|<|>|<=|>=|)}.+|{(in|!in)}\[.+\])$'
-	operators = ('{<=}', '{>=}', '{==}', '{!=}', '{<}', '{>}', '{in}', '{!in}')
+	# оператор {~} эквивалент оператору LIKE в SQL
+	filter_pattern = r'^.+({(==|!=|<|>|<=|>=|~|)}.+|{(in|!in)}\[.+\])$'
+	operators = ('{<=}', '{>=}', '{==}', '{!=}', '{<}', '{>}', '{in}', '{!in}', '{~}')
 	bool_operators = ('==', '!=')
 	list_operators = ('in', '!in')
 
@@ -39,9 +40,11 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 		if found_operator in list_operators:
 			value = value.strip('[]').split(';')
 			for i in range(len(value)):
-				value[i] = convert_string(value[i])
+				if valid_fields[field] != str:
+					value[i] = convert_string(value[i])
 		else:
-			value = convert_string(value)
+			if valid_fields[field] != str:
+				value = convert_string(value)
 
 		if isinstance(value, Optional[bool]):
 			if found_operator not in bool_operators:
@@ -54,8 +57,15 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 		else:
 			if not isinstance(value, valid_fields[field]):
 				raise TypeError
+
+		if not isinstance(value, str):
+			if found_operator == '~':
+				raise TypeError
+		else:
+			if found_operator == '~':
+				value = value.split()
+				value = [word for word in value if len(word) > 1]
 		
 		valid_filters.append(Filter(field, found_operator, value))
-			
 
 	return valid_filters
