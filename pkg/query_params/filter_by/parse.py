@@ -40,11 +40,9 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 		if found_operator in list_operators:
 			value = value.strip('[]').split(';')
 			for i in range(len(value)):
-				if valid_fields[field] != str:
-					value[i] = convert_string(value[i])
+				value[i] = convert_string(value[i], valid_fields[field])
 		else:
-			if valid_fields[field] != str:
-				value = convert_string(value)
+			value = convert_string(value, valid_fields[field])
 
 		if isinstance(value, Optional[bool]):
 			if found_operator not in bool_operators:

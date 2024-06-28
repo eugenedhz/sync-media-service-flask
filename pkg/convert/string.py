@@ -1,16 +1,26 @@
 from typing import Optional
 
 
-def convert_string(value: str) -> Optional[int | str | bool]:
-	conversions = {
-		'null': None,
-		'false': False,
-		'true': True
-	}
+CONVERSIONS = {
+	'null': None,
+	'false': False,
+	'true': True
+}
 
+
+def convert_string(value: str, t: type) -> Optional[int | str | bool]:
+	if isinstance(t, str):
+		return value
+	if isinstance(t, Optional[str]):
+		if value == 'null':
+			return None
+		return value
 	if value.isdigit():
-		value = int(value)
+		try:
+			return int(value)
+		except:
+			return float(value)
 	if value in conversions:
-		value = conversions[value]
+		return conversions[value]
 
 	return value
