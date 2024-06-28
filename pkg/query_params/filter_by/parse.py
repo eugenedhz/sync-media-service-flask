@@ -51,12 +51,10 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 			if found_operator not in bool_operators:
 				raise TypeError
 
-				
 		if isinstance(value, list):
 			for val in value:
 				if not isinstance(val, valid_fields[field]):
 					raise TypeError
-
 		else:
 			if not isinstance(value, valid_fields[field]):
 				raise TypeError
@@ -72,6 +70,5 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 					value = (value,)
 		
 		valid_filters.append(Filter(field, found_operator, value))
-			
 
 	return valid_filters
