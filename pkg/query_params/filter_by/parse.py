@@ -2,7 +2,6 @@ from typing import Optional, Any, NamedTuple
 import re
 
 from pkg.convert.string import convert_string
-from pkg.string.filter import get_words_with_no_stopwords
 
 
 class Filter(NamedTuple):
@@ -64,10 +63,8 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 				raise TypeError
 		else:
 			if found_operator == '~':
-				if ' ' in value:
-					value = get_words_with_no_stopwords(value)
-				else:
-					value = (value,)
+				value = value.split()
+				value = [word for word in value if len(word) > 1]
 		
 		valid_filters.append(Filter(field, found_operator, value))
 
