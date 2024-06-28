@@ -129,6 +129,88 @@ info:
       | null | event: 'error' | ***USER_NOT_IN_ROOM*** |
 
       -----------------------------------------------
+
+      ## ***QUERY PARAMETER: filter_by***
+
+      ### Reserved values:
+        - boolean value: `true`, `false`
+
+        - none value: `null`
+
+
+      ### Operators (must be in {} brackets):
+        - equals: `{==}`
+
+        - not equals: `{!=}`
+
+        - more: `{>}`
+
+        - less: `{<}`
+
+        - more or equals: `{>=}`
+
+        - less or equals: `{<=}`
+
+        - value in list: `{in}`
+
+        - value not in list: `{!in}`
+
+        - like operator (words or substrings in value, NOT case-sensitive)
+
+
+      ### Only for boolean operators:
+        - equals: `{==}`
+
+        - not equals: `{!=}`
+
+
+      ### Only for integer/float operators:
+        - equals: `{==}`
+
+        - not equals: `{!=}`
+
+        - more: `{>}`
+
+        - less: `{<}`
+
+        - more or equals: `{>=}`
+
+        - less or equals: `{<=}`
+
+
+      ### Only for list operators:
+        - value in list: `{in}`
+
+        - value not in list: `{!in}`
+
+
+      ### Only for string operators:
+        - equals: `{==}`
+
+        - not equals: `{!=}`
+
+        - more: `{>}`
+
+        - less: `{<}`
+
+        - more or equals: `{>=}`
+
+        - less or equals: `{<=}`
+
+        - like operator (words or substrings in value, NOT case-sensitive): `{~}`
+
+
+      ### list syntax (for value):
+      `[val1;val2;val3]`
+
+
+      ### Example:
+        - `filter_by=name{~}Wolf wall street,id{in}[1;2;3],isBanned{==}false`
+
+        - `filter_by=id{>=}15,avatar{!=}null`
+
+      -----------------------------------------------
+
   
   version: 'beta 0.0.1'
 
@@ -311,8 +393,6 @@ paths:
       - in: query
         name: filter_by
         required: false
-        description: |
-          Отфильтровать пользователей по значениям полей, например `filter_by=displayName=Sasha,isBanned=false,avatar=null`.
         type: string
 
       responses:
@@ -730,14 +810,18 @@ paths:
       - in: query
         name: filter_by
         required: false
-        description: |
-          Отфильтровать медиа по значениям полей, например `filter_by=name=Барби,description=Почему всё розовое`.
         type: string
       - in: query
         name: expand
         required: false
         description: |
           получить связанные сущности, доступно: `genres`, `videos`
+        type: string
+      - in: query
+        name: genreIds
+        required: false
+        description: |
+          Отфильтровать по жанрам (id через запятую)
         type: string
 
       responses:
@@ -990,8 +1074,6 @@ paths:
       - in: query
         name: filter_by
         required: false
-        description: |
-          Отфильтровать комнаты по значениям полей, например `filter_by=id{<=}2,name{in}[name1;name2;name3]`.
         type: string
       - in: query
         name: expand
@@ -1026,8 +1108,6 @@ paths:
       - in: query
         name: filter_by
         required: false
-        description: |
-          Отфильтровать по значениям полей
         type: string
 
       responses:
@@ -1367,8 +1447,6 @@ paths:
       - in: query
         name: filter_by
         required: false
-        description: |
-          Отфильтровать по значениям полей, например `filter_by=id{in}[1;2],name{==}Titanic`
         type: string
       - in: query
         name: expand
@@ -1434,8 +1512,7 @@ paths:
         name: filter_by
         required: false
         description: |
-          Отфильтровать участников по значениям полей, например `filter_by=id{>=}2,roomId{==}1`
-          ДОСТУПНО: id, userId, roomId.
+          ДОСТУПНО: `id`, `userId`, `roomId`
         type: string
 
       responses:
@@ -1559,8 +1636,7 @@ paths:
         name: filter_by
         required: false
         description: |
-          Отфильтровать по значениям полей, например `filter_by=order{>=}2,roomId{==}1`
-          ДОСТУПНО: id, mediaId, roomId, order
+          ДОСТУПНО: `id`, `mediaId`, `roomId`, `order`
         type: string
 
       responses:
