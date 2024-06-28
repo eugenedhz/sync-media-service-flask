@@ -30,8 +30,8 @@ class MediaUsecase():
 		return MediaDTO(**found_media.to_dict())
 
 
-	def get_medias(self, query_parameters_dto: QueryParametersDTO) -> list[MediaDTO]:
-		medias = self.repo.get_all(query_parameters_dto)
+	def get_medias(self, query_parameters_dto: QueryParametersDTO, genre_ids: list[int]) -> list[MediaDTO]:
+		medias = self.repo.get_all(query_parameters_dto, genre_ids)
 
 		return medias
 
