@@ -50,7 +50,11 @@ def formalize_filters(filters: list[Filter], Model: DeclarativeBase) -> list[Bin
 				filter = or_(attribute.not_in(value), attribute.is_(None))
 
 		elif operator == '~':
-			filter = or_(*[attribute.ilike(f'%{word}%') for word in value])
+			if len(value) == 0:
+				# стопроцентно ничего не найдёт, т.к. не должно быть пустых строк
+				filter = operators['=='](attribute, '')
+			else:
+				filter = or_(*[attribute.ilike(f'%{word}%') for word in value])
 
 		else:
 			filter = operators[operator](attribute, value)
