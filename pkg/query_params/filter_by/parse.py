@@ -41,7 +41,7 @@ def parse_filter_by(filter_query: Optional[str], valid_fields: dict[str, type]) 
 		if found_operator in list_operators:
 			value = value.strip('[]').split(';')
 			for i in range(len(value)):
-				if nvalid_fields[field] != str:
+				if valid_fields[field] != str:
 					value[i] = convert_string(value[i])
 		else:
 			if valid_fields[field] != str:
