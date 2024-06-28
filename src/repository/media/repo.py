@@ -4,7 +4,7 @@ from typing import Any
 
 from src.domain.media import Media
 from src.interface.repository.media import MediaRepoInterface
-from src.repository.sqla_models.models import MediaModel
+from src.repository.sqla_models.models import MediaModel, MediaGenreModel
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.media.dto import MediaUpdateDTO, MediaDTO, MediaCreateDTO
 
@@ -61,7 +61,7 @@ class MediaRepo(MediaRepoInterface):
         return Media(**updated_media._asdict(Media))
 
 
-    def get_all(self, query_parameters: QueryParametersDTO) -> list[MediaDTO]:
+    def get_all(self, query_parameters: QueryParametersDTO, genre_ids: list[int]) -> list[MediaDTO]:
         with Session(self.engine) as s:
             query = (
                 select(MediaModel)
@@ -72,6 +72,10 @@ class MediaRepo(MediaRepoInterface):
             if filters is not None:
                 filters = formalize_filters(filters, MediaModel)
                 query = query.filter(*filters)
+
+            if genre_ids is not None:
+                for id in genre_ids:
+                    query = query.filter(MediaModel.genres.any(MediaGenreModel.genreId == id))
 
             found_medias = get_all(session=s, query=query)
 
