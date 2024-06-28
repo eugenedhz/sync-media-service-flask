@@ -2,18 +2,18 @@ from operator import lt, le, eq, ne, ge, gt
 
 from sqlalchemy.orm import Session
 from sqlalchemy import Select, or_, and_
-from sqlalchemy.engine import Row
+from sqlalchemy.engine import ScalarResult
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql.elements import BinaryExpression
 
 from pkg.query_params.filter_by.parse import Filter
 
 
-def get_first(session: Session, query: Select) -> Row:
+def get_first(session: Session, query: Select) -> ScalarResult:
 	return session.scalars(query).first()
 
 
-def get_all(session: Session, query: Select) -> list[Row]:
+def get_all(session: Session, query: Select) -> list[ScalarResult]:
 	return session.scalars(query).all()
 
 
@@ -48,6 +48,9 @@ def formalize_filters(filters: list[Filter], Model: DeclarativeBase) -> list[Bin
 				filter = and_(attribute.not_in(value), attribute.is_not(None))
 			else:
 				filter = or_(attribute.not_in(value), attribute.is_(None))
+
+		elif operator == '~':
+			filter = or_(*[attribute.ilike(f'%{word}%') for word in value])
 
 		else:
 			filter = operators[operator](attribute, value)

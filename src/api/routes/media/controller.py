@@ -124,6 +124,15 @@ def get_all_medias():
     select = request_params.get('select')
     filter_by = request_params.get('filter_by')
     expand = request_params.get('expand')
+    genre_ids = request_params.get('genreIds')
+
+    if genre_ids:
+        try:
+            genre_ids = genre_ids.split(',')
+            for i in range(len(genre_ids)):
+                genre_ids[i] = int(genre_ids[i])
+        except:
+            raise ApiError(API_ERRORS['INVALID_ID'])
 
     try:
         expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
@@ -142,14 +151,11 @@ def get_all_medias():
     except:
         raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
-    expand = request_params.get('expand')
-    try:
-        expand = parse_expand(expand=expand, valid_fields=EXPAND_FIELDS)
-    except:
-        raise ApiError(API_ERRORS['INVALID_EXPAND'])
-
     query_parameters_dto = QueryParametersDTO(filters=filter_by)
-    medias = media_service.get_medias(query_parameters_dto=query_parameters_dto)
+    medias = media_service.get_medias(
+        query_parameters_dto=query_parameters_dto,
+        genre_ids=genre_ids
+    )
 
     if len(medias) == 0:
         raise ApiError(MEDIA_API_ERRORS['MEDIAS_NOT_FOUND'])

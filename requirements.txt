@@ -12,3 +12,4 @@ marshmallow
 flasgger
 redis[hiredis]
 pycountry
+nltk
