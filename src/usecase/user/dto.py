@@ -32,3 +32,4 @@ class UserUpdateDTO(TypedDict):
 	birthday: int # timestamp
 	description: str
 	avatar: str
+	password: str
