@@ -155,7 +155,7 @@ info:
 
         - value not in list: `{!in}`
 
-        - like operator (words or substrings in value, NOT case-sensitive)
+        - like operator (words or substrings in value, NOT case-sensitive): `{~}`
 
 
       ### Only for boolean operators:
