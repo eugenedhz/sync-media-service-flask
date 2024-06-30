@@ -24,3 +24,4 @@ class UpdateUserSchema(JsonSchema):
 	displayName = fields.Str(required=False, validate=Length(min=1, max=30))
 	birthday = fields.Int(required=False, validate=Range(min=86400))
 	description = fields.Str(required=False, validate=Length(min=1, max=140))
+	password = fields.Str(required=True, validate=[Length(min=8), Regexp(regex=Regex.PASSWORD)])
