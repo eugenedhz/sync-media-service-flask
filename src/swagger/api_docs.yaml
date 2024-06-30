@@ -1919,6 +1919,14 @@ components:
           required: false
           minLength: 1
           example: 'example@example.org'
+        password:
+          type: string
+          nullable: false
+          minLength: 8
+          description: |
+            имеет `regexp = ^[a-zA-Z0-9.@_-]+$`
+          required: true
+          example: 'somepassword'
         birthday:
           type: integer
           required: false
