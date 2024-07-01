@@ -209,6 +209,41 @@ info:
 
         - `filter_by=id{>=}15,avatar{!=}null`
 
+
+      ## ***SOCKETS: client-side events***
+
+      Description: `event` -> `data sent with event`
+
+
+      ### Connection events:
+
+        - `connected` -> `{'userId': user_id}`
+
+
+      ### Room events:
+
+        - `joined` -> `Participant entity`
+
+        - `left` -> `Participant entity`
+
+
+      ### Playlist events:
+
+        - `playlistMediaAdded` -> `PlaylistMedia entity`
+
+        - `playlistMediaUpdated` -> `PlaylistMedia entity`
+
+        - `playlistMediaSettedToPlayer` -> `PlaylistMedia entity`
+
+        - `playlistMediaDeleted` -> `PlaylistMedia entity`
+
+
+      ### Video Player events:
+
+        - `syncPlayerState` -> `{'currentTime': int, 'isPaused': boolean}`
+
+        - `sendPlayerStateFromClient` -> `{'userSID': string}` (on that event client must send request to `sendPlayerStateToUser` server event)
+
       -----------------------------------------------
 
   
@@ -1002,6 +1037,12 @@ paths:
 
       summary: Обновление комнаты
 
+      description: |
+        только создатель может обновить комнату
+
+
+        При обновлении также отправляется событие в комнату `roomUpdated` с сущностью комнаты
+
       tags:
         - Rooms API
 
@@ -1035,7 +1076,13 @@ paths:
 
       summary: Удаление комнаты
 
-      description: Только создатель комнаты может удалить её
+      description: |
+        Только создатель комнаты может удалить её
+
+
+        При удалении также отправляется событие в комнату `roomDeleted` с сущностью комнаты
+
+        комната в контексте сокетов тоже закрывается
 
       tags:
         - Rooms API
@@ -1571,6 +1618,9 @@ paths:
       operationId: join_room
 
       summary: Подключение к комнате
+
+      description: |
+        при успешном подключении происходит emit события `joined` в соотв. комнату с json сущностью участника
 
       tags:
         - Room Sockets API
