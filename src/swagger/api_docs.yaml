@@ -214,15 +214,18 @@ info:
 
       Description: `event` -> `data sent with event`
 
+
       ### Connection events:
 
         - `connected` -> `{'userId': user_id}`
+
 
       ### Room events:
 
         - `joined` -> `Participant entity`
 
         - `left` -> `Participant entity`
+
 
       ### Playlist events:
 
@@ -233,6 +236,7 @@ info:
         - `playlistMediaSettedToPlayer` -> `PlaylistMedia entity`
 
         - `playlistMediaDeleted` -> `PlaylistMedia entity`
+
 
       ### Video Player events:
 
