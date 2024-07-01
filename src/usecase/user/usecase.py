@@ -75,7 +75,8 @@ class UserUsecase():
 
 	def update_user(self, id: int, update_user_dto: UserUpdateDTO) -> UserDTO:
 		if 'password' in update_user_dto:
-			update_user_dto['password'] = generate_password_hash(update_user_dto['password'])
+			update_user_dto['passwordHash'] = generate_password_hash(update_user_dto['password'])
+			del update_user_dto['password']
 
 		updated_user = self.repo.update(id, update_user_dto)
 
