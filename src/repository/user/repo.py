@@ -212,7 +212,7 @@ class UserRepo(UserRepoInterface):
                 filters = formalize_filters(filters, UserModel)
                 query = query.filter(*filters)
 
-            if limit and offset:
+            if limit != None and offset != None:
                 query = query.limit(limit).offset(limit*offset)
 
             friends = get_all(s, query)
