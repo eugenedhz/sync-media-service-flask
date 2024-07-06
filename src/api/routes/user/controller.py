@@ -119,8 +119,17 @@ def get_all_users():
 	except:
 		raise ApiError(API_ERRORS['INVALID_EXPAND'])
 
-	query_parameters = QueryParametersDTO(filters=filter_by)
-	users = user_service.get_users(query_parameters_dto=query_parameters)
+	limit = request_params.get('limit')
+	offset = request_params.get('offset')
+	if limit or offset:
+		try:
+			limit = int(limit)
+			offset = int(offset)
+		except:
+			raise ApiError(API_ERRORS['INVALID_PAGE_QUERY'])
+
+	query_parameters_dto = QueryParametersDTO(filters=filter_by, limit=limit, offset=offset)
+	users = user_service.get_users(query_parameters_dto=query_parameters_dto)
 
 	if len(users) == 0:
 		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
@@ -236,7 +245,7 @@ def delete_user():
 
 	is_user_exists = user_service.is_field_exists(name='id', value=user_id)
 	if not is_user_exists:
-		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])	
+		raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
 	images = []
 	created_rooms = room_service.get_creator_rooms(user_id)

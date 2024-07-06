@@ -90,10 +90,14 @@ class UserRepo(UserRepoInterface):
             )
 
             filters = query_parameters_dto.filters
+            limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
 
             if filters is not None:
                 filters = formalize_filters(filters, UserModel)
                 query = query.filter(*filters)
+
+            if limit and offset:
+                query = query.limit(limit).offset(limit*offset)
 
             found_users = get_all(session=s, query=query)
 
@@ -188,9 +192,9 @@ class UserRepo(UserRepoInterface):
             return User(**deleted_friend._asdict(User))
 
 
-    def get_friends(self, user_id: int) -> list[UserDTO]:
+    def get_friends(self, user_id: int, query_parameters_dto: QueryParametersDTO) -> list[UserDTO]:
         with Session(self.engine) as s:
-            query_friends = (
+            query = (
                 select(UserModel)
                 .join(FriendshipModel, UserModel.id == FriendshipModel.user_2)
                 .where(FriendshipModel.user_1 == user_id)
@@ -201,7 +205,17 @@ class UserRepo(UserRepoInterface):
                 )
             )
 
-            friends = get_all(s, query_friends)
+            filters = query_parameters_dto.filters
+            limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
+
+            if filters is not None:
+                filters = formalize_filters(filters, UserModel)
+                query = query.filter(*filters)
+
+            if limit and offset:
+                query = query.limit(limit).offset(limit*offset)
+
+            friends = get_all(s, query)
 
             friends_dto = [UserDTO(**friend._asdict(User)) for friend in friends]
             return friends_dto
