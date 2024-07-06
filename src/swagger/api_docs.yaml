@@ -77,6 +77,7 @@ info:
       | 403 | FORBIDDEN | ***CANNOT_ADD_YOURSELF*** |
       | 403 | FORBIDDEN | ***ALREADY_REQUESTED*** |
       | 404 | NOT FOUND | ***FRIEND_NOT_FOUND*** |
+      | 404 | NOT FOUND | ***FRIENDS_NOT_FOUND*** |
       | 404 | NOT FOUND | ***REQUEST_NOT_FOUND*** |
       | ***Video API errors*** |
       | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
@@ -410,8 +411,6 @@ paths:
       operationId: get_users
 
       summary: Получить пользователей
-
-      description: Если пользователи не найдены, возвращает пустой список.
 
       tags:
         - User API
@@ -849,8 +848,6 @@ paths:
       operationId: get_medias
 
       summary: Получить все медиа
-
-      description: Если медиа не найдены, возвращает пустой список.
 
       tags:
         - Media API
@@ -1748,6 +1745,14 @@ paths:
         description: |
           ДОСТУПНО: `id`, `mediaId`, `roomId`, `order`
         type: string
+      - in: query
+        name: limit
+        required: false
+        type: integer
+      - in: query
+        name: offset
+        required: false
+        type: integer
 
       responses:
         200:

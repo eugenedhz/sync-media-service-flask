@@ -17,6 +17,11 @@ FRIENDS_API_ERRORS = {
         status_code = 404
     ),
 
+    'FRIENDS_NOT_FOUND': ApiErrorInfo(
+        error_message = 'FRIENDS_NOT_FOUND',
+        status_code = 404
+    ),
+
     'REQUEST_NOT_FOUND': ApiErrorInfo(
         error_message = 'REQUEST_NOT_FOUND',
         status_code = 404
