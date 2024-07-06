@@ -20,6 +20,7 @@ DEFAULT_PLAYER_STATE = {'currentTime': 0, 'isPaused': True}
 def get_player_current_state(data):
 	PlayerStateRequestSchema().validate(data)
 	user_sid = request.sid
+	user_id = user_socket_session.get(user_sid)
 	room_id = data['roomId']
 
 	if not room_service.is_field_exists('id', room_id):
@@ -38,9 +39,10 @@ def get_player_current_state(data):
 	for participant in participants:
 		if participant.userId != user_id:
 			random_participant_user_id = participant.userId
+			break
 
 	random_participant_sid = user_socket_session.get(random_participant_user_id)
-	emit('sendPlayerStateFromClient', {'userSID': requesting_user_sid}, to=random_participant_sid)
+	emit('sendPlayerStateFromClient', {'userSID': user_sid}, to=random_participant_sid)
 
 
 @socketio.on('sendPlayerStateToUser')
