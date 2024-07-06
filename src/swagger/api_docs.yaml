@@ -217,7 +217,7 @@ info:
 
       ### Connection events:
 
-        - `connected` -> `{'userId': user_id}`
+        - `connected` -> `{'userId': int}`
 
 
       ### Room events:
@@ -225,6 +225,10 @@ info:
         - `joined` -> `Participant entity`
 
         - `left` -> `Participant entity`
+
+        - `roomUpdated` -> `Room entity`
+
+        - `roomDeleted` -> `Room entity`
 
 
       ### Playlist events:

@@ -1,4 +1,6 @@
-from flask_socketio import ConnectionRefusedError, emit, rooms, leave_room
+from flask_socketio import (
+	ConnectionRefusedError, emit, rooms, leave_room, disconnect
+)
 from flask_jwt_extended import decode_token
 from flask import request
 
@@ -17,6 +19,11 @@ def connect_event():
 		raise ConnectionRefusedError('ACCESS_TOKEN_REQUIRED')
 
 	user_id = int(payload['sub'])
+	
+	current_user_sid = user_socket_session.get(user_id)
+	if current_user_sid:
+		disconnect(current_user_sid)
+
 	user_socket_session.set(request.sid, user_id)
 	user_socket_session.set(user_id, request.sid)
 
