@@ -74,7 +74,7 @@ class MediaVideoRepo(MediaVideoRepoInterface):
                 filters = formalize_filters(filters, VideoModel)
                 query = query.filter(*filters)
 
-            if limit and offset:
+            if limit != None and offset != None:
                 query = query.limit(limit).offset(limit*offset)
 
             found_videos = get_all(session=s, query=query)
