@@ -171,7 +171,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
                 filters = formalize_filters(filters, PlaylistMediaModel)
                 query = query.filter(*filters)
 
-            if limit and offset:
+            if limit != None and offset != None:
                 query = query.limit(limit).offset(limit*offset)
 
             query = query.order_by(asc(PlaylistMediaModel.order))

@@ -89,7 +89,7 @@ class GenreRepo(GenreRepoInterface):
                 filters = formalize_filters(filters, GenreModel)
                 query = query.filter(*filters)
 
-            if limit and offset:
+            if limit != None and offset != None:
                 query = query.limit(limit).offset(limit*offset)
 
             found_genres = get_all(session=s, query=query)

@@ -78,7 +78,7 @@ class MediaRepo(MediaRepoInterface):
                 for id in genre_ids:
                     query = query.filter(MediaModel.genres.any(MediaGenreModel.genreId == id))
             
-            if limit and offset:
+            if limit != None and offset != None:
                 query = query.limit(limit).offset(limit*offset)
 
             found_medias = get_all(session=s, query=query)

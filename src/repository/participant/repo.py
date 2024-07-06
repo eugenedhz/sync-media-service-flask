@@ -82,7 +82,7 @@ class ParticipantRepo(ParticipantRepoInterface):
                 filters = formalize_filters(filters, ParticipantModel)
                 query = query.filter(*filters)
 
-            if limit and offset:
+            if limit != None and offset != None:
                 query = query.limit(limit).offset(limit*offset)
 
             found_participants = get_all(session=s, query=query)
