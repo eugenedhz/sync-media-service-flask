@@ -6,7 +6,7 @@ from typing import Any
 
 from src.domain.user import User
 from src.interface.repository.user import UserRepoInterface
-from src.repository.sqla_models.models import UserModel, FriendshipRequestModel, FriendshipModel
+from src.repository.sqla_models.models import UserModel, FriendshipRequestModel, FriendshipModel, AdminModel
 from src.usecase.dto import QueryParametersDTO
 from src.usecase.user.dto import UserUpdateDTO, UserDTO
 
@@ -279,6 +279,19 @@ class UserRepo(UserRepoInterface):
                 return request
 
             return False
+
+
+    def is_admin(self, user_id: int) -> bool:
+        with Session(self.engine) as s:
+            query = (
+                select(AdminModel.id)
+                .where(AdminModel.userId == user_id)
+            )
+
+            if get_first(session=s, query=query) is None:
+                return False
+
+        return True
 
 
     def is_field_exists(self, field: dict[str: Any]) -> bool:

@@ -15,6 +15,8 @@ from src.api.error.shared_error import API_ERRORS
 from src.api.routes.genre.error import GENRE_API_ERRORS
 from src.api.routes.media.error import MEDIA_API_ERRORS
 from src.api.error.custom_error import ApiError
+from src.configs.constants import Role
+from src.api.helpers.jwt import role_required
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
@@ -22,6 +24,7 @@ from pkg.query_params.filter_by.parse import parse_filter_by
 
 @app.route('/genre', methods=['POST'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def genre_create():
     CreateGenreSchema().validate(request.json)
 
@@ -130,6 +133,8 @@ def get_media_genres():
 
 
 @app.route('/media/genre', methods=['POST'])
+@jwt_required()
+@role_required(Role.ADMIN)
 def add_genre_to_media():
     GenreAddOrDeleteFromMediaSchema().validate(request.json)
     json = request.json
@@ -156,6 +161,8 @@ def add_genre_to_media():
 
 
 @app.route('/media/genre', methods=['DELETE'])
+@jwt_required()
+@role_required(Role.ADMIN)
 def delete_genre_from_media():
     GenreAddOrDeleteFromMediaSchema().validate(request.json)
     json = request.json
@@ -183,6 +190,7 @@ def delete_genre_from_media():
 
 @app.route('/genre', methods=['PATCH'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def update_genre():
     genre_id = request.args.get('id')
 
@@ -211,6 +219,7 @@ def update_genre():
 
 @app.route('/genre', methods=['DELETE'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def delete_genre():
     genre_id = request.args.get('id')
 

@@ -1,4 +1,5 @@
 from src.api.error.custom_error import ApiErrorInfo
+from src.configs.constants import Role
 
 
 API_ERRORS = {
@@ -51,9 +52,8 @@ API_ERRORS = {
 		status_code = 400
 	),
 
-	'ADMIN_RIGHTS_REQUIRED': ApiErrorInfo(
-		error_message = 'ADMIN_RIGHTS_REQUIRED',
-		description = 'You must log in as admin to do this.',
+	f'{Role.ADMIN}_RIGHTS_REQUIRED': ApiErrorInfo(
+		error_message = f'{Role.ADMIN}_RIGHTS_REQUIRED',
 		status_code = 403
 	),
 
