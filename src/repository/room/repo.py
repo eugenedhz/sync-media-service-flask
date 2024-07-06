@@ -76,13 +76,13 @@ class RoomRepo(RoomRepoInterface):
         return Room(**updated_room._asdict(Room))
 
 
-    def get_all(self, query_parameters: QueryParametersDTO) -> list[RoomDTO]:
+    def get_all(self, query_parameters_dto: QueryParametersDTO) -> list[RoomDTO]:
         with Session(self.engine) as s:
             query = (
                 select(RoomModel)
             )
 
-            filters = query_parameters.filters
+            filters = query_parameters_dto.filters
             limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
 
             if filters is not None:
