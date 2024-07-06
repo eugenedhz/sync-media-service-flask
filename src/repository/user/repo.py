@@ -2,7 +2,7 @@ from sqlalchemy import Engine, update, select, Row
 from sqlalchemy.orm import Session, defer
 from sqlalchemy.sql.operators import or_, and_
 
-from typing import Any
+from typing import Any, Optional
 
 from src.domain.user import User
 from src.interface.repository.user import UserRepoInterface
@@ -192,7 +192,7 @@ class UserRepo(UserRepoInterface):
             return User(**deleted_friend._asdict(User))
 
 
-    def get_friends(self, user_id: int, query_parameters_dto: QueryParametersDTO) -> list[UserDTO]:
+    def get_friends(self, user_id: int, query_parameters_dto: Optional[QueryParametersDTO]) -> list[UserDTO]:
         with Session(self.engine) as s:
             query = (
                 select(UserModel)
@@ -205,15 +205,16 @@ class UserRepo(UserRepoInterface):
                 )
             )
 
-            filters = query_parameters_dto.filters
-            limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
+            if query_parameters_dto:
+                filters = query_parameters_dto.filters
+                limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
 
-            if filters is not None:
-                filters = formalize_filters(filters, UserModel)
-                query = query.filter(*filters)
+                if filters is not None:
+                    filters = formalize_filters(filters, UserModel)
+                    query = query.filter(*filters)
 
-            if limit != None and offset != None:
-                query = query.limit(limit).offset(limit*offset)
+                if limit != None and offset != None:
+                    query = query.limit(limit).offset(limit*offset)
 
             friends = get_all(s, query)
 
