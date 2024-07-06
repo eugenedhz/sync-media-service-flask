@@ -83,10 +83,14 @@ class RoomRepo(RoomRepoInterface):
             )
 
             filters = query_parameters.filters
+            limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
 
             if filters is not None:
                 filters = formalize_filters(filters, RoomModel)
                 query = query.filter(*filters)
+
+            if limit and offset:
+                query = query.limit(limit).offset(limit*offset)
 
             found_rooms = get_all(session=s, query=query)
 

@@ -33,7 +33,16 @@ def get_all_playlist_media():
 	except:
 		raise ApiError(API_ERRORS['INVALID_FILTERS'])
 
-	query_parameters_dto = QueryParametersDTO(filters=filter_by)
+	limit = request_params.get('limit')
+	offset = request_params.get('offset')
+	if limit or offset:
+		try:
+			limit = int(limit)
+			offset = int(offset)
+		except:
+			raise ApiError(API_ERRORS['INVALID_PAGE_QUERY'])
+
+	query_parameters_dto = QueryParametersDTO(filters=filter_by, limit=limit, offset=offset)
 	playlist_medias = playlist_media_service.get_playlist_medias(query_parameters_dto=query_parameters_dto)
 
 	if len(playlist_medias) == 0:

@@ -158,17 +158,21 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
         return PlaylistMediaDTO(**playlist_media._asdict(PlaylistMedia), name=name, thumbnail=thumbnail)           
 
 
-    def get_all(self, query_parameters: QueryParametersDTO) -> list[PlaylistMediaDTO]:
+    def get_all(self, query_parameters_dto: QueryParametersDTO) -> list[PlaylistMediaDTO]:
         with Session(self.engine) as s:
             query = (
                 select(PlaylistMediaModel)
             )
 
-            filters = query_parameters.filters
+            filters = query_parameters_dto.filters
+            limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
 
             if filters is not None:
                 filters = formalize_filters(filters, PlaylistMediaModel)
                 query = query.filter(*filters)
+
+            if limit and offset:
+                query = query.limit(limit).offset(limit*offset)
 
             query = query.order_by(asc(PlaylistMediaModel.order))
 

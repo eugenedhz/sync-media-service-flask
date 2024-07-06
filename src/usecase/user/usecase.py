@@ -141,8 +141,8 @@ class UserUsecase():
 		return UserDTO(**friend_dict)
 
 
-	def get_friends(self, user_id: int) -> list[UserDTO]:
-		friends = self.repo.get_friends(user_id=user_id)
+	def get_friends(self, user_id: int, query_parameters_dto: QueryParametersDTO) -> list[UserDTO]:
+		friends = self.repo.get_friends(user_id, query_parameters_dto)
 
 		return friends
 
