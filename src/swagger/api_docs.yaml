@@ -433,6 +433,14 @@ paths:
         name: filter_by
         required: false
         type: string
+      - in: query
+        name: limit
+        required: false
+        type: integer
+      - in: query
+        name: offset
+        required: false
+        type: integer
 
       responses:
         200:
@@ -550,6 +558,14 @@ paths:
           required: true
           description: |
             id пользователя
+          type: integer
+        - in: query
+          name: limit
+          required: false
+          type: integer
+        - in: query
+          name: offset
+          required: false
           type: integer
 
       responses:
@@ -862,6 +878,14 @@ paths:
         description: |
           Отфильтровать по жанрам (id через запятую)
         type: string
+      - in: query
+        name: limit
+        required: false
+        type: integer
+      - in: query
+        name: offset
+        required: false
+        type: integer
 
       responses:
         200:
@@ -1132,6 +1156,14 @@ paths:
         description: |
           Добавить связанные сущности, доступно `creator`, `participants`, `playlistMedia`
         type: string
+      - in: query
+        name: limit
+        required: false
+        type: integer
+      - in: query
+        name: offset
+        required: false
+        type: integer
 
       responses:
         200:
@@ -1160,6 +1192,14 @@ paths:
         name: filter_by
         required: false
         type: string
+      - in: query
+        name: limit
+        required: false
+        type: integer
+      - in: query
+        name: offset
+        required: false
+        type: integer
 
       responses:
         200:
@@ -1505,6 +1545,14 @@ paths:
         description: |
           Добавить связанные сущности, пока доступно `expand=media`
         type: string
+      - in: query
+        name: limit
+        required: false
+        type: integer
+      - in: query
+        name: offset
+        required: false
+        type: integer
 
       responses:
         200:
@@ -1565,6 +1613,14 @@ paths:
         description: |
           ДОСТУПНО: `id`, `userId`, `roomId`
         type: string
+      - in: query
+        name: limit
+        required: false
+        type: integer
+      - in: query
+        name: offset
+        required: false
+        type: integer
 
       responses:
         200:
