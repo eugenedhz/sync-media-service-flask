@@ -18,8 +18,9 @@ from src.api.routes.media.error import MEDIA_API_ERRORS
 from src.api.routes.video.error import VIDEO_API_ERRORS
 from src.api.error.custom_error import ApiError
 from src.api.helpers.video import concat_video_to_url, delete_videos_with_quality
+from src.api.helpers.jwt import role_required
 
-from src.configs.constants import Static
+from src.configs.constants import Static, Role
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
@@ -32,6 +33,7 @@ EXPAND_FIELDS = ('media',)
 
 @app.route('/media/video', methods=['POST'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def create_video():
     json = request.json
     CreateMediaVideoSchema().validate(json)
@@ -147,6 +149,7 @@ def get_all_videos():
 
 @app.route('/media/video', methods=['PATCH'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def update_video():
     video_id = request.args.get('id')
 
@@ -187,6 +190,7 @@ def update_video():
 
 @app.route('/media/video', methods=['DELETE'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def delete_video():
     video_id = request.args.get('id')
 

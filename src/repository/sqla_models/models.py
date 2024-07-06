@@ -87,6 +87,13 @@ class RoomModel(Base):
 	)
 
 
+class AdminModel(Base):
+	__tablename__ = Tables.ROLE
+
+	id = Column(Integer, primary_key=True)
+	userId = Column(String, ForeignKey(f'{Tables.USER}.id'), nullable=False, unique=True)
+
+
 class UserModel(Base):
 	__tablename__ = Tables.USER
 

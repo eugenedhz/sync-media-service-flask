@@ -70,7 +70,12 @@ def login():
 	if not password_match:
 		raise ApiError(AUTH_API_ERRORS['WRONG_PWD'])
 
-	claims = Claims(role=Role.USER, type='access')
+	if user_service.is_admin(user.id):
+		role = Role.ADMIN
+	else:
+		role=Role.USER
+
+	claims = Claims(role=role, type='access')
 	response = create_response_with_jwt(
 		user = user._asdict(),
 		claims = claims
