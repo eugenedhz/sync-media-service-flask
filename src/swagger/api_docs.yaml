@@ -46,6 +46,8 @@ info:
       | ***Query params errors*** |
       | 400 | BAD REQUEST | ***INVALID_FILTER_BY*** |
       | 400 | BAD REQUEST | ***INVALID_SELECT*** |
+      | 400 | BAD REQUEST | ***INVALID_EXPAND*** |
+      | 400 | BAD REQUEST | ***INVALID_PAGE_QUERY*** |
       | 400 | BAD REQUEST | ***INVALID_ID*** |
       | 400 | BAD REQUEST | ***NO_IDENTITY_PROVIDED*** |
       | ***File uploading errors*** |
@@ -68,7 +70,6 @@ info:
       | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
       | 404 | NOT FOUND | ***USERS_NOT_FOUND*** |
       | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
-      | 400 | BAD REQUEST | ***INVALID_EXPAND*** |
       | ***Media API errors*** |
       | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
@@ -92,8 +93,8 @@ info:
       | 404 | NOT FOUND | ***GENRES_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIA_GENRE_NOT_FOUND*** |
       | 404 | NOT FOUND | ***MEDIA_GENRES_NOT_FOUND*** |
-      | 409 | CONFLICT | ***SLUG_EXISTS*** |
-      | 409 | CONFLICT | ***MEDIA_GENRE_EXISTS*** |
+      | 409 | CONFLICT | ***SLUG_ALREADY_EXISTS*** |
+      | 409 | CONFLICT | ***MEDIA_GENRE_ALREADY_EXISTS*** |
       | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
       | ***Rooms API errors*** |
       | 404 | NOT FOUND | ***ROOM_NOT_FOUND*** |
@@ -285,12 +286,12 @@ tags:
     description: Do everything with genres :)
   - name: Media Video API
     description: Do everything with media videos :)
+  - name: Playlist Media API
+    description: Do everything with room playlist :)
   - name: Sockets API
     description: Do everything with sockets :)
   - name: Room Sockets API
     description: Do everything with room sockets :)
-  - name: Playlist Media API
-    description: Do everything with room playlist :)
   - name: Playlist Media Sockets API
     description: Do everything with room playlist :)
   - name: Video Player Sockets API
@@ -1639,6 +1640,10 @@ paths:
         обязателен параметр `withCredentials: true` при инициализации объекта `io`, чтобы передать access token.
 
         Иначе отправляется error packet с json `{'message': 'ACCESS_TOKEN_REQUIRED'}`
+        
+        если пользователь уже подключён к другой сокет сессии (в другом браузере или вкладке),
+        то во эту сессию происходит emit события disconnect (и выход из комнаты, если он был к ней подключён).
+
 
       responses:
         200:
@@ -2453,7 +2458,7 @@ components:
           nullable: false
           example: 'комната жени'
           minLength: 1
-          maxLength: 30
+          maxLength: 20
           required: true
         isPrivate:
           type: boolean
@@ -2484,7 +2489,7 @@ components:
           nullable: false
           example: 'комната жени'
           minLength: 1
-          maxLength: 30
+          maxLength: 20
           required: false
         isPrivate:
           type: boolean
