@@ -2453,7 +2453,7 @@ components:
           nullable: false
           example: 'комната жени'
           minLength: 1
-          maxLength: 30
+          maxLength: 20
           required: true
         isPrivate:
           type: boolean
@@ -2484,7 +2484,7 @@ components:
           nullable: false
           example: 'комната жени'
           minLength: 1
-          maxLength: 30
+          maxLength: 20
           required: false
         isPrivate:
           type: boolean
