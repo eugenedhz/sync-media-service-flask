@@ -28,8 +28,8 @@ def join_room_event(data):
 	participant_dto = ParticipantCreateDTO(userId=user_id, roomId=room_id)
 	participant = participant_service.create_participant(participant_dto)
 
-	emit('joined', participant._asdict(), to=room_id)
 	join_room(room_id)
+	emit('joined', participant._asdict(), to=room_id)
 
 
 @socketio.on('leave')
