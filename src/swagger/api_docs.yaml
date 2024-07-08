@@ -22,242 +22,245 @@ info:
 
       -----------------------------------------------
 
-      ## ***API ERRORS***
+      <details>
+        <summary> ***API ERRORS*** </summary>
 
-      📝 **Note:** Some errors may have human-readable `description` field.
-      
-      | Status Code | Status Description | Message |
-      | --- | --- | --- |
-      | ***Global errors*** |
-      | 405 | METHOD NOT ALLOWED | ***METHOD_NOT_ALLOWED*** |
-      | 404 | NOT FOUND | ***RESOURCE_NOT_FOUND*** |
-      | 500 | INTERNAL SERVER ERROR | ***INTERNAL_SERVER_ERROR*** |
-      | 403 | FORBIDDEN | ***ADMIN_RIGHTS_REQUIRED*** |
-      | ***JSON validation errors*** |
-      | 400 | BAD REQUEST | ***"field_name": "MISSING_FIELD"*** |
-      | 400 | BAD REQUEST | ***"field_name": "UNKNOWN_FIELD"*** |
-      | 400 | BAD REQUEST | ***"field_name": "INVALID_LENGTH"*** |
-      | 400 | BAD REQUEST | ***"field_name": "INVALID_RANGE"*** |
-      | 400 | BAD REQUEST | ***"field_name": "REGEXP_MISMATCH"*** |
-      | 400 | BAD REQUEST | ***"field_name": "INVALID_TYPE"*** |
-      | 400 | BAD REQUEST | ***"field_name": "NOT_NULLABLE"*** |
-      | ***Formdata errors*** |
-      | 400 | BAD REQUEST | ***FORMDATA_IS_EMPTY*** |
-      | ***Query params errors*** |
-      | 400 | BAD REQUEST | ***INVALID_FILTER_BY*** |
-      | 400 | BAD REQUEST | ***INVALID_SELECT*** |
-      | 400 | BAD REQUEST | ***INVALID_EXPAND*** |
-      | 400 | BAD REQUEST | ***INVALID_PAGE_QUERY*** |
-      | 400 | BAD REQUEST | ***INVALID_ID*** |
-      | 400 | BAD REQUEST | ***NO_IDENTITY_PROVIDED*** |
-      | ***File uploading errors*** |
-      | 400 | BAD REQUEST | ***INVALID_JPG*** |
-      | 400 | BAD REQUEST | ***INVALID_VIDEO*** |
-      | 500 | INTERNAL SERVER ERROR | ***CANNOT_SAVE_FILE_ON_SERVER*** |
-      | ***Authenticaton API errors*** |
-      | 401 | UNAUTHORIZED | ***NO_TOKEN_PROVIDED*** |
-      | 401 | UNAUTHORIZED | ***NO_FRESH_TOKEN_PROVIDED*** |
-      | 401 | UNAUTHORIZED | ***TOKEN_HAS_EXPIRED*** |
-      | 422 | UNPROCESSABLE ENTITY | ***INVALID_TOKEN*** |
-      | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
-      | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
-      | 409 | CONFLICT | ***USERNAME_NOT_FOUND*** |
-      | 409 | CONFLICT | ***INCORRECT_PASSWORD*** |
-      | 403 | FORBIDDEN | ***USER_IS_BANNED*** |
-      | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
-      | ***User API errors*** |
-      | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
-      | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
-      | 404 | NOT FOUND | ***USERS_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
-      | ***Media API errors*** |
-      | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
-      | ***Friends API errors*** |
-      | 403 | FORBIDDEN | ***CANNOT_ADD_YOURSELF*** |
-      | 403 | FORBIDDEN | ***ALREADY_REQUESTED*** |
-      | 404 | NOT FOUND | ***FRIEND_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***FRIENDS_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***REQUEST_NOT_FOUND*** |
-      | ***Video API errors*** |
-      | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***QUALITY_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
-      | 400 | BAD REQUEST | ***NO_UPLOAD_SESSION_PROVIDED*** |
-      | 400 | BAD REQUEST | ***NO_QUALITY_PROVIDED*** |
-      | 409 | CONFLICT | ***SIZE_MISMATCH*** |
-      | ***Genres API errors*** |
-      | 404 | NOT FOUND | ***GENRE_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***GENRES_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***MEDIA_GENRE_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***MEDIA_GENRES_NOT_FOUND*** |
-      | 409 | CONFLICT | ***SLUG_ALREADY_EXISTS*** |
-      | 409 | CONFLICT | ***MEDIA_GENRE_ALREADY_EXISTS*** |
-      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
-      | ***Rooms API errors*** |
-      | 404 | NOT FOUND | ***ROOM_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***ROOMS_NOT_FOUND*** |
-      | 409 | CONFLICT | ***ROOM_NAME_ALREADY_EXISTS*** |
-      | 403 | FORBIDDEN | ***CREATOR_RIGHTS_REQUIRED*** |
-      | ***Media Video API errors*** |
-      | 404 | NOT FOUND | ***MEDIA_VIDEO_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***MEDIA_VIDEOS_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***LANGUAGE_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
-      | 409 | CONFLICT | ***MEDIA_VIDEO_SOURCE_ALREADY_EXISTS*** |
-      | ***Participant API errors*** |
-      | 404 | NOT FOUND | ***PARTICIPANT_NOT_FOUND*** |
-      | 404 | NOT FOUND | ***PARTICIPANTS_NOT_FOUND*** |
-      | ***Sockets API errors*** |
-      | null | error packet | ***ACCESS_TOKEN_REQUIRED*** |
-      | ***Room Sockets API errors*** |
-      | null | event: 'error' | ***ROOM_NOT_FOUND*** |
-      | null | event: 'error' | ***USER_ALREADY_IN_SOME_ROOM*** |
-      | null | event: 'error' | ***USER_NOT_IN_ROOM*** |
-      | ***Playlist Media API errors*** |
-      | 404 | NOT FOUND | ***PLAYLIST_MEDIAS_NOT_FOUND*** |
-      | ***Playlist Media Sockets API errors*** |
-      | null | event: 'error' | ***PLAYLIST_MEDIA_NOT_FOUND*** |
-      | null | event: 'error' | ***ROOM_NOT_FOUND*** |
-      | null | event: 'error' | ***MEDIA_NOT_FOUND*** |
-      | null | event: 'error' | ***PLAYLIST_ORDER_OUT_OF_RANGE*** |
-      | null | event: 'error' | ***SAME_PLAYLIST_MEDIA_ORDER*** |
-      | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_ROOM*** |
-      | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_PLAYER*** |
-      | ***Video Player Sockets API errors*** |
-      | null | event: 'error' | ***ROOM_NOT_FOUND*** |
-      | null | event: 'error' | ***USER_NOT_IN_ROOM*** |
+        📝 **Note:** Some errors may have human-readable `description` field.
+        
+        | Status Code | Status Description | Message |
+        | --- | --- | --- |
+        | ***Global errors*** |
+        | 405 | METHOD NOT ALLOWED | ***METHOD_NOT_ALLOWED*** |
+        | 404 | NOT FOUND | ***RESOURCE_NOT_FOUND*** |
+        | 500 | INTERNAL SERVER ERROR | ***INTERNAL_SERVER_ERROR*** |
+        | 403 | FORBIDDEN | ***ADMIN_RIGHTS_REQUIRED*** |
+        | ***JSON validation errors*** |
+        | 400 | BAD REQUEST | ***"field_name": "MISSING_FIELD"*** |
+        | 400 | BAD REQUEST | ***"field_name": "UNKNOWN_FIELD"*** |
+        | 400 | BAD REQUEST | ***"field_name": "INVALID_LENGTH"*** |
+        | 400 | BAD REQUEST | ***"field_name": "INVALID_RANGE"*** |
+        | 400 | BAD REQUEST | ***"field_name": "REGEXP_MISMATCH"*** |
+        | 400 | BAD REQUEST | ***"field_name": "INVALID_TYPE"*** |
+        | 400 | BAD REQUEST | ***"field_name": "NOT_NULLABLE"*** |
+        | ***Formdata errors*** |
+        | 400 | BAD REQUEST | ***FORMDATA_IS_EMPTY*** |
+        | ***Query params errors*** |
+        | 400 | BAD REQUEST | ***INVALID_FILTER_BY*** |
+        | 400 | BAD REQUEST | ***INVALID_SELECT*** |
+        | 400 | BAD REQUEST | ***INVALID_EXPAND*** |
+        | 400 | BAD REQUEST | ***INVALID_PAGE_QUERY*** |
+        | 400 | BAD REQUEST | ***INVALID_ID*** |
+        | 400 | BAD REQUEST | ***NO_IDENTITY_PROVIDED*** |
+        | ***File uploading errors*** |
+        | 400 | BAD REQUEST | ***INVALID_JPG*** |
+        | 400 | BAD REQUEST | ***INVALID_VIDEO*** |
+        | 500 | INTERNAL SERVER ERROR | ***CANNOT_SAVE_FILE_ON_SERVER*** |
+        | ***Authenticaton API errors*** |
+        | 401 | UNAUTHORIZED | ***NO_TOKEN_PROVIDED*** |
+        | 401 | UNAUTHORIZED | ***NO_FRESH_TOKEN_PROVIDED*** |
+        | 401 | UNAUTHORIZED | ***TOKEN_HAS_EXPIRED*** |
+        | 422 | UNPROCESSABLE ENTITY | ***INVALID_TOKEN*** |
+        | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
+        | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
+        | 409 | CONFLICT | ***USERNAME_NOT_FOUND*** |
+        | 409 | CONFLICT | ***INCORRECT_PASSWORD*** |
+        | 403 | FORBIDDEN | ***USER_IS_BANNED*** |
+        | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
+        | ***User API errors*** |
+        | 409 | CONFLICT | ***USERNAME_ALREADY_EXISTS*** |
+        | 409 | CONFLICT | ***EMAIL_ALREADY_EXISTS*** |
+        | 404 | NOT FOUND | ***USERS_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***USER_NOT_FOUND*** |
+        | ***Media API errors*** |
+        | 404 | NOT FOUND | ***MEDIA_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***MEDIAS_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+        | ***Friends API errors*** |
+        | 403 | FORBIDDEN | ***CANNOT_ADD_YOURSELF*** |
+        | 403 | FORBIDDEN | ***ALREADY_REQUESTED*** |
+        | 404 | NOT FOUND | ***FRIEND_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***FRIENDS_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***REQUEST_NOT_FOUND*** |
+        | ***Video API errors*** |
+        | 404 | NOT FOUND | ***UPLOAD_SESSION_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***TRANSCODE_SESSION_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***QUALITY_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+        | 400 | BAD REQUEST | ***NO_UPLOAD_SESSION_PROVIDED*** |
+        | 400 | BAD REQUEST | ***NO_QUALITY_PROVIDED*** |
+        | 409 | CONFLICT | ***SIZE_MISMATCH*** |
+        | ***Genres API errors*** |
+        | 404 | NOT FOUND | ***GENRE_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***GENRES_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***MEDIA_GENRE_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***MEDIA_GENRES_NOT_FOUND*** |
+        | 409 | CONFLICT | ***SLUG_ALREADY_EXISTS*** |
+        | 409 | CONFLICT | ***MEDIA_GENRE_ALREADY_EXISTS*** |
+        | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+        | ***Rooms API errors*** |
+        | 404 | NOT FOUND | ***ROOM_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***ROOMS_NOT_FOUND*** |
+        | 409 | CONFLICT | ***ROOM_NAME_ALREADY_EXISTS*** |
+        | 403 | FORBIDDEN | ***CREATOR_RIGHTS_REQUIRED*** |
+        | ***Media Video API errors*** |
+        | 404 | NOT FOUND | ***MEDIA_VIDEO_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***MEDIA_VIDEOS_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***LANGUAGE_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***VIDEO_NOT_FOUND*** |
+        | 409 | CONFLICT | ***MEDIA_VIDEO_SOURCE_ALREADY_EXISTS*** |
+        | ***Participant API errors*** |
+        | 404 | NOT FOUND | ***PARTICIPANT_NOT_FOUND*** |
+        | 404 | NOT FOUND | ***PARTICIPANTS_NOT_FOUND*** |
+        | ***Sockets API errors*** |
+        | null | error packet | ***ACCESS_TOKEN_REQUIRED*** |
+        | ***Room Sockets API errors*** |
+        | null | event: 'error' | ***ROOM_NOT_FOUND*** |
+        | null | event: 'error' | ***USER_ALREADY_IN_SOME_ROOM*** |
+        | null | event: 'error' | ***USER_NOT_IN_ROOM*** |
+        | ***Playlist Media API errors*** |
+        | 404 | NOT FOUND | ***PLAYLIST_MEDIAS_NOT_FOUND*** |
+        | ***Playlist Media Sockets API errors*** |
+        | null | event: 'error' | ***PLAYLIST_MEDIA_NOT_FOUND*** |
+        | null | event: 'error' | ***ROOM_NOT_FOUND*** |
+        | null | event: 'error' | ***MEDIA_NOT_FOUND*** |
+        | null | event: 'error' | ***PLAYLIST_ORDER_OUT_OF_RANGE*** |
+        | null | event: 'error' | ***SAME_PLAYLIST_MEDIA_ORDER*** |
+        | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_ROOM*** |
+        | null | event: 'error' | ***PLAYLIST_MEDIA_ALREADY_IN_PLAYER*** |
+        | ***Video Player Sockets API errors*** |
+        | null | event: 'error' | ***ROOM_NOT_FOUND*** |
+        | null | event: 'error' | ***USER_NOT_IN_ROOM*** |
+      </details>
 
       -----------------------------------------------
 
-      ## ***QUERY PARAMETER: filter_by***
+      <details>
+        <summary> ***QUERY PARAMETER: filter_by*** </summary>
 
-      ### Reserved values:
-        - boolean value: `true`, `false`
+        ### Reserved values:
+          - boolean value: `true`, `false`
 
-        - none value: `null`
-
-
-      ### Operators (must be in {} brackets):
-        - equals: `{==}`
-
-        - not equals: `{!=}`
-
-        - more: `{>}`
-
-        - less: `{<}`
-
-        - more or equals: `{>=}`
-
-        - less or equals: `{<=}`
-
-        - value in list: `{in}`
-
-        - value not in list: `{!in}`
-
-        - like operator (words or substrings in value, NOT case-sensitive): `{~}`
+          - none value: `null`
 
 
-      ### Only for boolean operators:
-        - equals: `{==}`
+        ### Operators (must be in {} brackets):
+          - equals: `{==}`
 
-        - not equals: `{!=}`
+          - not equals: `{!=}`
 
+          - more: `{>}`
 
-      ### Only for integer/float operators:
-        - equals: `{==}`
+          - less: `{<}`
 
-        - not equals: `{!=}`
+          - more or equals: `{>=}`
 
-        - more: `{>}`
+          - less or equals: `{<=}`
 
-        - less: `{<}`
+          - value in list: `{in}`
 
-        - more or equals: `{>=}`
+          - value not in list: `{!in}`
 
-        - less or equals: `{<=}`
-
-
-      ### Only for list operators:
-        - value in list: `{in}`
-
-        - value not in list: `{!in}`
+          - like operator (words or substrings in value, NOT case-sensitive): `{~}`
 
 
-      ### Only for string operators:
-        - equals: `{==}`
+        ### Only for boolean operators:
+          - equals: `{==}`
 
-        - not equals: `{!=}`
-
-        - more: `{>}`
-
-        - less: `{<}`
-
-        - more or equals: `{>=}`
-
-        - less or equals: `{<=}`
-
-        - like operator (words or substrings in value, NOT case-sensitive): `{~}`
+          - not equals: `{!=}`
 
 
-      ### list syntax (for value):
-      `[val1;val2;val3]`
+        ### Only for integer/float operators:
+          - equals: `{==}`
+
+          - not equals: `{!=}`
+
+          - more: `{>}`
+
+          - less: `{<}`
+
+          - more or equals: `{>=}`
+
+          - less or equals: `{<=}`
 
 
-      ### Example:
-        - `filter_by=name{~}Wolf wall street,id{in}[1;2;3],isBanned{==}false`
+        ### Only for list operators:
+          - value in list: `{in}`
 
-        - `filter_by=id{>=}15,avatar{!=}null`
-
-
-      ## ***SOCKETS: client-side events***
-
-      Description: `event` -> `data sent with event`
+          - value not in list: `{!in}`
 
 
-      ### Connection events:
+        ### Only for string operators:
+          - equals: `{==}`
 
-        - `connected` -> `{'userId': int}`
+          - not equals: `{!=}`
 
+          - more: `{>}`
 
-      ### Room events:
+          - less: `{<}`
 
-        - `joined` -> `Participant entity`
+          - more or equals: `{>=}`
 
-        - `left` -> `Participant entity`
+          - less or equals: `{<=}`
 
-        - `roomUpdated` -> `Room entity`
-
-        - `roomDeleted` -> `Room entity`
-
-
-      ### Playlist events:
-
-        - `playlistMediaAdded` -> `PlaylistMedia entity`
-
-        - `playlistMediaUpdated` -> `PlaylistMedia entity`
-
-        - `playlistMediaSettedToPlayer` -> `PlaylistMedia entity`
-
-        - `playlistMediaDeleted` -> `PlaylistMedia entity`
+          - like operator (words or substrings in value, NOT case-sensitive): `{~}`
 
 
-      ### Video Player events:
+        ### list syntax (for value):
+        `[val1;val2;val3]`
 
-        - `syncPlayerState` -> `{'currentTime': int, 'isPaused': boolean}`
 
-        - `sendPlayerStateFromClient` -> `{'userSID': string}` (on that event client must send request to `sendPlayerStateToUser` server event)
+        ### Example:
+          - `filter_by=name{~}Wolf wall street,id{in}[1;2;3],isBanned{==}false`
+
+          - `filter_by=id{>=}15,avatar{!=}null`
+      </details>
+      
+      -----------------------------------------------
+
+      <details>
+        <summary> ***SOCKETS: client-side events*** </summary>
+
+        Description: `event` -> `data sent with event`
+
+
+        ### Connection events:
+
+          - `connected` -> `{'userId': int}`
+
+
+        ### Room events:
+
+          - `joined` -> `Participant entity`
+
+          - `left` -> `Participant entity`
+
+          - `roomUpdated` -> `Room entity`
+
+          - `roomDeleted` -> `Room entity`
+
+
+        ### Playlist events:
+
+          - `playlistMediaAdded` -> `PlaylistMedia entity`
+
+          - `playlistMediaUpdated` -> `PlaylistMedia entity`
+
+          - `playlistMediaSettedToPlayer` -> `PlaylistMedia entity`
+
+          - `playlistMediaDeleted` -> `PlaylistMedia entity`
+
+
+        ### Video Player events:
+
+          - `syncPlayerState` -> `{'currentTime': int, 'isPaused': boolean}`
+
+          - `sendPlayerStateFromClient` -> `{'userSID': string}` (on that event client must send request to `sendPlayerStateToUser` server event)
+      </details>
 
       -----------------------------------------------
 
   
-  version: 'beta 0.0.1'
-
-  contact:
-    url: https://vk.com/akumii
-    email: toropkibn@gmail.com
+  version: 'MVP 1.0.0'
 
   license:
     name: Nginx 1.18.0
@@ -272,18 +275,18 @@ tags:
     description: Do everything with authentication :)
   - name: User API
     description: Do everything with users :)
-  - name: Media API
-    description: Do everything with media :)
   - name: Friends API
     description: Do everything with friends :)
-  - name: Video API
-    description: Do everything with videos :)
   - name: Rooms API
     description: Do everything with rooms :)
   - name: Participants API
     description: Do everything with participants :)
   - name: Genres API
     description: Do everything with genres :)
+  - name: Media API
+    description: Do everything with media :)
+  - name: Video API
+    description: Do everything with videos :)
   - name: Media Video API
     description: Do everything with media videos :)
   - name: Playlist Media API
@@ -304,14 +307,11 @@ tags:
 servers: [
   {
     "url": "https://ilow-api.eugenv.ru/",
-    "description": "Development server"
+    "description": "Production server"
   },
   {
     "url": "http://127.0.0.1:8302/",
     "description": "Local server"
-  },
-  {
-    "url": "No production server is present...",
   }
 ]
 
