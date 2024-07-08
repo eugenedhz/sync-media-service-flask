@@ -161,7 +161,7 @@ def get_all_rooms():
     rooms = room_service.get_rooms(query_parameters_dto=query_parameters_dto)
 
     if len(rooms) == 0:
-        raise ApiError(ROOM_API_ERRORS['ROOMS_NOT_FOUND'])
+        return jsonify([])
 
     serialize_rooms = RoomSchema(only=select, many=True).dump
     serialized_rooms = serialize_rooms(rooms)

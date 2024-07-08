@@ -132,7 +132,7 @@ def get_all_users():
 	users = user_service.get_users(query_parameters_dto=query_parameters_dto)
 
 	if len(users) == 0:
-		raise ApiError(USER_API_ERRORS['USERS_NOT_FOUND'])
+		return jsonify([])
 
 	expand = request_params.get('expand')
 
