@@ -73,7 +73,7 @@ def get_all_participants():
     participants = participant_service.get_participants(query_parameters_dto=query_parameters_dto)
 
     if len(participants) == 0:
-        raise ApiError(PARTICIPANT_API_ERRORS['PARTICIPANTS_NOT_FOUND'])
+        return jsonify([])
 
     serialize_participants = ParticipantSchema(only=select, many=True).dump
     serialized_participants = serialize_participants(participants)

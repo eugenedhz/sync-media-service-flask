@@ -101,7 +101,7 @@ def get_all_genres():
     genres = genre_service.get_genres(query_parameters_dto=query_parameters_dto)
 
     if len(genres) == 0:
-        raise ApiError(GENRE_API_ERRORS['GENRES_NOT_FOUND'])
+        return jsonify([])
     
     serialize_genres = GenreSchema(only=select, many=True).dump
     serialized_genres = serialize_genres(genres)

@@ -174,7 +174,7 @@ def get_user_friends():
     users = user_service.get_friends(user_id=user_id, query_parameters_dto=query_parameters_dto)
 
     if len(users) == 0:
-        raise ApiError(FRIENDS_API_ERRORS['FRIENDS_NOT_FOUND'])
+        return jsonify([])
 
     serialize_users = UserSchema(many=True).dump
     serialized_users = serialize_users(users)

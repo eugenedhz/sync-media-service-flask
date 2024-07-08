@@ -169,7 +169,7 @@ def get_all_medias():
     )
 
     if len(medias) == 0:
-        raise ApiError(MEDIA_API_ERRORS['MEDIAS_NOT_FOUND'])
+        return jsonify([])
 
     serialize_medias = MediaSchema(only=select, many=True).dump
     serialized_medias = serialize_medias(medias)

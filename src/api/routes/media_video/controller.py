@@ -139,7 +139,7 @@ def get_all_videos():
     media_videos = media_video_service.get_videos(query_parameters_dto)
 
     if len(media_videos) == 0:
-        raise ApiError(MEDIA_VIDEO_API_ERRORS['MEDIA_VIDEOS_NOT_FOUND'])
+        return jsonify([])
 
     serialize_media_videos = MediaVideoSchema(only=select, many=True).dump
     serialized_media_videos = serialize_media_videos(media_videos)
