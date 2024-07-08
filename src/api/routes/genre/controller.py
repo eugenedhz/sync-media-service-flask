@@ -133,7 +133,7 @@ def get_media_genres():
     genres = genre_service.get_media_genres(media_id)
 
     if len(genres) == 0:
-        raise ApiError(GENRE_API_ERRORS['MEDIA_GENRES_NOT_FOUND'])
+        return jsonify([])
     
     serialize_genres = GenreSchema(only=select, many=True).dump
     serialized_genres = serialize_genres(genres)
