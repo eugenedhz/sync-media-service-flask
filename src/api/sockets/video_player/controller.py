@@ -1,5 +1,4 @@
 from flask import request
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_socketio import emit, rooms
 
 from src.api.extensions import socketio
@@ -69,6 +68,6 @@ def sync_player_current_state(data):
 	if room_id not in user_rooms:
 		raise ApiError(ROOM_SOCKET_ERRORS['USER_NOT_IN_ROOM'])
 
-	emit('syncPlayerState', data, to=room_id)
+	emit('syncPlayerState', data, to=room_id, include_self=False)
 
 	return 200
