@@ -239,6 +239,11 @@ info:
           - `roomDeleted` -> `Room entity`
 
 
+        ### Chat events:
+
+          - `messageSent` -> `{'message': string, participant: Participant entity}`
+
+
         ### Playlist events:
 
           - `playlistMediaAdded` -> `PlaylistMedia entity`
@@ -299,6 +304,8 @@ tags:
     description: Do everything with room playlist :)
   - name: Video Player Sockets API
     description: Do everything with video-player sockets :)
+  - name: Chat Sockets API
+    description: Do everything with chat sockets :)
 
 ################################################################################
 #                            Hosts, Servers, cookies auth                      #
@@ -1966,6 +1973,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlayerStateSchema'
 
+  /sendMessage:
+    post:
+      operationId: send_message_to_room
+
+      summary: Отправление сообщения в комнату
+
+      tags:
+        - Chat Sockets API
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageSendSchema'
+
+      responses:
+        200:
+          description: |
+            при успешном отправлении происходит emit события `messageSent` в соотв. комнату с json сообщения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageSentSchema'
+
 
 ################################################################################
 #                                    Schemas                                   #
@@ -2761,3 +2793,35 @@ components:
           example: 1
           min: 1
           required: true
+
+    MessageSendSchema:
+      type: object
+      properties:
+        roomId:
+          type: integer
+          nullable: false
+          example: 1
+          min: 1
+          required: true   
+        message:
+          type: string
+          nullable: false
+          example: 'hello world!'
+          minLength: 1
+          required: true 
+
+    MessageSentSchema:
+      type: object
+      properties:  
+        message:
+          type: string
+          nullable: false
+          example: 'hello world!'
+          minLength: 1
+        timeSent:
+          type: integer
+          nullable: false
+          example: 1710230677
+          description: 'timestamp'
+        participant:
+          $ref: '#/components/schemas/ParticipantSchema'
