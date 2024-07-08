@@ -37,6 +37,10 @@ class UserRepoInterface(ABC):
 		raise NotImplementedError
 
 
+	def is_admin(self, user_id: int) -> bool:
+		raise NotImplementedError
+
+
 	@abstractmethod
 	def is_field_exists(self, field: dict[str: Any]) -> bool:
 		raise NotImplementedError

@@ -19,8 +19,9 @@ from src.api.routes.media.schemas import (
     UpdateMediaFilesSchema, CreateMediaFilesSchema
 )
 from src.api.routes.media_video.schemas import MediaVideoSchema
-from src.configs.constants import Static
+from src.configs.constants import Static, Role
 from src.api.helpers.video import concat_video_to_url, delete_videos_with_quality
+from src.api.helpers.jwt import role_required
 
 from pkg.query_params.select.parse import parse_select
 from pkg.query_params.filter_by.parse import parse_filter_by
@@ -36,6 +37,7 @@ EXPAND_FIELDS = ('genres', 'videos')
 
 @app.route('/media', methods=['POST'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def media_create():
     CreateMediaFilesSchema().validate(request.files)
     formdata = CreateMediaSchema().load(request.form)
@@ -193,6 +195,7 @@ def get_all_medias():
 
 @app.route('/media', methods=['PATCH'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def update_media():
     media_id = request.args.get('id')
 
@@ -255,6 +258,7 @@ def update_media():
 
 @app.route('/media', methods=['DELETE'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def delete_media():
     media_id = request.args.get('id')
 

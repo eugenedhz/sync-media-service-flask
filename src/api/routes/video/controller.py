@@ -5,13 +5,14 @@ from flask import request, jsonify, send_from_directory
 from flask_jwt_extended import jwt_required
 
 from src.app import app
-from src.configs.constants import Static, VideoUploadSession
+from src.configs.constants import Static, VideoUploadSession, Role
 from src.api.services.video import video_service, upload_session, transcode_session
 from src.api.routes.video.schemas import UploadSchema, ChunkSchema
 from src.api.error.custom_error import ApiError
 from src.api.error.shared_error import API_ERRORS
 from src.api.routes.video.error import VIDEO_API_ERRORS
 from src.threads.video.transcoder import transcode_queue
+from src.api.helpers.jwt import role_required
 
 from pkg.file.video.validate import is_valid_video_extension
 from pkg.file.filename import split_filename
@@ -19,6 +20,7 @@ from pkg.file.filename import split_filename
 
 @app.route('/upload/session', methods=['GET'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def get_session():
     current_time = int(datetime.now().timestamp())
     uuid = uuid4().hex
@@ -29,6 +31,7 @@ def get_session():
 
 @app.route('/upload', methods=['POST'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def upload_chunk():
     ChunkSchema().validate(request.files)
     formdata = UploadSchema().load(request.form)
@@ -111,6 +114,7 @@ def get_video(filename):
 
 @app.route('/upload/session', methods=['DELETE'])
 @jwt_required()
+@role_required(Role.ADMIN)
 def abort_upload():
     session = request.args.get('session')
 
