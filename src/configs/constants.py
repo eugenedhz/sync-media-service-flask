@@ -40,6 +40,7 @@ class Tables(Readonly):
 	MEDIA_GENRE = 'MediaGenre'
 	FRIENDSHIP_REQUEST = 'FriendshipRequest'
 	FRIENDSHIP = 'Friendship'
+	ROLE = 'Role'
 
 
 class RedisGroups(Readonly):

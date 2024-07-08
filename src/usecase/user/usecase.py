@@ -175,7 +175,7 @@ class UserUsecase():
 
 
 	def is_admin(self, user_id: int) -> bool:
-        return self.repo.is_admin(user_id)
+		return self.repo.is_admin(user_id)
 
 
 	def is_field_exists(self, name: str, value: str) -> bool:
