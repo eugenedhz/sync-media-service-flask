@@ -73,7 +73,7 @@ def login():
 	if user_service.is_admin(user.id):
 		role = Role.ADMIN
 	else:
-		role=Role.USER
+		role = Role.USER
 
 	claims = Claims(role=role, type='access')
 	response = create_response_with_jwt(

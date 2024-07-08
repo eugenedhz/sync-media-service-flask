@@ -284,7 +284,7 @@ class UserRepo(UserRepoInterface):
     def is_admin(self, user_id: int) -> bool:
         with Session(self.engine) as s:
             query = (
-                select(AdminModel.id)
+                select(AdminModel)
                 .where(AdminModel.userId == user_id)
             )
 

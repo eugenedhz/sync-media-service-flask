@@ -90,8 +90,7 @@ class RoomModel(Base):
 class AdminModel(Base):
 	__tablename__ = Tables.ROLE
 
-	id = Column(Integer, primary_key=True)
-	userId = Column(String, ForeignKey(f'{Tables.USER}.id'), nullable=False, unique=True)
+	userId = Column(String, ForeignKey(f'{Tables.USER}.id', ondelete='CASCADE'), primary_key=True)
 
 
 class UserModel(Base):
