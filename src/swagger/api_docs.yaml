@@ -708,7 +708,8 @@ paths:
       security:
         - cookieAuth: []
 
-      summary: Создание медиа
+      summary: |
+        Создание медиа ***ADMIN ROLE REQUIRED***
 
       tags:
         - Media API
@@ -772,7 +773,8 @@ paths:
 
       operationId: update_media
 
-      summary: Обновление медиа.
+      summary: |
+        Обновление медиа ***ADMIN ROLE REQUIRED***
 
       tags:
         - Media API
@@ -805,7 +807,8 @@ paths:
 
       operationId: delete_media
 
-      summary: Удаление медиа.
+      summary: |
+        Удаление медиа ***ADMIN ROLE REQUIRED***
 
       description: Этим может воспользоваться админ для удаления медиа
 
@@ -876,7 +879,8 @@ paths:
         - cookieAuth: []
 
       operationId: get_session_uuid
-      summary: Получить uuid загрузочной сессии
+      summary: |
+        Получить uuid загрузочной сессии ***ADMIN ROLE REQUIRED***
       description: получение uuid сессии, если сессия некоторое время не использовалась (24 часа), она удаляется, берётся на каждую загрузку отдельно
       tags:
         - Video API
@@ -893,7 +897,8 @@ paths:
         - cookieAuth: []
 
       operationId: abort_session
-      summary: отменить загрузочную сессию по её uuid
+      summary: |
+        отменить загрузочную сессию по её uuid ***ADMIN ROLE REQUIRED***
       tags:
         - Video API
 
@@ -917,7 +922,8 @@ paths:
         - cookieAuth: []
       
       operationId: load_chunk
-      summary: загрузить чанк файла
+      summary: |
+        загрузить чанк файла ***ADMIN ROLE REQUIRED***
       tags:
         - Video API
 
@@ -946,7 +952,8 @@ paths:
   /upload/transcode_status:
     get:
       operationId: get_transcode_status
-      summary: получить статусы обработки видео
+      summary: |
+        получить статусы обработки видео ***ADMIN ROLE REQUIRED***
       tags:
         - Video API
 
@@ -1205,7 +1212,8 @@ paths:
 
       operationId: add_media_genre
 
-      summary: Добавить жанр к медиа
+      summary: |
+        Добавить жанр к медиа ***ADMIN ROLE REQUIRED***
 
       tags:
         - Genres API
@@ -1231,7 +1239,8 @@ paths:
 
       operationId: delete_media_genre
 
-      summary: Удалить жанр из медиа
+      summary: |
+        Удалить жанр из медиа ***ADMIN ROLE REQUIRED***
 
       tags:
         - Genres API
@@ -1256,7 +1265,8 @@ paths:
       security:
         - cookieAuth: []
 
-      summary: Создание жанра
+      summary: |
+        Создание жанра ***ADMIN ROLE REQUIRED***
 
       tags:
         - Genres API
@@ -1311,7 +1321,8 @@ paths:
 
       operationId: update_genre
 
-      summary: Обновление жанра
+      summary: |
+        Обновление жанра ***ADMIN ROLE REQUIRED***
 
       tags:
         - Genres API
@@ -1343,7 +1354,8 @@ paths:
 
       operationId: delete_genre
 
-      summary: Удаление жанра
+      summary: |
+        Удаление жанра ***ADMIN ROLE REQUIRED***
 
       tags:
         - Genres API
@@ -1367,7 +1379,8 @@ paths:
       security:
         - cookieAuth: []
 
-      summary: Создание видео медиа
+      summary: |
+        Создание видео медиа ***ADMIN ROLE REQUIRED***
 
       tags:
         - Media Video API
@@ -1428,7 +1441,8 @@ paths:
 
       operationId: update_video_media
 
-      summary: Обновление видео медиа
+      summary: |
+        Обновление видео медиа ***ADMIN ROLE REQUIRED***
 
       tags:
         - Media Video API
@@ -1460,7 +1474,8 @@ paths:
 
       operationId: delete_video_media
 
-      summary: Удаление видео медиа
+      summary: |
+        Удаление видео медиа ***ADMIN ROLE REQUIRED***
 
       tags:
         - Media Video API
