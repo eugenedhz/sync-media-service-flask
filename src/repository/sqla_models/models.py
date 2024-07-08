@@ -87,6 +87,12 @@ class RoomModel(Base):
 	)
 
 
+class AdminModel(Base):
+	__tablename__ = Tables.ROLE
+
+	userId = Column(String, ForeignKey(f'{Tables.USER}.id', ondelete='CASCADE'), primary_key=True)
+
+
 class UserModel(Base):
 	__tablename__ = Tables.USER
 

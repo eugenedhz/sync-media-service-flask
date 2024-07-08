@@ -3,6 +3,7 @@ from datetime import timedelta
 from pkg.constants.readonly import Readonly
 
 
+# for each role, except `USER`, in `src.error.shared_errors.py` must be an individual error
 class Role(Readonly):
 	ADMIN = 'ADMIN'
 	USER = 'USER'
