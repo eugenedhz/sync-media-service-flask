@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import request
 from flask_socketio import emit
 
@@ -28,6 +30,8 @@ def message_event(data):
 		raise ApiError(ROOM_SOCKET_ERRORS['USER_NOT_IN_ROOM'])
 
 	del data['roomId']
+	current_time = int(datetime.now().timestamp())
 	data['participant'] = participant._asdict()
+	data['timeSent'] = current_time
 
 	emit('messageSent', data, to=room_id)

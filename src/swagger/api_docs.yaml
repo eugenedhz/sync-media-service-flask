@@ -2818,5 +2818,10 @@ components:
           nullable: false
           example: 'hello world!'
           minLength: 1
+        timeSent:
+          type: integer
+          nullable: false
+          example: 1710230677
+          description: 'timestamp'
         participant:
           $ref: '#/components/schemas/ParticipantSchema'
