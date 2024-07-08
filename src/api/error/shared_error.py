@@ -52,6 +52,11 @@ API_ERRORS = {
 		status_code = 400
 	),
 
+	'INVALID_PAGE_QUERY': ApiErrorInfo(
+		error_message = 'INVALID_PAGE_QUERY',
+		status_code = 400
+	),
+
 	f'{Role.ADMIN}_RIGHTS_REQUIRED': ApiErrorInfo(
 		error_message = f'{Role.ADMIN}_RIGHTS_REQUIRED',
 		status_code = 403
