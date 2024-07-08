@@ -17,13 +17,13 @@ class RoomSchema(JsonSchema):
 
 class CreateRoomSchema(JsonSchema):
 	name = fields.String(required=True, validate=[Regexp(regex=Regex.ROOM_NAME), Length(min=1, max=30)])
-	title = fields.String(required=True, validate=Length(min=1, max=30))
+	title = fields.String(required=True, validate=Length(min=1, max=20))
 	isPrivate = fields.Boolean(required=True)
 
 
 class UpdateRoomSchema(JsonSchema):
 	name = fields.String(required=False, validate=[Regexp(regex=Regex.ROOM_NAME), Length(min=1, max=30)])
-	title = fields.String(required=False, validate=Length(min=1, max=30))
+	title = fields.String(required=False, validate=Length(min=1, max=20))
 	isPrivate = fields.Boolean(required=False)
 
 

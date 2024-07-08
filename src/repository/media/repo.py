@@ -61,13 +61,14 @@ class MediaRepo(MediaRepoInterface):
         return Media(**updated_media._asdict(Media))
 
 
-    def get_all(self, query_parameters: QueryParametersDTO, genre_ids: list[int]) -> list[MediaDTO]:
+    def get_all(self, query_parameters_dto: QueryParametersDTO, genre_ids: list[int]) -> list[MediaDTO]:
         with Session(self.engine) as s:
             query = (
                 select(MediaModel)
             )
 
-            filters = query_parameters.filters
+            filters = query_parameters_dto.filters
+            limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
 
             if filters is not None:
                 filters = formalize_filters(filters, MediaModel)
@@ -76,6 +77,9 @@ class MediaRepo(MediaRepoInterface):
             if genre_ids is not None:
                 for id in genre_ids:
                     query = query.filter(MediaModel.genres.any(MediaGenreModel.genreId == id))
+            
+            if limit != None and offset != None:
+                query = query.limit(limit).offset(limit*offset)
 
             found_medias = get_all(session=s, query=query)
 

@@ -2,7 +2,7 @@ from sqlalchemy import Engine, update, select, Row
 from sqlalchemy.orm import Session, defer
 from sqlalchemy.sql.operators import or_, and_
 
-from typing import Any
+from typing import Any, Optional
 
 from src.domain.user import User
 from src.interface.repository.user import UserRepoInterface
@@ -90,10 +90,14 @@ class UserRepo(UserRepoInterface):
             )
 
             filters = query_parameters_dto.filters
+            limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
 
             if filters is not None:
                 filters = formalize_filters(filters, UserModel)
                 query = query.filter(*filters)
+
+            if limit != None and offset != None:
+                query = query.limit(limit).offset(limit*offset)
 
             found_users = get_all(session=s, query=query)
 
@@ -188,9 +192,9 @@ class UserRepo(UserRepoInterface):
             return User(**deleted_friend._asdict(User))
 
 
-    def get_friends(self, user_id: int) -> list[UserDTO]:
+    def get_friends(self, user_id: int, query_parameters_dto: Optional[QueryParametersDTO]) -> list[UserDTO]:
         with Session(self.engine) as s:
-            query_friends = (
+            query = (
                 select(UserModel)
                 .join(FriendshipModel, UserModel.id == FriendshipModel.user_2)
                 .where(FriendshipModel.user_1 == user_id)
@@ -201,7 +205,18 @@ class UserRepo(UserRepoInterface):
                 )
             )
 
-            friends = get_all(s, query_friends)
+            if query_parameters_dto:
+                filters = query_parameters_dto.filters
+                limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
+
+                if filters is not None:
+                    filters = formalize_filters(filters, UserModel)
+                    query = query.filter(*filters)
+
+                if limit != None and offset != None:
+                    query = query.limit(limit).offset(limit*offset)
+
+            friends = get_all(s, query)
 
             friends_dto = [UserDTO(**friend._asdict(User)) for friend in friends]
             return friends_dto

@@ -69,17 +69,21 @@ class ParticipantRepo(ParticipantRepoInterface):
         return ParticipantDTO(**found_participant._asdict(Participant), name=name, avatar=avatar)
 
 
-    def get_all(self, query_parameters: QueryParametersDTO) -> list[ParticipantDTO]:
+    def get_all(self, query_parameters_dto: QueryParametersDTO) -> list[ParticipantDTO]:
         with Session(self.engine) as s:
             query = (
                 select(ParticipantModel)
             )
 
-            filters = query_parameters.filters
+            filters = query_parameters_dto.filters
+            limit, offset = query_parameters_dto.limit, query_parameters_dto.offset 
 
             if filters is not None:
                 filters = formalize_filters(filters, ParticipantModel)
                 query = query.filter(*filters)
+
+            if limit != None and offset != None:
+                query = query.limit(limit).offset(limit*offset)
 
             found_participants = get_all(session=s, query=query)
             

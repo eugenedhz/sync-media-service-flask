@@ -8,6 +8,7 @@ from src.api.routes.user.error import USER_API_ERRORS
 from src.api.routes.friends.error import FRIENDS_API_ERRORS
 from src.api.error.custom_error import ApiError
 from src.api.routes.user.schemas import UserSchema, UpdateUserSchema
+from src.usecase.dto import QueryParametersDTO
 
 
 @app.route('/friends', methods=['POST'])
@@ -160,7 +161,20 @@ def get_user_friends():
         if user is None:
             raise ApiError(USER_API_ERRORS['USER_NOT_FOUND'])
 
-    users = user_service.get_friends(user_id=user_id)
+    limit = request_params.get('limit')
+    offset = request_params.get('offset')
+    if limit or offset:
+        try:
+            limit = int(limit)
+            offset = int(offset)
+        except:
+            raise ApiError(API_ERRORS['INVALID_PAGE_QUERY'])
+
+    query_parameters_dto = QueryParametersDTO(limit=limit, offset=offset)
+    users = user_service.get_friends(user_id=user_id, query_parameters_dto=query_parameters_dto)
+
+    if len(users) == 0:
+        raise ApiError(FRIENDS_API_ERRORS['FRIENDS_NOT_FOUND'])
 
     serialize_users = UserSchema(many=True).dump
     serialized_users = serialize_users(users)
