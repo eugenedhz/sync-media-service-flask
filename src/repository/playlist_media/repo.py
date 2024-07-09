@@ -16,10 +16,11 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
         self.engine = engine
 
 
-    def get_max_playlist_order(self) -> Optional[int]:
+    def get_max_playlist_order(self, room_id: int) -> Optional[int]:
         with Session(self.engine) as s:
             query = (
                 select(func.max(PlaylistMediaModel.order))
+                .where(PlaylistMediaModel.roomId == room_id)
             )
             max_playlist_order = get_first(session=s, query=query)
 
@@ -28,7 +29,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
 
     def store(self, playlist_media: PlaylistMedia) -> PlaylistMediaDTO:
         with Session(self.engine) as s:
-            max_order = self.get_max_playlist_order()
+            max_order = self.get_max_playlist_order(playlist_media.roomId)
             new_order = 0
 
             if not(max_order is None):
@@ -102,13 +103,14 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
 
 
     # обновление порядка остальных медиа, при кейсе обновления или удаления медиа в плейлисте
-    def _update_orders(self, session: Session, current_order: int, new_order: Optional[int] = None) -> None:
+    def _update_orders(self, session: Session, current_order: int, room_id: int, new_order: Optional[int] = None) -> None:
         query = update(PlaylistMediaModel)
 
         # кейс удаления
         if new_order is None:
             query = (
                 query
+                .filter(PlaylistMediaModel.roomId == room_id)
                 .filter(PlaylistMediaModel.order > current_order)
                 .values(order=PlaylistMediaModel.order - 1)
             )
@@ -119,12 +121,14 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
         if current_order < new_order:
             query = (
                 query
+                .filter(PlaylistMediaModel.roomId == room_id)
                 .filter(PlaylistMediaModel.order > current_order, PlaylistMediaModel.order <= new_order)
                 .values(order=PlaylistMediaModel.order - 1)
             )
         else:
             query = (
                 query
+                .filter(PlaylistMediaModel.roomId == room_id)
                 .filter(PlaylistMediaModel.order < current_order, PlaylistMediaModel.order >= new_order)
                 .values(order=PlaylistMediaModel.order + 1)
             )
@@ -139,7 +143,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
             if 'order' in update_playlist_media_dto:
                 current_order = playlist_media.order
                 new_order = update_playlist_media_dto['order']
-                self._update_orders(s, current_order, new_order)
+                self._update_orders(s, current_order, playlist_media.roomId, new_order)
 
             query = (
                 update(PlaylistMediaModel)
@@ -209,7 +213,7 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
             playlist_media = s.get(PlaylistMediaModel, id)
             current_order = playlist_media.order
 
-            self._update_orders(s, current_order)
+            self._update_orders(s, current_order, playlist_media.roomId)
 
             name = playlist_media.name
             thumbnail = playlist_media.thumbnail
