@@ -12,10 +12,14 @@ from src.api.services.user import user_socket_session
 @socketio.on('connect')
 def connect_event():
 	try:
-		tokens = request.headers['Cookie']
-		access_token = tokens.split(';')[0].replace('access_token_cookie=', '')
+		tokens = request.headers['Cookie'].split(';')
+		access_token = ''
+		for token in tokens:
+			if 'access_token_cookie' in token:
+				access_token = token.replace('access_token_cookie=', '').strip()
+				break
 		payload = decode_token(access_token)
-	except:
+	except Exception as e:
 		raise ConnectionRefusedError('ACCESS_TOKEN_REQUIRED')
 
 	user_id = int(payload['sub'])

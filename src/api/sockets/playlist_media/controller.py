@@ -59,7 +59,7 @@ def update_playlist_media(data):
 		if playlist_media.order == data['order']:
 			raise ApiError(PLAYLIST_MEDIA_SOCKET_ERRORS['SAME_PLAYLIST_MEDIA_ORDER'])
 
-		max_playlist_order = playlist_media_service.get_max_playlist_order()
+		max_playlist_order = playlist_media_service.get_max_playlist_order(playlist_media.roomId)
 		if data['order'] > max_playlist_order:
 			raise ApiError(PLAYLIST_MEDIA_SOCKET_ERRORS['PLAYLIST_ORDER_OUT_OF_RANGE'])
 
@@ -85,8 +85,11 @@ def update_playlist_media(data):
 	if playlist_media_in_player.id == playlist_media_id:
 		raise ApiError(PLAYLIST_MEDIA_SOCKET_ERRORS['PLAYLIST_MEDIA_ALREADY_IN_PLAYER'])
 
-	playlist_media_service.delete_playlist_media(
-		playlist_media_in_player.id
+	max_order = playlist_media_service.get_max_playlist_order(playlist_media_in_player.roomId)
+	dto = PlaylistMediaUpdateDTO(order=max_order)
+	playlist_media_service.update_playlist_media(
+		id = playlist_media_in_player.id,
+		update_playlist_media_dto = dto
 	)
 
 	dto = PlaylistMediaUpdateDTO(order=0)

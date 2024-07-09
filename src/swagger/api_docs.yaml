@@ -241,7 +241,7 @@ info:
 
         ### Chat events:
 
-          - `messageSent` -> `{'message': string, participant: Participant entity}`
+          - `messageSent` -> `{'message': string, 'timeSent': int, participant: Participant entity}`
 
 
         ### Playlist events:

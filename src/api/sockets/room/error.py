@@ -12,7 +12,6 @@ ROOM_SOCKET_ERRORS = {
 	),
 
 	'USER_NOT_IN_ROOM': ApiErrorInfo(
-		error_message = 'USER_NOT_IN_ROOM',
-		description = 'Cannot leave room in which user is not participanting.'
+		error_message = 'USER_NOT_IN_ROOM'
 	),
 }

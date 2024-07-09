@@ -21,7 +21,6 @@ def get_player_current_state(data):
 	user_sid = request.sid
 	user_id = user_socket_session.get(user_sid)
 	room_id = data['roomId']
-
 	if not room_service.is_field_exists('id', room_id):
 		raise ApiError(ROOM_SOCKET_ERRORS['ROOM_NOT_FOUND'])
 
@@ -41,7 +40,7 @@ def get_player_current_state(data):
 			break
 
 	random_participant_sid = user_socket_session.get(random_participant_user_id)
-	emit('sendPlayerStateFromClient', {'userSID': user_sid}, to=random_participant_sid)
+	emit('sendPlayerStateFromClient', {'userSID': user_sid}, to=random_participant_sid, include_self=False, skip_sid=request.sid)
 
 
 @socketio.on('sendPlayerStateToUser')
@@ -51,7 +50,7 @@ def send_player_current_state(data):
 	user_sid = data['userSID']
 	del data['userSID']
 
-	emit('syncPlayerState', data, to=user_sid)
+	emit('syncPlayerState', data, to=user_sid, include_self=False, skip_sid=request.sid)
 
 
 @socketio.on('sendPlayerStateToEveryone')
@@ -68,6 +67,6 @@ def sync_player_current_state(data):
 	if room_id not in user_rooms:
 		raise ApiError(ROOM_SOCKET_ERRORS['USER_NOT_IN_ROOM'])
 
-	emit('syncPlayerState', data, to=room_id, include_self=False)
+	emit('syncPlayerState', data, to=room_id, include_self=False, skip_sid=request.sid)
 
 	return 200

@@ -65,8 +65,8 @@ class PlaylistMediaUsecase():
 		return deleted_playlist_media
 
 
-	def get_max_playlist_order(self) -> Optional[int]:
-		return self.repo.get_max_playlist_order()
+	def get_max_playlist_order(self, room_id: int) -> Optional[int]:
+		return self.repo.get_max_playlist_order(room_id)
 
 
 	def is_field_exists(self, name: str, value: Any) -> bool:
