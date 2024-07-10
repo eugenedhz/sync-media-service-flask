@@ -87,10 +87,11 @@ class PlaylistMediaRepo(PlaylistMediaRepoInterface):
         return PlaylistMediaDTO(**playlist_media._asdict(PlaylistMedia), name=name, thumbnail=thumbnail)
 
 
-    def get_by_order(self, order) -> PlaylistMediaDTO:
+    def get_by_order(self, room_id: int, order: int) -> PlaylistMediaDTO:
         with Session(self.engine) as s:
             query = (
                 select(PlaylistMediaModel)
+                .where(PlaylistMediaModel.roomId == room_id)
                 .where(PlaylistMediaModel.order == order)
             )
 

@@ -15,7 +15,7 @@ class MediaVideoSchema(JsonSchema):
 
 
 class CreateMediaVideoSchema(JsonSchema):
-	mediaId = fields.Int(required=True, validate=Range(min=1))
+	mediaId = fields.Integer(required=True, validate=Range(min=1))
 	name = fields.String(required=True, validate=Length(min=1))
 	source = fields.String(required=True, validate=Regexp(regex=Regex.VIDEO))
 	language = fields.String(required=True, validate=Regexp(regex=Regex.COUNTRY_CODE))

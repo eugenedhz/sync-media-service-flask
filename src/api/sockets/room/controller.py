@@ -50,6 +50,5 @@ def leave_room_event(data):
 		raise ApiError(ROOM_SOCKET_ERRORS['USER_NOT_IN_ROOM'])
 
 	participant_service.delete_participant(participant.id)
-	leave_room(room_id)
-
 	emit('left', participant._asdict(), to=room_id)
+	leave_room(room_id)
