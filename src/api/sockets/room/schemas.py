@@ -6,4 +6,4 @@ from pkg.json.validators import Range
 
 
 class JoinAndLeaveRoomSchema(JsonSchema):
-	roomId = fields.Int(required=True, validate=Range(min=1))
+	roomId = fields.Integer(required=True, validate=Range(min=1))

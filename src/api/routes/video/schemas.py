@@ -7,10 +7,10 @@ from pkg.json.validators import Range
 
 class UploadSchema(JsonSchema):
 	session = fields.Str(required=True)
-	totalFileSize = fields.Int(required=True, validate=Range(min=1))
-	totalChunkCount = fields.Int(required=True, validate=Range(min=1))
-	chunkIndex = fields.Int(required=True, validate=Range(min=0))
-	chunkByteOffset = fields.Int(required=True, validate=Range(min=0))
+	totalFileSize = fields.Integer(required=True, validate=Range(min=1))
+	totalChunkCount = fields.Integer(required=True, validate=Range(min=1))
+	chunkIndex = fields.Integer(required=True, validate=Range(min=0))
+	chunkByteOffset = fields.Integer(required=True, validate=Range(min=0))
 
 
 class ChunkSchema(JsonSchema):

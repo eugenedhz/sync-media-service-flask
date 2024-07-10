@@ -49,11 +49,9 @@ def update_playlist_media(data):
 	playlist_media_id = data['playlistMediaId']
 	del data['playlistMediaId']
 
-	is_playlist_media_exist = playlist_media_service.is_field_exists('id', playlist_media_id)
-	if not is_playlist_media_exist:
+	playlist_media = playlist_media_service.get_playlist_media_by_id(playlist_media_id)
+	if not playlist_media:
 		raise ApiError(PLAYLIST_MEDIA_API_ERRORS['PLAYLIST_MEDIA_NOT_FOUND'])
-
-	is_order_equals_zero = False
 
 	if 'order' in request.json:
 		if playlist_media.order == data['order']:
@@ -73,19 +71,19 @@ def update_playlist_media(data):
 
 
 @socketio.on('setPlaylistMediaToPlayer')
-def update_playlist_media(data):
+def set_playlist_media(data):
 	PlaylistMediaIdSchema().validate(data)
 	playlist_media_id = data['playlistMediaId']
 
-	is_playlist_media_exist = playlist_media_service.is_field_exists('id', playlist_media_id)
-	if not is_playlist_media_exist:
-		raise ApiError(PLAYLIST_MEDIA_SOCKET_ERRORS['PLAYLIST_MEDIA_NOT_FOUND'])
+	playlist_media = playlist_media_service.get_playlist_media_by_id(playlist_media_id)
+	if not playlist_media:
+		raise ApiError(PLAYLIST_MEDIA_API_ERRORS['PLAYLIST_MEDIA_NOT_FOUND'])
 
-	playlist_media_in_player = playlist_media_service.get_playlist_media_by_order(0)
+	playlist_media_in_player = playlist_media_service.get_playlist_media_by_order(room_id=playlist_media.roomId, order=0)
 	if playlist_media_in_player.id == playlist_media_id:
 		raise ApiError(PLAYLIST_MEDIA_SOCKET_ERRORS['PLAYLIST_MEDIA_ALREADY_IN_PLAYER'])
 
-	max_order = playlist_media_service.get_max_playlist_order(playlist_media_in_player.roomId)
+	max_order = playlist_media_service.get_max_playlist_order(playlist_media.roomId)
 	dto = PlaylistMediaUpdateDTO(order=max_order)
 	playlist_media_service.update_playlist_media(
 		id = playlist_media_in_player.id,
