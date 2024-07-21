@@ -45,7 +45,7 @@ class ApiError(Exception):
         for_json = []
         for validation_error in self.validation_errors:
             error = ApiErrorForJson(
-                message = validation_error.message,
+                message = validation_error.error_message,
                 fieldName = validation_error.field_name
             )
             for_json.append(error)
