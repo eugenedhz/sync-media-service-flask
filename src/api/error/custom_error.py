@@ -34,7 +34,7 @@ class ApiError(Exception):
 
 
     def to_dict(self) -> ApiErrorForJson | list[ApiErrorForJson]:
-        if not validation_errors:
+        if not self.validation_errors:
             for_json = ApiErrorForJson(
                 message = self.error,
                 fieldName = self.field_name,
@@ -43,7 +43,7 @@ class ApiError(Exception):
             return for_json
 
         for_json = []
-        for validation_error in validation_errors:
+        for validation_error in self.validation_errors:
             error = ApiErrorForJson(
                 message = validation_error.message,
                 fieldName = validation_error.field_name
