@@ -17,16 +17,18 @@ class JsonSchema(Schema):
 
 	def handle_error(self, exc, data, **kwargs):
 		invalid_fields = exc.messages
+		validation_errors = []
 
 		for key in invalid_fields:
 			if 'Not a valid' in invalid_fields[key][0]:
-				invalid_fields[key] = 'INVALID_TYPE'
+				message = 'INVALID_TYPE'
 			else:
-				invalid_fields[key] = invalid_fields[key][0]
+				message = invalid_fields[key][0]
 
-		raise ApiError(
-			ApiErrorInfo(
-				error_message = invalid_fields, 
-				description = "JSON you have sent failed validation."
+			error = ApiErrorInfo(
+				error_message = message, 
+				field_name = key
 			)
-		)
+			validation_errors.append(error)
+
+		raise ApiError(validation_errors)
