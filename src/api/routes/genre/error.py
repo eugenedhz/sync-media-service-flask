@@ -14,6 +14,7 @@ GENRE_API_ERRORS = {
 
     'SLUG_EXISTS': ApiErrorInfo(
         error_message = 'SLUG_ALREADY_EXISTS',
+        field_name = 'slug',
         status_code = 409
     ),
 

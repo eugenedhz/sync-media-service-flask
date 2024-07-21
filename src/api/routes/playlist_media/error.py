@@ -19,11 +19,13 @@ PLAYLIST_MEDIA_API_ERRORS = {
 
     'PLAYLIST_ORDER_OUT_OF_RANGE': ApiErrorInfo(
         error_message = 'PLAYLIST_ORDER_OUT_OF_RANGE',
+        field_name = 'order',
         status_code = 400
     ),
 
     'SAME_PLAYLIST_MEDIA_ORDER': ApiErrorInfo(
         error_message = 'SAME_PLAYLIST_MEDIA_ORDER',
+        field_name = 'order',
         status_code = 409
     )
 }
