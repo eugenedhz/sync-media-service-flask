@@ -28,6 +28,7 @@ AUTH_API_ERRORS = {
 
 	'BANNED': ApiErrorInfo(
 		error_message = 'USER_IS_BANNED', 
+		field_name = 'username',
 		status_code = 403
 	)
 }
