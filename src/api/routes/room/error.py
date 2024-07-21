@@ -14,6 +14,7 @@ ROOM_API_ERRORS = {
 
     'ROOM_NAME_EXISTS': ApiErrorInfo(
         error_message = 'ROOM_NAME_ALREADY_EXISTS',
+        field_name = 'name',
         status_code = 409
     ),
 
