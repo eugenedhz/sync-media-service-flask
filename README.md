@@ -4,6 +4,10 @@ Watch videos simultaneously with friends!
 
 link: https://ilow.eugenv.ru
 
+repos:
++ frontend: https://github.com/eugenedhz/sync-media-service-vue
++ backend: https://github.com/eugenedhz/sync-media-service-flask
+
 ## UI
 
 ### main page
